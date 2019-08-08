@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Mino&#39;s blog">
 <meta property="og:description" content="数据库基础数据库​        数据库是一个以某种有组织的方式存储的数据集合，可以将数据库想象为一个存储电子文件的文件柜，该文件柜存储数据的物理位置，不管数据是什么以及是如何组织的。 简单来讲，数据库是保存有组织的数据的容器（通常是一个文件或一组文件）。数据库管理系统(DBMS)​        数据的所有存储、检索、管理和处理实际上是由数据库软件——数据库管理系统（Database Manag">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-07T08:25:38.663Z">
+<meta property="og:updated_time" content="2019-08-07T10:03:10.584Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据库基础与MySQL简介">
 <meta name="twitter:description" content="数据库基础数据库​        数据库是一个以某种有组织的方式存储的数据集合，可以将数据库想象为一个存储电子文件的文件柜，该文件柜存储数据的物理位置，不管数据是什么以及是如何组织的。 简单来讲，数据库是保存有组织的数据的容器（通常是一个文件或一组文件）。数据库管理系统(DBMS)​        数据的所有存储、检索、管理和处理实际上是由数据库软件——数据库管理系统（Database Manag">
@@ -317,35 +317,36 @@
 </li>
 <li><p><strong>客户机—服务器的DBMS</strong>，例如：<strong>MySQL、Oracle、Microsoft SQL Server</strong>等。</p>
 <p>客户机—服务器应用分为两个不同的部分：</p>
-<p>​        <strong>客户机</strong>：与用户打交道，将用户请求通过网络发送给服务器处理。</p>
-<p>​        <strong>服务器</strong>：与数据文件打交道，负责处理数据以及访问数据。</p>
+<p><strong>客户机</strong>：与用户打交道，将用户请求通过网络发送给服务器处理。</p>
+<p><strong>服务器</strong>：与数据文件打交道，负责处理数据以及访问数据。</p>
 </li>
 </ul>
 <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><ul>
-<li>​    <strong>表(table)：</strong> 某种特定类型的数据的结构化清单，是数据库的<strong>基本存储结构</strong>，数据库由表组成。</li>
+<li><strong>表(table)：</strong> 某种特定类型的数据的结构化清单，是数据库的<strong>基本存储结构</strong>，数据库由表组成。</li>
 </ul>
 <p>​         同一数据库中表的<strong>表名</strong>是<strong>唯一</strong>的，即相同数据库中存在表名相同的表。</p>
 <ul>
-<li><p>​    <strong>模式（schema）：</strong>关于数据库和表的布局及特性的信息。</p>
+<li><p><strong>模式（schema）：</strong>关于数据库和表的布局及特性的信息。</p>
 </li>
-<li><p>​    <strong>列（column）:</strong>   <strong>表中的一个字段</strong>。所有的表都是由一个或多个列组成。可以将数据库想象成一个网格，网格中每一例存储着    一条特定的信息。如在顾客表中，一列存储顾客编号，另一列存储顾客姓名，地址、城市等其他信息都存储在其各自的列中。</p>
+<li><p><strong>列（column）:</strong>   <strong>表中的一个字段</strong>。所有的表都是由一个或多个列组成。可以将数据库想象成一个网格，网格中每一例存储着    一条特定的信息。如在顾客表中，一列存储顾客编号，另一列存储顾客姓名，地址、城市等其他信息都存储在其各自的列中。</p>
 </li>
-<li><p>​    <strong>数据类型（datatype）：**</strong>所容许的数据的类型。**每个表列都有相应的数据类型，其限制（或容许）该列中存储的数据。</p>
+<li><p><strong>数据类型（datatype）：**</strong>所容许的数据的类型。**每个表列都有相应的数据类型，其限制（或容许）该列中存储的数据。</p>
 </li>
-<li><p>​    <strong>行（row)：</strong>表中的一个<strong>记录</strong>。</p>
+<li><p><strong>行（row)：</strong>表中的一个<strong>记录</strong>。</p>
 </li>
 <li><p><strong>主键（primary key）：唯一</strong>标识表中每行的这个列（或这组列），创建的每个表都应具有一个主键。</p>
 </li>
 <li><p><strong>SQL：</strong>  <strong>结构化查询语言</strong>（Structured Query Language）的缩写，一种专门用来与数据库通信的语言。</p>
 </li>
 </ul>
-<h1 id="MySQL简介"><a href="#MySQL简介" class="headerlink" title="MySQL简介"></a>MySQL简介</h1><p>​        <strong>MySQL是一种基于客户机—服务器的DBMS，</strong>MySQL由于性能高、成本低、可靠性好，是最流行的开源数据库之一。</p>
-<p>​        主要优势：1、免费：MySQL是一款免费软件，任何人都可以从MySQL的官方网站下载该软件</p>
-<p>​                           2、开源：开放源代码且无版权制约、可以对源代码进行修改、自主性强、使用成本低。</p>
-<p>​                           3、门槛低：MySQL软件体积小，安装使用简单，使开发者能够快速上手。</p>
-<p>​                           4、支持多种操作系统，提供多种api接口，支持多种开发语言。</p>
+<h2 id="MySQL简介"><a href="#MySQL简介" class="headerlink" title="MySQL简介"></a>MySQL简介</h2><p><strong>MySQL是一种基于客户机—服务器的DBMS，</strong>MySQL由于性能高、成本低、可靠性好，是最流行的开源数据库之一。</p>
+<p>主要优势：</p>
+<p>1、免费：MySQL是一款免费软件，任何人都可以从MySQL的官方网站下载该软件</p>
+<p>2、开源：开放源代码且无版权制约、可以对源代码进行修改、自主性强、使用成本低。</p>
+<p>3、门槛低：MySQL软件体积小，安装使用简单，使开发者能够快速上手。</p>
+<p>4、支持多种操作系统，提供多种api接口，支持多种开发语言。</p>
 <p>版本更新历程</p>
-<h5 id="MySQL属于关系型数据库。"><a href="#MySQL属于关系型数据库。" class="headerlink" title="MySQL属于关系型数据库。"></a><strong>MySQL属于关系型数据库</strong>。</h5><p>​        关系型数据库管理系统：采用<strong>二维表格</strong>模型来组织管理的数据库系统，即把数据保存在不同的表中，而不是将数据放在一个大仓库中。</p>
+<h5 id="MySQL属于关系型数据库。"><a href="#MySQL属于关系型数据库。" class="headerlink" title="MySQL属于关系型数据库。"></a><strong>MySQL属于关系型数据库</strong>。</h5><p>关系型数据库管理系统：采用<strong>二维表格</strong>模型来组织管理的数据库系统，即把数据保存在不同的表中，而不是将数据放在一个大仓库中。</p>
 <h5 id="MySQL版本详解"><a href="#MySQL版本详解" class="headerlink" title="MySQL版本详解"></a><a href="https://www.cnblogs.com/mehome/p/9428175.html" target="_blank" rel="noopener">MySQL版本详解</a></h5>
       
     </div>
@@ -513,7 +514,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库基础"><span class="nav-number">1.</span> <span class="nav-text">数据库基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库"><span class="nav-number">1.1.</span> <span class="nav-text">数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#简单来讲，数据库是保存有组织的数据的容器（通常是一个文件或一组文件）。"><span class="nav-number">1.1.0.0.0.1.</span> <span class="nav-text">简单来讲，数据库是保存有组织的数据的容器（通常是一个文件或一组文件）。</span></a></li></ol></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库管理系统-DBMS"><span class="nav-number">1.2.</span> <span class="nav-text">数据库管理系统(DBMS)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#DBMS可以分为两类："><span class="nav-number">1.2.0.1.</span> <span class="nav-text">DBMS可以分为两类：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本概念"><span class="nav-number">1.3.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL简介"><span class="nav-number">2.</span> <span class="nav-text">MySQL简介</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#MySQL属于关系型数据库。"><span class="nav-number">2.0.0.0.1.</span> <span class="nav-text">MySQL属于关系型数据库。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#MySQL版本详解"><span class="nav-number">2.0.0.0.2.</span> <span class="nav-text">MySQL版本详解</span></a></li></ol></li></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库基础"><span class="nav-number">1.</span> <span class="nav-text">数据库基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库"><span class="nav-number">1.1.</span> <span class="nav-text">数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#简单来讲，数据库是保存有组织的数据的容器（通常是一个文件或一组文件）。"><span class="nav-number">1.1.0.0.0.1.</span> <span class="nav-text">简单来讲，数据库是保存有组织的数据的容器（通常是一个文件或一组文件）。</span></a></li></ol></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库管理系统-DBMS"><span class="nav-number">1.2.</span> <span class="nav-text">数据库管理系统(DBMS)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#DBMS可以分为两类："><span class="nav-number">1.2.0.1.</span> <span class="nav-text">DBMS可以分为两类：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本概念"><span class="nav-number">1.3.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL简介"><span class="nav-number">1.4.</span> <span class="nav-text">MySQL简介</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#MySQL属于关系型数据库。"><span class="nav-number">1.4.0.0.1.</span> <span class="nav-text">MySQL属于关系型数据库。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#MySQL版本详解"><span class="nav-number">1.4.0.0.2.</span> <span class="nav-text">MySQL版本详解</span></a></li></ol></li></div>
             
 
           </div>
