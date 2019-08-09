@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="用户权限管理主要内容1、可以限制用户访问那些数据库、数据表； 2、可以限制用户可以对那些表进行select、create、delete、alter、insert、update等操作； 3、限制用户登录的IP或域名； 4、可以限制用户自己的权限可以授权给其他用户">
+<meta name="description" content="MySQL的用户权限管理MySQL数据库账号安全对DBA来说至关重要，工作中的数据库环境一般分为测试环境和生产环境，工作时常需要给开发人员或其他人员分配权限，权限的申请流程需要设置规范，使人们按照规则来办事。 主要内容1、可以限制用户访问那些数据库、数据表； 2、可以限制用户可以对那些表进行select、create、delete、alter、insert、update等操作； 3、限制用户登录的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL的用户权限管理">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2019/08/09/user-management/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="用户权限管理主要内容1、可以限制用户访问那些数据库、数据表； 2、可以限制用户可以对那些表进行select、create、delete、alter、insert、update等操作； 3、限制用户登录的IP或域名； 4、可以限制用户自己的权限可以授权给其他用户">
+<meta property="og:description" content="MySQL的用户权限管理MySQL数据库账号安全对DBA来说至关重要，工作中的数据库环境一般分为测试环境和生产环境，工作时常需要给开发人员或其他人员分配权限，权限的申请流程需要设置规范，使人们按照规则来办事。 主要内容1、可以限制用户访问那些数据库、数据表； 2、可以限制用户可以对那些表进行select、create、delete、alter、insert、update等操作； 3、限制用户登录的">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-09T09:24:26.522Z">
+<meta property="og:updated_time" content="2019-08-09T10:02:34.180Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL的用户权限管理">
-<meta name="twitter:description" content="用户权限管理主要内容1、可以限制用户访问那些数据库、数据表； 2、可以限制用户可以对那些表进行select、create、delete、alter、insert、update等操作； 3、限制用户登录的IP或域名； 4、可以限制用户自己的权限可以授权给其他用户">
+<meta name="twitter:description" content="MySQL的用户权限管理MySQL数据库账号安全对DBA来说至关重要，工作中的数据库环境一般分为测试环境和生产环境，工作时常需要给开发人员或其他人员分配权限，权限的申请流程需要设置规范，使人们按照规则来办事。 主要内容1、可以限制用户访问那些数据库、数据表； 2、可以限制用户可以对那些表进行select、create、delete、alter、insert、update等操作； 3、限制用户登录的">
 
 
 
@@ -319,10 +319,32 @@
       
 
       
-        <h1 id="用户权限管理主要内容"><a href="#用户权限管理主要内容" class="headerlink" title="用户权限管理主要内容"></a>用户权限管理主要内容</h1><p>1、可以限制用户访问那些数据库、数据表；</p>
+        <h1 id="MySQL的用户权限管理"><a href="#MySQL的用户权限管理" class="headerlink" title="MySQL的用户权限管理"></a>MySQL的用户权限管理</h1><p>MySQL数据库账号安全对DBA来说至关重要，工作中的数据库环境一般分为测试环境和生产环境，工作时常需要给开发人员或其他人员分配权限，权限的申请流程需要设置规范，使人们按照规则来办事。</p>
+<h2 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h2><p>1、可以限制用户访问那些数据库、数据表；</p>
 <p>2、可以限制用户可以对那些表进行select、create、delete、alter、insert、update等操作；</p>
 <p>3、限制用户登录的IP或域名；</p>
 <p>4、可以限制用户自己的权限可以授权给其他用户</p>
+<h2 id="用户分类"><a href="#用户分类" class="headerlink" title="用户分类"></a>用户分类</h2><p>MySQL数据库的用户一般分为两类：</p>
+<p>1、超级管理员用户<strong>root</strong>。</p>
+<p>2、由root用户创建的<strong>普通用户</strong>，普通用户的权限由root用户进行分配。</p>
+<p>root用户避免作为Web连接用，超级管理员用户（root用户和all privileges权限用户）只能归DBA管理。</p>
+<h2 id="查看用户"><a href="#查看用户" class="headerlink" title="查看用户"></a>查看用户</h2><p><strong>MySQL5.6</strong> 查看用户情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select user,host,password from user</span><br></pre></td></tr></table></figure>
+
+<p><strong>MySQL5.7</strong> 查看用户情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">use mysql</span><br><span class="line">select user,host,authentication_string from user;</span><br></pre></td></tr></table></figure>
+
+<h2 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h2><p>创建用户时，最好专库专账号，避免一个账号管理多个库。</p>
+<p><strong>创建用户语法：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create user 用户名@主机ip identified by ‘密码’;</span><br></pre></td></tr></table></figure>
+
+<p>给开发人员进行权限分配时，可以分配只读权限和读写权限用户。</p>
+<p><strong>创建只读用户：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">create user &apos;erp_read&apos;@&apos;192.168.56.%&apos; identified by &apos;erp123&apos;;       #为erp库创建只读用户</span><br><span class="line">grant select on erp.* to &apos;erp_read&apos;@&apos;192.168.56.%&apos; identified by &apos;erp123&apos;;</span><br><span class="line">flush privileges;       #刷新权限</span><br></pre></td></tr></table></figure>
+
+<p><strong>创建读写用户：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">create user &apos;erp_user&apos;@&apos;192.168.56.%&apos; identified by &apos;erp123&apos;;    为erp库创建读写用户</span><br><span class="line">grant select,insert,update,delete on erp.* to &apos;erp_user&apos;@&apos;192.168.56.%&apos; identified by &apos;erp123&apos;;</span><br><span class="line">flush privileges;      #刷新权限</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -482,7 +504,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#用户权限管理主要内容"><span class="nav-number">1.</span> <span class="nav-text">用户权限管理主要内容</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL的用户权限管理"><span class="nav-number">1.</span> <span class="nav-text">MySQL的用户权限管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#主要内容"><span class="nav-number">1.1.</span> <span class="nav-text">主要内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户分类"><span class="nav-number">1.2.</span> <span class="nav-text">用户分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看用户"><span class="nav-number">1.3.</span> <span class="nav-text">查看用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建用户"><span class="nav-number">1.4.</span> <span class="nav-text">创建用户</span></a></li></ol></li></ol></div>
             
 
           </div>
