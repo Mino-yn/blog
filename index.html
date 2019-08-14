@@ -268,7 +268,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2019/08/09/Download-MySQL/" itemprop="url">安装MySQL数据库</a></h1>
+                <a class="post-title-link" href="/blog/2019/08/09/Download-MySQL/" itemprop="url">MySQL的安装部署与卸载</a></h1>
         
 
         <div class="post-meta">
@@ -320,13 +320,13 @@
       
         
           
-            <h1 id="MySQL5-7"><a href="#MySQL5-7" class="headerlink" title="MySQL5.7"></a>MySQL5.7</h1><p>1、创建用户，指定MySQL所在的用户组</p>
+            <h2 id="MySQL5-7安装"><a href="#MySQL5-7安装" class="headerlink" title="MySQL5.7安装"></a>MySQL5.7安装</h2><p>1、创建用户，指定MySQL所在的用户组</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">groupadd mysql </span><br><span class="line">useradd -g mysql mysql -s /sbin/nologin</span><br></pre></td></tr></table></figure>
 
-<p>2、下载软件包，并将解压MySQL软件包至/usr/local/  目录下</p>
+<p>2、下载软件包，并将解压MySQL软件包至  /usr/local/  目录下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scp mysql-5.7.23-el7-x86_64.tar.gz root@x.x.x.x:/usr/local/src/     </span><br><span class="line">tar -zxvf mysql-5.7.23-el7-x86_64.tar.gz -C /usr/local/</span><br><span class="line">ln -s /usr/local/mysql-5.7.23-el7-x86_64 /usr/local/mysql           #做软链方便日后的升级</span><br></pre></td></tr></table></figure>
 
-<p>3、创建MySQL的用户目录，并给数据目录赋权。这里选择将目录创建在/data/mysql下</p>
+<p>3、创建MySQL的用户目录，并给数据目录赋权。这里选择将目录创建在  /data/mysql 下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/mysql</span><br><span class="line">chown mysql:mysql -R /usr/local/mysql</span><br><span class="line">chown mysql:mysql -R /data/mysql</span><br></pre></td></tr></table></figure>
 
 <p>4、编辑配置文件my.cnf</p>
@@ -350,6 +350,18 @@
 
 <p>9、登录数据库</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p</span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL彻底卸载"><a href="#MySQL彻底卸载" class="headerlink" title="MySQL彻底卸载"></a>MySQL彻底卸载</h2><p>1、关进程并删除mysqld</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#查看MySQL启动进程，</span><br><span class="line">ps -ef | grep mysqld     </span><br><span class="line">#若MySQL处于启动状态，停止MySQL服务</span><br><span class="line">cd /etc/init.d</span><br><span class="line">[root@cmp15 init.d]# ./mysqld stop</span><br><span class="line">#删除mysqld</span><br><span class="line">[root@cmp15 init.d]# rm -rf mysqld</span><br></pre></td></tr></table></figure>
+
+<p>2、删除数据目录，这里数据文件存储在在  /data/mysql 目录中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /data/</span><br><span class="line">rm -rf mysql</span><br></pre></td></tr></table></figure>
+
+<p>3、删除安装目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/                      </span><br><span class="line">[root@cmp15 local]# rm -rf mysql</span><br></pre></td></tr></table></figure>
+
+<p>4、删除配置文件my.cnf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /etc/my.cnf</span><br></pre></td></tr></table></figure>
 
 
           
