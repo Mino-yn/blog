@@ -320,7 +320,166 @@
       
         
           
-            
+            <h2 id="权限表的存取"><a href="#权限表的存取" class="headerlink" title="权限表的存取"></a>权限表的存取</h2><h3 id="权限表"><a href="#权限表" class="headerlink" title="权限表"></a>权限表</h3><p>MySQL中权限的设置存储在数据库的权限表中：</p>
+<ul>
+<li><p>mysql.user：用户表、user表中的列分为：用户列、权限列、安全列和资源控制列。</p>
+</li>
+<li><p>mysql.db：数据库权限设置</p>
+</li>
+<li><p>mysql.table_priv：表权限设置</p>
+</li>
+<li><p>mysql.column_priv：列权限设置</p>
+</li>
+</ul>
+<h3 id="权限组成结构："><a href="#权限组成结构：" class="headerlink" title="权限组成结构："></a>权限组成结构：</h3><ul>
+<li>用户：有用自己的用户名和密码，并且拥有能够操作的权限。</li>
+<li>操作权限：限制一个用户能够做什么，可以配置到<strong>全局/数据库/表/列</strong></li>
+</ul>
+<h3 id="权限存取过程"><a href="#权限存取过程" class="headerlink" title="权限存取过程"></a>权限存取过程</h3><p>用户进行连接时，权限表的存取重要分为两个过程</p>
+<ul>
+<li>通过user表中的host、user、password三个字段与连接的IP、用户名、密码进行对比实现用户身份的验证。</li>
+<li>若通过身份验证，则按权限表权限范围依次递减（ user -&gt; db -&gt; tables_priv -&gt; columns_priv） 的顺序得到数据库权限。</li>
+</ul>
+<h2 id="权限的相关命令"><a href="#权限的相关命令" class="headerlink" title="权限的相关命令"></a>权限的相关命令</h2><h3 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h3><p>语法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">grant 权限</span><br><span class="line">on 数据库对象</span><br><span class="line">to 用户 identified by 密码</span><br><span class="line">with grant option(给别人权限)</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 创建用户 </span><br><span class="line">create user &apos;用户名&apos;@&apos;访问限制&apos; identified by &apos;密码&apos;;</span><br><span class="line"></span><br><span class="line"># 赋予useradmin用户select、insert权限  *.*代表所有数据库对象 </span><br><span class="line">grant select,insert on *.* to &apos;useradmin&apos;@&apos;%&apos;;  </span><br><span class="line"></span><br><span class="line"># 创建useradmin用户并且赋予权限 </span><br><span class="line">grant select,insert on *.* to &apos;useradmin&apos;@&apos;%&apos; identified by &apos;密码&apos;;</span><br><span class="line"></span><br><span class="line">#加上with grant option(给别人权限)权限</span><br><span class="line">grant select,insert on *.* to &apos;useradmin&apos;@&apos;%&apos; identified by &apos;密码&apos; with grant option;</span><br></pre></td></tr></table></figure>
+
+<h3 id="刷新权限"><a href="#刷新权限" class="headerlink" title="刷新权限"></a>刷新权限</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看权限"><a href="#查看权限" class="headerlink" title="查看权限"></a>查看权限</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#查看当前用户权限</span><br><span class="line">show grants;</span><br><span class="line"></span><br><span class="line">#查看特定用户权限</span><br><span class="line">show grants for 用户@访问限制;</span><br></pre></td></tr></table></figure>
+
+<h3 id="回收权限"><a href="#回收权限" class="headerlink" title="回收权限"></a>回收权限</h3><p>使用revoke撤销全部权限，<strong>操作者必须拥有全局的create user或update权限</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#语法</span><br><span class="line">revoke 权限 on 数据库对象 from 用户;</span><br><span class="line"></span><br><span class="line">#示例：</span><br><span class="line">revoke all on *.* form useradmin;</span><br></pre></td></tr></table></figure>
+
+<h3 id="删除用户"><a href="#删除用户" class="headerlink" title="删除用户"></a>删除用户</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#语法</span><br><span class="line">drop user 用户@限制访问;</span><br><span class="line">#实例</span><br><span class="line">drop user &apos;useradmin&apos;@&apos;%&apos;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL主要权限"><a href="#MySQL主要权限" class="headerlink" title="MySQL主要权限"></a>MySQL主要权限</h2><table>
+<thead>
+<tr>
+<th>权限</th>
+<th>权限说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>all privileges</td>
+<td>除grant外的所有权限</td>
+</tr>
+<tr>
+<td>select</td>
+<td>通过SELECT命令选择数据</td>
+</tr>
+<tr>
+<td>insert</td>
+<td>通过INSERT命令插入数据</td>
+</tr>
+<tr>
+<td>update</td>
+<td>通过UPDATE命令修改现有数据</td>
+</tr>
+<tr>
+<td>delete</td>
+<td>通过DELETE命令删除现有数据</td>
+</tr>
+<tr>
+<td>create</td>
+<td>创建新的数据库和表</td>
+</tr>
+<tr>
+<td>drop</td>
+<td>删除现有数据库和表</td>
+</tr>
+<tr>
+<td>alter</td>
+<td>使用alter table 重命名和修改表结构</td>
+</tr>
+<tr>
+<td>reload</td>
+<td>使用flush刷新和重新加载MySQL所用各种内部缓存</td>
+</tr>
+<tr>
+<td>shutdown</td>
+<td>使用mysqladmin shutdown(关闭MySQL)</td>
+</tr>
+<tr>
+<td>process</td>
+<td>使用show full processlist查看其他用户进程，服务器管理</td>
+</tr>
+<tr>
+<td>file</td>
+<td>使用select into outfile 和load data infile命令；加载服务器上的文件</td>
+</tr>
+<tr>
+<td>grant option</td>
+<td>使用grant和revoke</td>
+</tr>
+<tr>
+<td>index</td>
+<td>使用index创建和删除表索引，用索引查询表</td>
+</tr>
+<tr>
+<td>show_db</td>
+<td>使用show databases</td>
+</tr>
+<tr>
+<td>super</td>
+<td>使用change master、kill、logs、purge、master和set global,允许mysqladmin调试登录</td>
+</tr>
+<tr>
+<td>create_tmp</td>
+<td>使用create temporary tables 创建临时表</td>
+</tr>
+<tr>
+<td>lock_tables</td>
+<td>使用LOCK TABLES命令阻止对表的访问/修改</td>
+</tr>
+<tr>
+<td>execute</td>
+<td>使用call和存储过程</td>
+</tr>
+<tr>
+<td>repl_slave</td>
+<td>读取用于维护复制数据库环境的二进制日志文件，主服务器管理</td>
+</tr>
+<tr>
+<td>repl_client</td>
+<td>可确定复制从服务器和主服务器的位置，从服务器管理</td>
+</tr>
+<tr>
+<td>create_view</td>
+<td>使用create view创建视图</td>
+</tr>
+<tr>
+<td>show_view</td>
+<td>使用show view查看视图</td>
+</tr>
+<tr>
+<td>create_routine</td>
+<td>使用create procedure,可更改或放弃存储过程和函数</td>
+</tr>
+<tr>
+<td>alter_routine</td>
+<td>使用alter procedure和drop procedure更改或放弃存储过程或函数</td>
+</tr>
+<tr>
+<td>create_user</td>
+<td>使用create user、drop user、rename user、revoke all privileges</td>
+</tr>
+<tr>
+<td>event</td>
+<td>创建、修改和删除事件</td>
+</tr>
+<tr>
+<td>trigger</td>
+<td>创建和删除触发器</td>
+</tr>
+<tr>
+<td>create_tablespace</td>
+<td>创建表空间</td>
+</tr>
+</tbody></table>
+
           
         
       
