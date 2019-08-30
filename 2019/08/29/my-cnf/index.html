@@ -86,10 +86,12 @@
 <meta property="og:site_name" content="Mino&#39;s blog">
 <meta property="og:description" content="参数文件my.cnf是数据库的参数文件，my.cnf文件就是把在命令行上启动MySQL时后面的参数用my.cnf配置好，使得在下载启动时无需再命令上加参数。 MySQL的很多性能优化工作、主从复制等都是在调整参数以适应不同时期不同数量级的数据，因此理解my.cnf中的参数非常重要，只有理解了参数设置，才能对数据库进行某些方面的调优工作。 my.cnf文件，分为Client section 和 Se">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-29T07:54:32.683Z">
+<meta property="og:image" content="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-065843.png">
+<meta property="og:updated_time" content="2019-08-30T08:18:09.252Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL的my.cnf">
 <meta name="twitter:description" content="参数文件my.cnf是数据库的参数文件，my.cnf文件就是把在命令行上启动MySQL时后面的参数用my.cnf配置好，使得在下载启动时无需再命令上加参数。 MySQL的很多性能优化工作、主从复制等都是在调整参数以适应不同时期不同数量级的数据，因此理解my.cnf中的参数非常重要，只有理解了参数设置，才能对数据库进行某些方面的调优工作。 my.cnf文件，分为Client section 和 Se">
+<meta name="twitter:image" content="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-065843.png">
 
 
 
@@ -322,6 +324,7 @@
         <h2 id="参数文件"><a href="#参数文件" class="headerlink" title="参数文件"></a>参数文件</h2><p>my.cnf是数据库的参数文件，my.cnf文件就是把在命令行上启动MySQL时后面的参数用my.cnf配置好，使得在下载启动时无需再命令上加参数。</p>
 <p>MySQL的很多性能优化工作、主从复制等都是在调整参数以适应不同时期不同数量级的数据，因此理解my.cnf中的参数非常重要，只有理解了参数设置，才能对数据库进行某些方面的调优工作。</p>
 <p>my.cnf文件，分为Client section 和 Server section两块</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-065843.png" alt>]()</p>
 <h3 id="Client-section"><a href="#Client-section" class="headerlink" title="Client section"></a>Client section</h3><p>配置MySQL客户端参数，常见参数：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[client]             #客户端设置，客户端默认的连接参数</span><br><span class="line">port                      = 3306                       #连接服务器默认端口            </span><br><span class="line">socket                    = /data/mysql/mysql.sock     #用于本地连接的套接字文件，与服务端配置相同</span><br><span class="line">default-character-set     = utf8mb4                #编码</span><br></pre></td></tr></table></figure>
 

@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="Mino&#39;s blog">
 <meta property="og:description" content="认识索引索引是一个排序的列表，列表中存储着索引的值和包含这个值的数据所在行的物理地址，索引就好比书的目录页，在数据十分庞大的时候，索引可以大大加快查询的速度。因为使用索引后可以不用扫描全表来定位某行的数据，而是先通过索引表（是一个文件，需要占据物理空间）找到该行数据对应的物理地址然后访问相应的数据。 对于InnoDB存储引擎：  .frm 后缀的文件存储的是表结构。 .ibd后缀的文件存放索引文件">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-30T07:11:04.867Z">
+<meta property="og:updated_time" content="2019-08-30T08:18:56.408Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL索引">
 <meta name="twitter:description" content="认识索引索引是一个排序的列表，列表中存储着索引的值和包含这个值的数据所在行的物理地址，索引就好比书的目录页，在数据十分庞大的时候，索引可以大大加快查询的速度。因为使用索引后可以不用扫描全表来定位某行的数据，而是先通过索引表（是一个文件，需要占据物理空间）找到该行数据对应的物理地址然后访问相应的数据。 对于InnoDB存储引擎：  .frm 后缀的文件存储的是表结构。 .ibd后缀的文件存放索引文件">
@@ -331,14 +331,14 @@
 <li>索引是按照特定的数据结构把数据表中的数据放在索引文件中，以便于快速查找；</li>
 <li>索引存在于磁盘中，会占据物理空间。</li>
 </ul>
-<p>优点：</p>
+<p><strong>优点：</strong></p>
 <ul>
 <li>提高数据检索效率</li>
 <li>提高聚合函数效率</li>
 <li>提高排序效率</li>
 <li>使用覆盖索引可避免回表</li>
 </ul>
-<p>创建索引注意事项：</p>
+<p><strong>创建索引注意事项：</strong></p>
 <ul>
 <li>选择性低的字段不要创建索引</li>
 <li>很少查询的字段不要创建索引</li>

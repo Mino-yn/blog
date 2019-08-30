@@ -323,6 +323,7 @@
             <h2 id="参数文件"><a href="#参数文件" class="headerlink" title="参数文件"></a>参数文件</h2><p>my.cnf是数据库的参数文件，my.cnf文件就是把在命令行上启动MySQL时后面的参数用my.cnf配置好，使得在下载启动时无需再命令上加参数。</p>
 <p>MySQL的很多性能优化工作、主从复制等都是在调整参数以适应不同时期不同数量级的数据，因此理解my.cnf中的参数非常重要，只有理解了参数设置，才能对数据库进行某些方面的调优工作。</p>
 <p>my.cnf文件，分为Client section 和 Server section两块</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-065843.png" alt>]()</p>
 <h3 id="Client-section"><a href="#Client-section" class="headerlink" title="Client section"></a>Client section</h3><p>配置MySQL客户端参数，常见参数：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[client]             #客户端设置，客户端默认的连接参数</span><br><span class="line">port                      = 3306                       #连接服务器默认端口            </span><br><span class="line">socket                    = /data/mysql/mysql.sock     #用于本地连接的套接字文件，与服务端配置相同</span><br><span class="line">default-character-set     = utf8mb4                #编码</span><br></pre></td></tr></table></figure>
 
@@ -468,14 +469,14 @@
 <li>索引是按照特定的数据结构把数据表中的数据放在索引文件中，以便于快速查找；</li>
 <li>索引存在于磁盘中，会占据物理空间。</li>
 </ul>
-<p>优点：</p>
+<p><strong>优点：</strong></p>
 <ul>
 <li>提高数据检索效率</li>
 <li>提高聚合函数效率</li>
 <li>提高排序效率</li>
 <li>使用覆盖索引可避免回表</li>
 </ul>
-<p>创建索引注意事项：</p>
+<p><strong>创建索引注意事项：</strong></p>
 <ul>
 <li>选择性低的字段不要创建索引</li>
 <li>很少查询的字段不要创建索引</li>
@@ -1063,7 +1064,7 @@
         
           
             <h1 id="数据库文件"><a href="#数据库文件" class="headerlink" title="数据库文件"></a>数据库文件</h1><ul>
-<li><a href="https://mino-yn.github.io/blog/2019/08/19/MySQL-my-cnf/">参数文件</a>（my.cnf）</li>
+<li><a href="https://mino-yn.github.io/blog/2019/08/29/my-cnf/">参数文件</a>（my.cnf）</li>
 <li>错误日志文件（error log）</li>
 <li><a href="#二进制日志文件">二进制日志文件</a>（binary log）</li>
 <li>慢查询日志（slow log）</li>
