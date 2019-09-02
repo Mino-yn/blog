@@ -88,9 +88,9 @@
 <meta property="og:description" content="什么是事务事务是一组DML（insert、delete、update）语句的集合，是逻辑上的一组操作。MySQL数据库InnoDB存储引擎支持事务，MyISAM不支持。MySQL的事务默认是自提交式的 事务的特性原子性原子性是指事务中包含的操作要么全部成功，要么全部失败回滚。事务的操作如果成功就必须要完全应用到数据库，如果操作失败则不能对数据库有任何影响。保证数据库是一致的。 一致性一致性指事务前">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/MySQL-Transaction1.png">
-<meta property="og:image" content="https://mino-yn.github.io/blog/blog/2019/09/02/MySQL-Transaction/C:%5CUsers%5C19028862%5Cblog%5Csource_posts%5CMySQL-Transaction%5CMySQL-Transaction2.png">
-<meta property="og:image" content="https://mino-yn.github.io/blog/blog/2019/09/02/MySQL-Transaction/C:%5CUsers%5C19028862%5Cblog%5Csource_posts%5CMySQL-Transaction%5CMySQL-Transaction3.png">
-<meta property="og:updated_time" content="2019-09-02T07:01:45.536Z">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/MySQL-Transaction2.png">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/MySQL-Transaction3.png">
+<meta property="og:updated_time" content="2019-09-02T07:29:02.546Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="事务">
 <meta name="twitter:description" content="什么是事务事务是一组DML（insert、delete、update）语句的集合，是逻辑上的一组操作。MySQL数据库InnoDB存储引擎支持事务，MyISAM不支持。MySQL的事务默认是自提交式的 事务的特性原子性原子性是指事务中包含的操作要么全部成功，要么全部失败回滚。事务的操作如果成功就必须要完全应用到数据库，如果操作失败则不能对数据库有任何影响。保证数据库是一致的。 一致性一致性指事务前">
@@ -356,12 +356,11 @@
 <h2 id="事务操作命令"><a href="#事务操作命令" class="headerlink" title="事务操作命令"></a>事务操作命令</h2><p><strong>1. 查看数据库引擎是否支持事务</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show engines;</span><br></pre></td></tr></table></figure>
 
-<p><img src="/blog/blog/2019/09/02/MySQL-Transaction/C:%5CUsers%5C19028862%5Cblog%5Csource_posts%5CMySQL-Transaction%5CMySQL-Transaction2.png" alt="1567406895256"></p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/MySQL-Transaction2.png" alt></p>
 <p><strong>2.查看Mysql默认储存引擎</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show variables like &apos;%storage_engine%&apos;;</span><br></pre></td></tr></table></figure>
 
-<p>!(C:\Users\19028862\AppData\Roaming\Typora\typora-user-images\1567406976274.png)</p>
-<p><img src="/blog/blog/2019/09/02/MySQL-Transaction/C:%5CUsers%5C19028862%5Cblog%5Csource_posts%5CMySQL-Transaction%5CMySQL-Transaction3.png" alt="1567406997678"></p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/MySQL-Transaction3.png" alt></p>
 <p><strong>3.创建事务</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//开启事务</span><br><span class="line">start transaction;          //两者等价</span><br><span class="line">begin;</span><br></pre></td></tr></table></figure>
 
