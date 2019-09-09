@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="Mino&#39;s blog">
 <meta property="og:description" content="MySQL5.7安装1、创建用户，指定MySQL所在的用户组 12shell&amp;gt; groupadd mysql shell&amp;gt; useradd -g mysql mysql -s /sbin/nologin  2、下载软件包，并将解压MySQL软件包至  /usr/local/  目录下 1234shell&amp;gt; scp mysql-5.7.23-el7-x86_64.tar.gz ro">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-02T06:27:49.747Z">
+<meta property="og:updated_time" content="2019-09-09T02:50:52.956Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL的安装部署与卸载">
 <meta name="twitter:description" content="MySQL5.7安装1、创建用户，指定MySQL所在的用户组 12shell&amp;gt; groupadd mysql shell&amp;gt; useradd -g mysql mysql -s /sbin/nologin  2、下载软件包，并将解压MySQL软件包至  /usr/local/  目录下 1234shell&amp;gt; scp mysql-5.7.23-el7-x86_64.tar.gz ro">
@@ -375,6 +375,27 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/mysqld start          #启动mysql服务</span><br><span class="line">/etc/init.d/mysqld stop           #关闭mysql服务</span><br></pre></td></tr></table></figure>
 
 <p><strong>注：/etc/init.d/mysqld 由 /usr/local/mysql/support-files/mysql.server复制而来的。</strong></p>
+<h2 id="MySQL5-6安装"><a href="#MySQL5-6安装" class="headerlink" title="MySQL5.6安装"></a>MySQL5.6安装</h2><p>1、下载安装包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">groupadd mysql</span><br><span class="line">useradd -g mysql mysql -s /sbin/nologin</span><br><span class="line"></span><br><span class="line">tar -zxvf mysql-5.6.27-el7-x86_64.tar.gz -C /usr/local/</span><br><span class="line">ln -s mysql-5.6.27-el7-x86_64 mysql</span><br></pre></td></tr></table></figure>
+
+<p>2、编辑配置文件my.cnf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">port                      = 3306</span><br><span class="line">socket                    = /data/mysql/mysql.sock</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">port                      = 3306</span><br><span class="line">socket                    = /data/mysql/mysql.sock</span><br><span class="line">pid_file                  = /data/mysql/mysql.pid</span><br><span class="line">basedir                   = /usr/local/mysql</span><br><span class="line">datadir                   = /data/mysql</span><br><span class="line">character_set_server      = utf8</span><br><span class="line"></span><br><span class="line"># LOG</span><br><span class="line">slow_query_log            = 1</span><br><span class="line">long_query_time           = 5</span><br><span class="line">log_error                 = /data/mysql/error.log</span><br><span class="line">slow_query_log_file       = /data/mysql/slow.log</span><br><span class="line"></span><br><span class="line"># INNODB</span><br><span class="line">innodb_data_home_dir      = /data/mysql</span><br><span class="line">innodb_buffer_pool_size   = 10240M</span><br><span class="line">innodb_log_file_size      = 1G</span><br><span class="line">innodb_data_file_path     = ibdata1:1G:autoextend</span><br><span class="line"></span><br><span class="line"># OTHER</span><br><span class="line">max_connections           = 3000</span><br><span class="line">interactive_timeout       = 600</span><br><span class="line">wait_timeout              = 600</span><br><span class="line">lower_case_table_names    = 1</span><br><span class="line"></span><br><span class="line"># REPLICATION</span><br><span class="line">server-id                 = 3306100</span><br><span class="line">log-bin                   = /data/mysql/mysql-bin</span><br><span class="line">sync_binlog               = 0</span><br><span class="line">max_binlog_size           = 1024M</span><br><span class="line">binlog-format             = row</span><br><span class="line">expire_logs_days          = 15</span><br></pre></td></tr></table></figure>
+
+<p>3、创建MySQL的数据目录，并给数据目录赋权。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/mysql</span><br><span class="line">chown mysql:mysql -R /usr/local/mysql</span><br><span class="line">chown mysql:mysql -R /data/mysql</span><br></pre></td></tr></table></figure>
+
+<p>4、初始化</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/scripts/mysql_install_db  --basedir=/usr/local/mysql --defaults-file=/etc/my.cnf --user=mysql</span><br></pre></td></tr></table></figure>
+
+<p>5、启动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql 2&gt;&amp;1 &gt; /dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<p>6、开启防火墙</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=3306/tcp --permanent</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p>7、设置开机自启动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/mysql/bin</span><br><span class="line">cp mysql mysqladmin mysqlbinlog mysqld mysqld_safe mysqldump /usr/bin/</span><br><span class="line"></span><br><span class="line">vi /usr/local/mysql/support-files/mysql.server</span><br><span class="line">`mysqld_pid_file_path`=/data/mysql/mysql.pid</span><br><span class="line"></span><br><span class="line">cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</span><br><span class="line">chmod +x /etc/init.d/mysqld</span><br><span class="line">chkconfig --add mysqld</span><br><span class="line">chkconfig mysqld on</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -488,7 +509,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -534,7 +555,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL5-7安装"><span class="nav-number">1.</span> <span class="nav-text">MySQL5.7安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL彻底卸载"><span class="nav-number">2.</span> <span class="nav-text">MySQL彻底卸载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL的启动与关闭"><span class="nav-number">3.</span> <span class="nav-text">MySQL的启动与关闭</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL5-7安装"><span class="nav-number">1.</span> <span class="nav-text">MySQL5.7安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL彻底卸载"><span class="nav-number">2.</span> <span class="nav-text">MySQL彻底卸载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL的启动与关闭"><span class="nav-number">3.</span> <span class="nav-text">MySQL的启动与关闭</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL5-6安装"><span class="nav-number">4.</span> <span class="nav-text">MySQL5.6安装</span></a></li></ol></div>
             
 
           </div>
