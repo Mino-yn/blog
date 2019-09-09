@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="参数文件my.cnf是数据库的参数文件，my.cnf文件就是把在命令行上启动MySQL时后面的参数用my.cnf配置好，使得在下载启动时无需再命令上加参数。 MySQL的很多性能优化工作、主从复制等都是在调整参数以适应不同时期不同数量级的数据，因此理解my.cnf中的参数非常重要，只有理解了参数设置，才能对数据库进行某些方面的调优工作。 my.cnf文件，分为Client section 和 Se">
+<meta name="description" content="配置文件my.cnf是数据库的配置文件，my.cnf文件就是把在命令行上启动MySQL时后面的参数用my.cnf配置好，使得在下载启动时无需再命令上加参数。 MySQL的很多性能优化工作、主从复制等都是在调整参数以适应不同时期不同数量级的数据，因此理解my.cnf中的参数非常重要，只有理解了参数设置，才能对数据库进行某些方面的调优工作。 my.cnf文件，分为Client section 和 Se">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MySQL的my.cnf">
+<meta property="og:title" content="MySQL的配置文件">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2019/08/29/my-cnf/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="参数文件my.cnf是数据库的参数文件，my.cnf文件就是把在命令行上启动MySQL时后面的参数用my.cnf配置好，使得在下载启动时无需再命令上加参数。 MySQL的很多性能优化工作、主从复制等都是在调整参数以适应不同时期不同数量级的数据，因此理解my.cnf中的参数非常重要，只有理解了参数设置，才能对数据库进行某些方面的调优工作。 my.cnf文件，分为Client section 和 Se">
+<meta property="og:description" content="配置文件my.cnf是数据库的配置文件，my.cnf文件就是把在命令行上启动MySQL时后面的参数用my.cnf配置好，使得在下载启动时无需再命令上加参数。 MySQL的很多性能优化工作、主从复制等都是在调整参数以适应不同时期不同数量级的数据，因此理解my.cnf中的参数非常重要，只有理解了参数设置，才能对数据库进行某些方面的调优工作。 my.cnf文件，分为Client section 和 Se">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-30T08:24:21.174Z">
+<meta property="og:updated_time" content="2019-09-09T03:28:17.338Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MySQL的my.cnf">
-<meta name="twitter:description" content="参数文件my.cnf是数据库的参数文件，my.cnf文件就是把在命令行上启动MySQL时后面的参数用my.cnf配置好，使得在下载启动时无需再命令上加参数。 MySQL的很多性能优化工作、主从复制等都是在调整参数以适应不同时期不同数量级的数据，因此理解my.cnf中的参数非常重要，只有理解了参数设置，才能对数据库进行某些方面的调优工作。 my.cnf文件，分为Client section 和 Se">
+<meta name="twitter:title" content="MySQL的配置文件">
+<meta name="twitter:description" content="配置文件my.cnf是数据库的配置文件，my.cnf文件就是把在命令行上启动MySQL时后面的参数用my.cnf配置好，使得在下载启动时无需再命令上加参数。 MySQL的很多性能优化工作、主从复制等都是在调整参数以适应不同时期不同数量级的数据，因此理解my.cnf中的参数非常重要，只有理解了参数设置，才能对数据库进行某些方面的调优工作。 my.cnf文件，分为Client section 和 Se">
 
 
 
@@ -125,7 +125,7 @@
 
 
 
-  <title>MySQL的my.cnf | Mino's blog</title>
+  <title>MySQL的配置文件 | Mino's blog</title>
   
 
 
@@ -269,7 +269,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">MySQL的my.cnf</h1>
+          <h1 class="post-title" itemprop="name headline">MySQL的配置文件</h1>
         
 
         <div class="post-meta">
@@ -319,7 +319,7 @@
       
 
       
-        <h2 id="参数文件"><a href="#参数文件" class="headerlink" title="参数文件"></a>参数文件</h2><p>my.cnf是数据库的参数文件，my.cnf文件就是把在命令行上启动MySQL时后面的参数用my.cnf配置好，使得在下载启动时无需再命令上加参数。</p>
+        <h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>my.cnf是数据库的配置文件，my.cnf文件就是把在命令行上启动MySQL时后面的参数用my.cnf配置好，使得在下载启动时无需再命令上加参数。</p>
 <p>MySQL的很多性能优化工作、主从复制等都是在调整参数以适应不同时期不同数量级的数据，因此理解my.cnf中的参数非常重要，只有理解了参数设置，才能对数据库进行某些方面的调优工作。</p>
 <p>my.cnf文件，分为Client section 和 Server section两块</p>
 <h3 id="Client-section"><a href="#Client-section" class="headerlink" title="Client section"></a>Client section</h3><p>配置MySQL客户端参数，常见参数：</p>
@@ -495,7 +495,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#参数文件"><span class="nav-number">1.</span> <span class="nav-text">参数文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Client-section"><span class="nav-number">1.1.</span> <span class="nav-text">Client section</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Server-section"><span class="nav-number">1.2.</span> <span class="nav-text">Server section</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数类型"><span class="nav-number">1.3.</span> <span class="nav-text">参数类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#动态参数"><span class="nav-number">1.3.1.</span> <span class="nav-text">动态参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#静态参数："><span class="nav-number">1.3.2.</span> <span class="nav-text">静态参数：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#my-cnf"><span class="nav-number">1.4.</span> <span class="nav-text">my.cnf</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置文件"><span class="nav-number">1.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Client-section"><span class="nav-number">2.</span> <span class="nav-text">Client section</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Server-section"><span class="nav-number">3.</span> <span class="nav-text">Server section</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数类型"><span class="nav-number">4.</span> <span class="nav-text">参数类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#动态参数"><span class="nav-number">4.1.</span> <span class="nav-text">动态参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#静态参数："><span class="nav-number">4.2.</span> <span class="nav-text">静态参数：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#my-cnf"><span class="nav-number">5.</span> <span class="nav-text">my.cnf</span></a></li></ol></div>
             
 
           </div>
