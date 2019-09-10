@@ -89,7 +89,8 @@
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HDM1.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HDM3.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HDM2.png">
-<meta property="og:updated_time" content="2019-09-09T09:50:45.438Z">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/restart-dbgateway.png">
+<meta property="og:updated_time" content="2019-09-10T09:48:48.169Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL实例接入阿里云HDM">
 <meta name="twitter:description" content="背景由于内网限制，需要通过搭建代理服务器 Squid 进行访问。 公司一般出于安全考虑， 在同一局域网中只有一台机器可以访问外网，运维进行了整体的限制， 但是在后面的工作中，需要在机器上安装一些软件，及命令，所以其他的机器需要访问外网来简化工作， 但又不能打乱原有运维的设置，所以需要在能访问外网的机器上做个代理。 实践接入HDM服务器可以访问外网 12345#在opt目录下操作cd /opt">
@@ -342,6 +343,23 @@
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HDM3.png" alt></p>
 <h3 id="授权验证"><a href="#授权验证" class="headerlink" title="授权验证"></a>授权验证</h3><p>该步骤主要是输入数据库账号和密码，帮助集中式DBGateway通过数据库账号和密码以只读的方式获取数据库监控数据。</p>
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HDM2.png" alt></p>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><h3 id="判断-DBGateway-进程是否存活"><a href="#判断-DBGateway-进程是否存活" class="headerlink" title="判断 DBGateway 进程是否存活"></a>判断 DBGateway 进程是否存活</h3><p>只用于判断 DBGateway 进程是否存活，无法判断其是否正常工作。</p>
+<p><strong>方法一</strong>：在HDM产品页面，DBGateway管理子界面上当前状态显示为“正常”即表示 DBGateway 进程存活。</p>
+<p><strong>方法二</strong>：在DBGateway所在服务器上执行以下命令判断。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/opt/dbgateway/bin/dbgateway-manager -d status</span><br></pre></td></tr></table></figure>
+
+<p>进程存活输出样例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DBGateway is running.</span><br></pre></td></tr></table></figure>
+
+<p>进程不存在输出样例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DBGateway is dead.</span><br></pre></td></tr></table></figure>
+
+<h3 id="重启-DBGateway"><a href="#重启-DBGateway" class="headerlink" title="重启 DBGateway"></a>重启 DBGateway</h3><p>重启方式一：在HDM产品页面DBGateway管理功能中，选择对应的DBGateway，“管理” -&gt; “重启”</p>
+<p>条件：DBGateway 进程存在</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/restart-dbgateway.png" alt></p>
+<p>重启方式二：手工直接在DBGateway所在的服务器上执行以下命令。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/opt/dbgateway/bin/dbgateway-manager -d restart</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -497,7 +515,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践"><span class="nav-number">2.</span> <span class="nav-text">实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#接入HDM"><span class="nav-number">2.1.</span> <span class="nav-text">接入HDM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#授权验证"><span class="nav-number">2.2.</span> <span class="nav-text">授权验证</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践"><span class="nav-number">2.</span> <span class="nav-text">实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#接入HDM"><span class="nav-number">2.1.</span> <span class="nav-text">接入HDM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#授权验证"><span class="nav-number">2.2.</span> <span class="nav-text">授权验证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见问题"><span class="nav-number">3.</span> <span class="nav-text">常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#判断-DBGateway-进程是否存活"><span class="nav-number">3.1.</span> <span class="nav-text">判断 DBGateway 进程是否存活</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重启-DBGateway"><span class="nav-number">3.2.</span> <span class="nav-text">重启 DBGateway</span></a></li></ol></li></ol></div>
             
 
           </div>
