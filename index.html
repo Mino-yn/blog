@@ -268,7 +268,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2019/09/11/case-2/" itemprop="url">案例2 MySQL CPU利用率过高</a></h1>
+                <a class="post-title-link" href="/blog/2019/09/11/case-2/" itemprop="url">案例2 · CPU利用率过高</a></h1>
         
 
         <div class="post-meta">
@@ -320,13 +320,13 @@
       
         
           
-            <h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p>CPU利用率连续15分钟超过了（90%）达到96.75885416666917%，请求协助排查原因。</p>
-<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><p>1)连接上服务器使用top命令动态查看cpu的状态发现MySQL CPU使用率长时间处于异常过高的状态。</p>
+            <h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p>CPU异常告警：CPU 利用率连续 15 分钟超过了 90%，达到 96.75885416666917%，请求协助排查原因。</p>
+<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><p>1）连接上服务器，使用 <code>top</code> 命令动态，查看 CPU 状态发现 CPU 使用率长时间处于异常过高的状态。</p>
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/case2-1.png" alt></p>
-<p>2）使用<strong>show processlist 查看数据库线程</strong>，未发现有锁占用和大量线程阻塞的情况。</p>
-<p>3）查看数据库日志未发现明显异常</p>
-<p>4）重新查看数据库线程，发现有许多查询都处于<strong>creating sort index</strong>的状态，通过客户端抽取其SQL语句，都是如下类似的查询结构：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line"> material AS material_code,</span><br><span class="line"> material_t2 AS module_code,</span><br><span class="line"> material_name_t2 AS description,</span><br><span class="line"> quantity_t2 AS consumption_unit,</span><br><span class="line"> unitofmeasure_t2 AS component_unit</span><br><span class="line">FROM pc_tf_bom_dtl</span><br><span class="line">WHERE material=&apos;0060122449&apos; AND plant=&apos;null&apos;</span><br><span class="line">ORDER BY bom_level</span><br></pre></td></tr></table></figure>
+<p>2）使用 <code>show processlist</code> 查看数据库线程，未发现有锁占用和大量线程阻塞的情况。</p>
+<p>3）查看数据库日志未发现明显异常。</p>
+<p>4）重新查看数据库线程，发现有许多查询都处于 <code>creating sort index</code> 的状态，通过客户端抽取其 SQL 语句，都是如下类似的查询结构：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">SELECT</span></span><br><span class="line"> <span class="string">material</span> <span class="string">AS</span> <span class="string">material_code,</span></span><br><span class="line"> <span class="string">material_t2</span> <span class="string">AS</span> <span class="string">module_code,</span></span><br><span class="line"> <span class="string">material_name_t2</span> <span class="string">AS</span> <span class="string">description,</span></span><br><span class="line"> <span class="string">quantity_t2</span> <span class="string">AS</span> <span class="string">consumption_unit,</span></span><br><span class="line"> <span class="string">unitofmeasure_t2</span> <span class="string">AS</span> <span class="string">component_unit</span></span><br><span class="line"><span class="string">FROM</span> <span class="string">pc_tf_bom_dtl</span></span><br><span class="line"><span class="string">WHERE</span> <span class="string">material='0060122449'</span> <span class="string">AND</span> <span class="string">plant='null'</span></span><br><span class="line"><span class="string">ORDER</span> <span class="string">BY</span> <span class="string">bom_level</span></span><br></pre></td></tr></table></figure>
 
 <p>除了material编号发生变化，其余部分相同。</p>
 <p>查看pc_tf_bom_dtl 表的结构：</p>
