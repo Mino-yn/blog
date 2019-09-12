@@ -88,7 +88,8 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/case2-1.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/case2-2.png">
-<meta property="og:updated_time" content="2019-09-11T03:27:51.693Z">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/case2-3.png">
+<meta property="og:updated_time" content="2019-09-11T09:20:20.469Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="案例2 · CPU利用率过高">
 <meta name="twitter:description" content="问题现象CPU异常告警：CPU 利用率连续 15 分钟超过了 90%，达到 96.75885416666917%，请求协助排查原因。 原因分析1）连接上服务器，使用 top 命令动态，查看 CPU 状态发现 CPU 使用率长时间处于异常过高的状态。  2）使用 show processlist 查看数据库线程，未发现有锁占用和大量线程阻塞的情况。 3）查看数据库日志未发现明显异常。 4）重新查看数">
@@ -341,6 +342,7 @@
 <h3 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h3><p><strong>增添</strong>一个对material字段的<strong>索引</strong></p>
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/case2-2.png" alt></p>
 <p>重新查看CPU利用率，发现MySQL CPU利用率很快的下降恢复正常。</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/case2-3.png" alt></p>
 
       
     </div>
@@ -374,6 +376,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2019/09/11/case-3/" rel="prev" title="case 3">
+                case 3 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -450,7 +456,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-count">26</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
