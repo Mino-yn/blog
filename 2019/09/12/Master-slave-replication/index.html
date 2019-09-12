@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="搭建主从同步（1）主从，安装 XtraBackup  （2）配置主从互信 （3）主库，全备数据并传输到从服务器 1备份主库：innobackupex --defaults-file=/etc/my.cnf --user=root --password=Haier@123 --no-timestamp /data/backup传输到从库：scp -r /data/backup/* root@10.1">
+<meta name="description" content="搭建主从同步（1）主从，安装 XtraBackup    (2）配置主从互信 （3）主库，全备数据并传输到从服务器 123备份主库：innobackupex --defaults-file=/etc/my.cnf --user=root --password=Haier@123 --no-timestamp /data/backup传输到从库：scp -r /data/backup/* root@">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用Xtrabackup搭建MySQL主从">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2019/09/12/Master-slave-replication/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="搭建主从同步（1）主从，安装 XtraBackup  （2）配置主从互信 （3）主库，全备数据并传输到从服务器 1备份主库：innobackupex --defaults-file=/etc/my.cnf --user=root --password=Haier@123 --no-timestamp /data/backup传输到从库：scp -r /data/backup/* root@10.1">
+<meta property="og:description" content="搭建主从同步（1）主从，安装 XtraBackup    (2）配置主从互信 （3）主库，全备数据并传输到从服务器 123备份主库：innobackupex --defaults-file=/etc/my.cnf --user=root --password=Haier@123 --no-timestamp /data/backup传输到从库：scp -r /data/backup/* root@">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-12T10:16:17.754Z">
+<meta property="og:updated_time" content="2019-09-12T15:39:48.517Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用Xtrabackup搭建MySQL主从">
-<meta name="twitter:description" content="搭建主从同步（1）主从，安装 XtraBackup  （2）配置主从互信 （3）主库，全备数据并传输到从服务器 1备份主库：innobackupex --defaults-file=/etc/my.cnf --user=root --password=Haier@123 --no-timestamp /data/backup传输到从库：scp -r /data/backup/* root@10.1">
+<meta name="twitter:description" content="搭建主从同步（1）主从，安装 XtraBackup    (2）配置主从互信 （3）主库，全备数据并传输到从服务器 123备份主库：innobackupex --defaults-file=/etc/my.cnf --user=root --password=Haier@123 --no-timestamp /data/backup传输到从库：scp -r /data/backup/* root@">
 
 
 
@@ -320,15 +320,15 @@
 
       
         <h3 id="搭建主从同步"><a href="#搭建主从同步" class="headerlink" title="搭建主从同步"></a>搭建主从同步</h3><p>（1）主从，安装 XtraBackup </p>
-<p>（2）配置主从互信</p>
+<p>  (2）配置主从互信</p>
 <p>（3）主库，全备数据并传输到从服务器</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">备份主库：innobackupex --defaults-file=/etc/my.cnf --user=root --password=Haier@123 --no-timestamp /data/backup传输到从库：scp -r /data/backup/* root@10.133.7.19:/data/backup</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">备份主库：</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=root --password=Haier@123 --no-timestamp /data/backup</span><br><span class="line">传输到从库：scp -r /data/backup/* root@10.133.7.19:/data/backup</span><br></pre></td></tr></table></figure>
 
 <p>（4）从库，恢复全备数据</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -uroot -pHaier@123 shutdowninnobackupex --apply-log /data/backupmv mysql mysql_bakmkdir mysqlinnobackupex --copy-back /data/backupchown -R mysql:mysql mysql/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -uroot -pHaier@123 shutdown</span><br><span class="line">innobackupex --apply-log /data/backup</span><br><span class="line">mv mysql mysql_bak</span><br><span class="line">mkdir mysql</span><br><span class="line">innobackupex --copy-back /data/backup</span><br><span class="line">chown -R mysql:mysql mysql</span><br><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
 
 <p>（5）从库，建立复制关系</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@GPCMS-DB-M backup]# cat xtrabackup_binlog_infomysql-binlog.000297	900834433CHANGE MASTER TO MASTER_HOST=&apos;10.133.7.18&apos;,MASTER_USER=&apos;repl&apos;,MASTER_PASSWORD=&apos;Changeme_123&apos;,MASTER_PORT=3306,MASTER_LOG_FILE=&apos;mysql-binlog.000297&apos;, MASTER_LOG_POS=900834433,MASTER_CONNECT_RETRY=10;MySQL [(none)]&gt; start slave;Query OK, 0 rows affected (0.00 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@GPCMS-DB-M backup]# cat xtrabackup_binlog_info</span><br><span class="line">mysql-binlog.000297	900834433</span><br><span class="line"></span><br><span class="line">CHANGE MASTER TO MASTER_HOST=&apos;10.133.7.18&apos;,</span><br><span class="line">MASTER_USER=&apos;repl&apos;,</span><br><span class="line">MASTER_PASSWORD=&apos;Changeme_123&apos;,</span><br><span class="line">MASTER_PORT=3306,</span><br><span class="line">MASTER_LOG_FILE=&apos;mysql-binlog.000297&apos;, MASTER_LOG_POS=900834433,</span><br><span class="line">MASTER_CONNECT_RETRY=10;</span><br><span class="line"></span><br><span class="line">MySQL [(none)]&gt; start slave;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br></pre></td></tr></table></figure>
       
     </div>
     
