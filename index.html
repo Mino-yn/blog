@@ -320,7 +320,16 @@
       
         
           
-            
+            <h3 id="搭建主从同步"><a href="#搭建主从同步" class="headerlink" title="搭建主从同步"></a>搭建主从同步</h3><p>（1）主从，安装 XtraBackup </p>
+<p>（2）配置主从互信</p>
+<p>（3）主库，全备数据并传输到从服务器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">备份主库：innobackupex --defaults-file=/etc/my.cnf --user=root --password=Haier@123 --no-timestamp /data/backup传输到从库：scp -r /data/backup/* root@10.133.7.19:/data/backup</span><br></pre></td></tr></table></figure>
+
+<p>（4）从库，恢复全备数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -uroot -pHaier@123 shutdowninnobackupex --apply-log /data/backupmv mysql mysql_bakmkdir mysqlinnobackupex --copy-back /data/backupchown -R mysql:mysql mysql/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<p>（5）从库，建立复制关系</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@GPCMS-DB-M backup]# cat xtrabackup_binlog_infomysql-binlog.000297	900834433CHANGE MASTER TO MASTER_HOST=&apos;10.133.7.18&apos;,MASTER_USER=&apos;repl&apos;,MASTER_PASSWORD=&apos;Changeme_123&apos;,MASTER_PORT=3306,MASTER_LOG_FILE=&apos;mysql-binlog.000297&apos;, MASTER_LOG_POS=900834433,MASTER_CONNECT_RETRY=10;MySQL [(none)]&gt; start slave;Query OK, 0 rows affected (0.00 sec)</span><br></pre></td></tr></table></figure>
           
         
       
