@@ -79,21 +79,21 @@
 
 
 
-<meta name="description" content="简介Percona XtraBackup是开源免费的MySQL数据库热备份软件，它能对InnoDB和XtraDB存储引擎的数据库非阻塞地备份（对于MyISAM的备份 同样需要加表锁）。XtraBackup支持所有的Percona Server、MySQL、MariaDB和Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行InnoDB热备 2、增量备份MySQL 3、流压缩到传输">
+<meta name="description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备。 2、增量">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Percona XtraBackup安装实践">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2019/09/11/Xtrabackup/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="简介Percona XtraBackup是开源免费的MySQL数据库热备份软件，它能对InnoDB和XtraDB存储引擎的数据库非阻塞地备份（对于MyISAM的备份 同样需要加表锁）。XtraBackup支持所有的Percona Server、MySQL、MariaDB和Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行InnoDB热备 2、增量备份MySQL 3、流压缩到传输">
+<meta property="og:description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备。 2、增量">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup1.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup2.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup3.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/0.png">
-<meta property="og:updated_time" content="2019-09-12T02:20:53.033Z">
+<meta property="og:updated_time" content="2019-09-12T02:32:04.732Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Percona XtraBackup安装实践">
-<meta name="twitter:description" content="简介Percona XtraBackup是开源免费的MySQL数据库热备份软件，它能对InnoDB和XtraDB存储引擎的数据库非阻塞地备份（对于MyISAM的备份 同样需要加表锁）。XtraBackup支持所有的Percona Server、MySQL、MariaDB和Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行InnoDB热备 2、增量备份MySQL 3、流压缩到传输">
+<meta name="twitter:description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备。 2、增量">
 <meta name="twitter:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup1.png">
 
 
@@ -324,13 +324,13 @@
       
 
       
-        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Percona XtraBackup是开源免费的MySQL数据库热备份软件，它能对InnoDB和XtraDB存储引擎的数据库非阻塞地备份（对于MyISAM的备份 同样需要加表锁）。XtraBackup支持所有的Percona Server、MySQL、MariaDB和Drizzle。</p>
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。</p>
 <p><strong>XtraBackup优势 ：</strong></p>
-<p>1、无需停止数据库进行InnoDB热备</p>
-<p>2、增量备份MySQL</p>
-<p>3、流压缩到传输到其它服务器</p>
-<p>4、能比较容易地创建主从同步</p>
-<p>5、备份MySQL时不会增大服务器负载</p>
+<p>1、无需停止数据库进行 InnoDB 热备。</p>
+<p>2、增量备份 MySQL。</p>
+<p>3、流压缩到传输到其它服务器。</p>
+<p>4、能比较容易地创建主从同步。</p>
+<p>5、备份MySQL时不会增大服务器负载。</p>
 <h2 id="安装实践"><a href="#安装实践" class="headerlink" title="安装实践"></a>安装实践</h2><h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><p>1）下载 Percona-XtraBackup，采用从本地上传的方式</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget http://10.190.177.9:8085/Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar    #本地上传</span><br><span class="line">tar xvf Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line">- percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br><span class="line">- percona-xtrabackup-24-debuginfo-2.4.12-1.el7.x86_64.rpm</span><br><span class="line">- percona-xtrabackup-test-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
 
@@ -346,16 +346,14 @@
 <h3 id="安装脚本"><a href="#安装脚本" class="headerlink" title="安装脚本"></a>安装脚本</h3><p>通过建立执行脚本<code>install_xtrabackup.sh</code> 进行安装</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line"># Install XtraBackup</span><br><span class="line">cd /usr/local/src</span><br><span class="line">wget http://10.190.177.9:8085/Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line">tar xvf Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line"></span><br><span class="line">wget http://10.190.177.9:8085/libev-4.15-1.el6.x86_64.rpm</span><br><span class="line">yum -y install perl-DBD-MySQL</span><br><span class="line">yum -y install perl-Digest-MD5</span><br><span class="line">rpm -ivh libev-4.15-1.el6.x86_64.rpm</span><br><span class="line">rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line">xtrabackup --version</span><br></pre></td></tr></table></figure>
 
-<h2 id="其他问题"><a href="#其他问题" class="headerlink" title="其他问题"></a>其他问题</h2><p>使用<code>yum</code> 命令安装依赖包<code>percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</code>时报错</p>
+<h2 id="其他问题"><a href="#其他问题" class="headerlink" title="其他问题"></a>其他问题</h2><h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p>使用<code>yum</code> 命令安装依赖包<code>percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</code>时报错</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">yum</span> <span class="bullet">-y</span> <span class="string">install</span> <span class="string">percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span></span><br></pre></td></tr></table></figure>
 
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup1.png" alt></p>
 <p>报错提示<code>mariadb-libs</code> 与之前安装的 MySQL 发生冲突，查看 MySQL 安装包目录</p>
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup2.png" alt></p>
-<p>检查后发现之前是通过RPM包的方式安装MySQL，为了省事只安装了部分包，未安装<code>shared</code> 和<code>embedded</code> 包</p>
-<p>由于各rpm包之间存在依赖关系，安装不全导致新安装的<code>mariadb-libs</code> 与<code>MySQL-server</code> 发生冲突。</p>
-<p><strong>解决方法</strong></p>
-<p>将未安装的MySQL rpm包全部安装上</p>
+<p>检查后发现报错是由MySQL未安装完全导致的，之前安装MySQL时是通过 RPM 包的方式，为了省事只安装了部分包便直接使用，未安装 MySQL 的<code>shared</code> 和<code>embedded</code> 包，由于 MySQL 的各 rpm 包之间存在依赖关系，安装不全导致安装 Xtrabackup 所依赖的<code>mariadb-libs</code> 时与之前安装的<code>MySQL-server</code> 发生冲突。</p>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a><strong>解决方法</strong></h3><p>将未安装的 MySQL rpm 包全部安装上</p>
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup3.png" alt></p>
 <p>将报错的<code>yum</code>命令重新执行，查看xtrabackup版本</p>
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/0.png" alt></p>
@@ -515,7 +513,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装实践"><span class="nav-number">2.</span> <span class="nav-text">安装实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#操作步骤"><span class="nav-number">2.1.</span> <span class="nav-text">操作步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装脚本"><span class="nav-number">2.2.</span> <span class="nav-text">安装脚本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他问题"><span class="nav-number">3.</span> <span class="nav-text">其他问题</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装实践"><span class="nav-number">2.</span> <span class="nav-text">安装实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#操作步骤"><span class="nav-number">2.1.</span> <span class="nav-text">操作步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装脚本"><span class="nav-number">2.2.</span> <span class="nav-text">安装脚本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他问题"><span class="nav-number">3.</span> <span class="nav-text">其他问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题现象"><span class="nav-number">3.1.</span> <span class="nav-text">问题现象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决方法"><span class="nav-number">3.2.</span> <span class="nav-text">解决方法</span></a></li></ol></li></ol></div>
             
 
           </div>
