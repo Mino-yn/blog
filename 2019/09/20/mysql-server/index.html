@@ -79,13 +79,17 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Mino&#39;s blog">
-<meta property="og:url" content="https://mino-yn.github.io/blog/tags/Linux/index.html">
+<meta name="description" content="MySQL在类Unix系统上安装时会包含一个mysql.server启动脚本。 调用mysql.server脚本启停MySQL服务： 1shell&amp;gt; mysql.server start|stop  使用上述命令时，mysql.server 启动脚本会先进入MySQL的注册目录，然后调用mysqld_safe命令来启停MySQL服务，但我们通常会将">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL.server启动脚本阅读">
+<meta property="og:url" content="https://mino-yn.github.io/blog/2019/09/20/mysql-server/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
+<meta property="og:description" content="MySQL在类Unix系统上安装时会包含一个mysql.server启动脚本。 调用mysql.server脚本启停MySQL服务： 1shell&amp;gt; mysql.server start|stop  使用上述命令时，mysql.server 启动脚本会先进入MySQL的注册目录，然后调用mysqld_safe命令来启停MySQL服务，但我们通常会将">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-20T10:57:58.860Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Mino&#39;s blog">
+<meta name="twitter:title" content="MySQL.server启动脚本阅读">
+<meta name="twitter:description" content="MySQL在类Unix系统上安装时会包含一个mysql.server启动脚本。 调用mysql.server脚本启停MySQL服务： 1shell&amp;gt; mysql.server start|stop  使用上述命令时，mysql.server 启动脚本会先进入MySQL的注册目录，然后调用mysqld_safe命令来启停MySQL服务，但我们通常会将">
 
 
 
@@ -115,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="https://mino-yn.github.io/blog/tags/Linux/">
+  <link rel="canonical" href="https://mino-yn.github.io/blog/2019/09/20/mysql-server/">
 
 
 
 
 
-  <title>标签: Linux | Mino's blog</title>
+  <title>MySQL.server启动脚本阅读 | Mino's blog</title>
   
 
 
@@ -140,7 +144,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -234,52 +238,145 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>Linux<small>标签</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/20/mysql-server/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/blog/2019/08/23/ssh免密登录（单向）/" itemprop="url">
-              
-                <span itemprop="name">ssh免密登录</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">MySQL.server启动脚本阅读</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-08-23T09:17:03+08:00" content="2019-08-23">
-          08-23
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-20T14:39:48+08:00">
+                2019-09-20
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><code>MySQL</code>在类<code>Unix</code>系统上安装时会包含一个<code>mysql.server</code>启动脚本。</p>
+<p>调用<code>mysql.server</code>脚本启停<code>MySQL</code>服务：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; mysql.server start|stop</span><br></pre></td></tr></table></figure>
+
+<p>使用上述命令时，<code>mysql.server</code> 启动脚本会先进入<code>MySQL</code>的注册目录，然后调用<code>mysqld_safe</code>命令来启停<code>MySQL</code>服务，但我们通常会将</p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/09/18/mysql-install/" rel="next" title="mysql install">
+                <i class="fa fa-chevron-left"></i> mysql install
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -287,6 +384,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -499,6 +600,10 @@
 
 
   
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
