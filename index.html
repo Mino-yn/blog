@@ -249,6 +249,313 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/25/pt-online-schema-change/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/25/pt-online-schema-change/" itemprop="url">pt-online-schema-change</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-25T17:14:29+08:00">
+                2019-09-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><ul>
+<li>在线数据库的维护中，涉及到研发修改表结构的情况，修改一些小表影响很小，而修改大表时，往往影响业务的正常运转。</li>
+</ul>
+<h2 id="pt-online-schema-change简介"><a href="#pt-online-schema-change简介" class="headerlink" title="pt-online-schema-change简介"></a>pt-online-schema-change简介</h2><p><code>pt-online-schema-change</code>是<code>percona</code>公司开发的一个工具，可以在<code>percona-toolkit</code>包中找到，它可以在线修改表结构。<code>pt-online-schema-change</code>通过改进原生<code>ddl</code>的方式，达到不锁表在线修改表结构。</p>
+<h3 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a><a href="https://mino-yn.github.io/blog/2019/09/06/Percona%20Toolkit/"><strong>下载安装</strong></a></h3><h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><ul>
+<li>创建一个和要执行 <code>alter</code>操作的表一样的新的空表结构(是alter之前的结构)</li>
+<li>在新表执行<code>alter table</code> 语句（速度应该很快）</li>
+<li>在原表上加三个触发器，DELETE/UPDATE/INSERT，将原表中要执行的语句也在新表中执行</li>
+<li>以一定块大小从原表拷贝数据到临时表，拷贝过程中通过原表上的触发器在原表进行的写操作都会更新到新建的临时表</li>
+<li><code>Rename</code> 原表到old表中，在把临时表Rename为原表</li>
+<li>如果有参考该表的外键，根据<code>alter-foreign-keys-method</code>参数的值，检测外键相关的表，做相应设置的处理</li>
+<li>默认最后将旧原表删除</li>
+</ul>
+<h3 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h3><p><code>pt-online-schema-change --help</code> 可以查看参数的使用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">--host=xxx --user=xxx --password=xxx   连接实例信息，缩写-h xxx -u xxx -p xxx</span><br><span class="line">--user=        连接mysql的用户名</span><br><span class="line">--password=    连接mysql的密码</span><br><span class="line">--host=        连接mysql的地址</span><br><span class="line">P=3306         连接mysql的端口号</span><br><span class="line">D=             连接mysql的库名</span><br><span class="line">t=             连接mysql的表名</span><br><span class="line">--alter        修改表结构的语句</span><br><span class="line">--dry-run      创建和修改新表，但不真正执行，可看到生成的执行句，了解其执行步骤与细节，和--print配合最佳</span><br><span class="line">--execute      执行修改表结构 ，--dry-run与--execute必须指定一个，二者相互排斥</span><br><span class="line">--charset=utf8 使用utf8编码，避免中文乱码</span><br><span class="line">--no-version-check  不检查版本，在阿里云服务器中一般加入此参数，否则会报错</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>--alter</code></p>
+<p>结构变更语句，不需要 <code>ALTER TABLE</code>关键字。与原始ddl一样可以指定多个更改，用逗号分隔。</p>
+<ol>
+<li>绝大部分情况下表上需要有主键或唯一索引，因为工具在运行当中为了保证新表也是最新的，需要旧表上创建 DELETE和UPDATE 触发器，同步到新表的时候有主键会更快。个别情况是，当alter操作就是在c1列上建立主键时，DELETE触发器将基于c1列。</li>
+<li>子句不支持<code>rename</code> 去给表重命名。<code>RENAME INDEX old_index_name TO new_index_name</code></li>
+<li><code>alter</code>命令原表就不支持给索引重命名，需要先<code>drop</code>再<code>add</code>，在<code>pt-osc</code>也一样。<br>但给字段重命名，千万不要<code>drop-add</code>，整列数据会丢失，使用<code>change col1 col1_new type constraint</code>（保持类型和约束一致，否则相当于修改 <code>column type</code>，不能<code>online</code>）</li>
+<li>子句如果是<code>add column</code>并且定义了<code>not null</code>，那么必须指定<code>default</code>值，否则会失败。</li>
+<li>如果要删除外键（名<code>fk_foo</code>），使用工具的时候外键名要加下划线，比如<code>--alter &quot;DROP FOREIGN KEY _fk_foo&quot;</code></li>
+</ol>
+</li>
+</ul>
+<h2 id="pt-online-schema-change使用"><a href="#pt-online-schema-change使用" class="headerlink" title="pt-online-schema-change使用"></a>pt-online-schema-change使用</h2><h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><h4 id="添加表字段"><a href="#添加表字段" class="headerlink" title="添加表字段"></a>添加表字段</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">#添加字段id</span><br><span class="line">[root@mysql-s ~]# pt-online-schema-change --user=root --password=Haier@123 --host=127.0.0.1  --alter &quot;ADD COLUMN id int default 0&quot; D=employees,t=salaries --print --execute</span><br><span class="line">No slaves found.  See --recursion-method if host mysql-s has slaves.</span><br><span class="line">Not checking slave lag because no slaves were found and --check-slave-lag was not specified.</span><br><span class="line">Operation, tries, wait:</span><br><span class="line">  analyze_table, 10, 1</span><br><span class="line">  copy_rows, 10, 0.25</span><br><span class="line">  create_triggers, 10, 1</span><br><span class="line">  drop_triggers, 10, 1</span><br><span class="line">  swap_tables, 10, 1</span><br><span class="line">  update_foreign_keys, 10, 1</span><br><span class="line">Altering `employees`.`salaries`...</span><br><span class="line">Creating new table...                    #创建新表</span><br><span class="line">CREATE TABLE `employees`.`_salaries_new` (</span><br><span class="line">  `emp_no` int(11) NOT NULL,</span><br><span class="line">  `salary` int(11) NOT NULL,</span><br><span class="line">  `from_date` date NOT NULL,</span><br><span class="line">  `to_date` date NOT NULL,</span><br><span class="line">  `f_id` int(12) unsigned NOT NULL DEFAULT &apos;6&apos;,</span><br><span class="line">  PRIMARY KEY (`emp_no`,`from_date`),</span><br><span class="line">    CONSTRAINT `__salaries_ibfk_1` FOREIGN KEY (`emp_no`) REFERENCES `employees` (`emp_no`) ON DELETE CASCADE</span><br><span class="line">) ENGINE=InnoDB DEFAULT CHARSET=latin1</span><br><span class="line">Created new table employees._salaries_new OK.</span><br><span class="line">Altering new table...                    #使用ddl修改表结构</span><br><span class="line">ALTER TABLE `employees`.`_salaries_new` ADD COLUMN id int default 0</span><br><span class="line">Altered `employees`.`_salaries_new` OK.</span><br><span class="line">2019-09-25T21:05:17 Creating triggers... #在原表上加三个触发器，DELETE/UPDATE/INSERT</span><br><span class="line">2019-09-25T21:05:17 Created triggers OK.   </span><br><span class="line">2019-09-25T21:05:17 Copying approximately 2837536 rows...  #分块拷贝数据到新表</span><br><span class="line">INSERT LOW_PRIORITY IGNORE INTO `employees`.`_salaries_new` (`emp_no`, `salary`, `from_date`, `to_date`, `f_id`) SELECT `emp_no`, `salary`, `from_date`, `to_date`, `f_id` FROM `employees`.`salaries` FORCE INDEX(`PRIMARY`) WHERE ((`emp_no` &gt; ?) OR (`emp_no` = ? AND `from_date` &gt;= ?)) AND ((`emp_no` &lt; ?) OR (`emp_no` = ? AND `from_date` &lt;= ?)) LOCK IN SHARE MODE /*pt-online-schema-change 40847 copy nibble*/</span><br><span class="line">SELECT /*!40001 SQL_NO_CACHE */ `emp_no`, `emp_no`, `from_date` FROM `employees`.`salaries` FORCE INDEX(`PRIMARY`) WHERE ((`emp_no` &gt; ?) OR (`emp_no` = ? AND `from_date` &gt;= ?)) ORDER BY `emp_no`, `from_date` LIMIT ?, 2 /*next chunk boundary*/</span><br><span class="line">2019-09-25T21:05:28 Copied rows OK.</span><br><span class="line">2019-09-25T21:05:28 Analyzing new table...</span><br><span class="line">2019-09-25T21:05:28 Swapping tables...       #交换新旧表</span><br><span class="line">RENAME TABLE `employees`.`salaries` TO `employees`.`_salaries_old`, `employees`.`_salaries_new` TO `employees`.`salaries`</span><br><span class="line">2019-09-25T21:05:28 Swapped original and new tables OK.</span><br><span class="line">2019-09-25T21:05:28 Dropping old table...   #删除旧表</span><br><span class="line">DROP TABLE IF EXISTS `employees`.`_salaries_old`</span><br><span class="line">2019-09-25T21:05:28 Dropped old table `employees`.`_salaries_old` OK.</span><br><span class="line">2019-09-25T21:05:28 Dropping triggers...</span><br><span class="line">DROP TRIGGER IF EXISTS `employees`.`pt_osc_employees_salaries_del`</span><br><span class="line">DROP TRIGGER IF EXISTS `employees`.`pt_osc_employees_salaries_upd`</span><br><span class="line">DROP TRIGGER IF EXISTS `employees`.`pt_osc_employees_salaries_ins`</span><br><span class="line">2019-09-25T21:05:28 Dropped triggers OK.</span><br><span class="line">Successfully altered `employees`.`salaries`.</span><br></pre></td></tr></table></figure>
+
+<h4 id="修改表字段"><a href="#修改表字段" class="headerlink" title="修改表字段"></a>修改表字段</h4><p>修改表字段类型</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#将id改为varchar类型</span><br><span class="line">pt-online-schema-change --user=root --password=Haier@123 --host=127.0.0.1 --alter &quot;</span><br><span class="line">MODIFY COLUMN id varchar(11) NOT NULL DEFAULT &apos;0&apos;; &quot;  D=employees,t=salaries --print --execute</span><br></pre></td></tr></table></figure>
+
+<p>修改表字段名称</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#将id改为n_id</span><br><span class="line">pt-online-schema-change --user=root --password=Haier@123 --host=127.0.0.1 --alter &quot;CHANGE id n_id varchar(12) NOT NULL &quot;  D=employees,t=salaries --print --execute</span><br><span class="line">报错：</span><br><span class="line">The tool should handle this correctly, but you should test it first because if it fails the renamed columns&apos; data will be lost!  Specify --no-check-alter to disable this check and perform the --alter.</span><br><span class="line"></span><br><span class="line">#解决：指定--no check alter以禁用此检查并执行--alter。</span><br><span class="line">pt-online-schema-change --user=root --password=Haier@123 --host=127.0.0.1 --alter &quot;CHANGE id n_id varchar(12) NOT NULL &quot;  D=employees,t=salaries --print --execute --no-check-alter</span><br></pre></td></tr></table></figure>
+
+<h4 id="添加删除索引"><a href="#添加删除索引" class="headerlink" title="添加删除索引"></a>添加删除索引</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#添加索引</span><br><span class="line">pt-online-schema-change --user=root --password=Haier@123 --host=127.0.0.1  --alter &quot;ADD INDEX idx_n_id(n_id)&quot; D=employees,t=salaries --print --execute</span><br><span class="line">#删除索引</span><br><span class="line">pt-online-schema-change --user=root --password=Haier@123 --host=127.0.0.1  --alter &quot;DROP INDEX idx_n_id&quot; D=employees,t=salaries --print --execute</span><br></pre></td></tr></table></figure>
+
+<h4 id="修改主键"><a href="#修改主键" class="headerlink" title="修改主键"></a>修改主键</h4><p>思路：<br>1.先删除原表的主键<br>2.再添加<code>n_id</code> 列，并设置为主键<br>3.把原表的主键作为新表的<code>unique key</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#使用pt-osc去修改删除主键，务必同时添加原主键为 UNIQUE KEY，否则很有可能导致性能问题</span><br><span class="line">pt-online-schema-change --user=root --password=Haier@123 --host=127.0.0.1  --alter &quot;DROP PRIMARY KEY,add column n_id int(20) NOT NULL AUTO_INCREMENT primary key,add unique key uk_id_name(id,name)&quot; D=employees,t=new_test --print --execute --no-check-alter</span><br></pre></td></tr></table></figure>
+
+<h3 id="报错案例"><a href="#报错案例" class="headerlink" title="报错案例"></a>报错案例</h3><p><strong>1、报错语句</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The table `db_name`.`table_name` has triggers.  This tool needs to create its own triggers, so the table cannot already have triggers.</span><br></pre></td></tr></table></figure>
+
+<p>原表存在触发器，原表不能存在触发器，否则不适用。</p>
+<p><strong>2、报错语句</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The tool should handle this correctly, but you should test it first because if it fails the renamed columns&apos; data will be lost!  Specify --no-check-alter to disable this check and perform the --alter.</span><br></pre></td></tr></table></figure>
+
+<p>指定<code>--no check alter</code>以禁用此检查并执行<code>--alter</code>。</p>
+<p><strong>3、报错语句</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The new table `employees`.`_new_test_new` does not have a PRIMARY KEY or a unique index which is required for the DELETE trigger.</span><br><span class="line">Please check you have at least one UNIQUE and NOT NULLABLE index.</span><br></pre></td></tr></table></figure>
+
+<p>源表没有主键，无法创建<code>DELETE</code>触发器</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/24/mysql-DatabaseName/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/24/mysql-DatabaseName/" itemprop="url">修改数据库名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-24T16:49:55+08:00">
+                2019-09-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h3><p>1、查看<code>MySQL</code>数据库进程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ps -ef|grep mysql</span><br></pre></td></tr></table></figure>
+
+<p>记录下<code>socket</code>地址</p>
+<p><img src="/blog/blog/2019/09/24/mysql-DatabaseName/C:%5CUsers%5C19028862%5CDesktop%5C20190924223130.png" alt></p>
+<p>2、下载脚本<code>rename_db.sh</code> 至<code>tmp</code>目录下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd /tmp</span><br><span class="line">$ wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/rename_db.sh</span><br></pre></td></tr></table></figure>
+
+<p>给脚本赋权</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ chmod +x /tmp/rename_db.sh</span><br></pre></td></tr></table></figure>
+
+<p>3、执行脚本，修改数据库名</p>
+<p>将<code>user</code>数据库改名为<code>user-original</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ ./rename_db.sh -o users -n user-original -u root -p Haier@123 -s /data/mysql3100/mysql.sock</span><br><span class="line"># -o    修改前数据库名称</span><br><span class="line"># -n    修改后数据库名称</span><br><span class="line"># -u    连接MySQL数据库用户名</span><br><span class="line"># -p    连接MySQL数据库密码</span><br><span class="line"># -s    MySQL数据库socket地址</span><br><span class="line"># 注：选项参数的格式必须是-d val，而不能是中间没有空格的-dval。</span><br><span class="line"># 新的数据库中只有表，视图仍是原数据库名，需要重建试图。</span><br></pre></td></tr></table></figure>
+
+<p>4、根据需要删除原数据库</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/20/case3-build-slave/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -992,7 +1299,7 @@
           
             <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。</p>
 <p><strong>XtraBackup优势 ：</strong></p>
-<p>1、无需停止数据库进行 InnoDB 热备。</p>
+<p>1、无需停止数据库进行 InnoDB 热备，备份过程中不会锁表，不影响现有业务。</p>
 <p>2、增量备份 MySQL。</p>
 <p>3、流压缩到传输到其它服务器。</p>
 <p>4、能比较容易地创建主从同步。</p>
@@ -1353,307 +1660,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/09/database-monitoring/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/09/09/database-monitoring/" itemprop="url">数据库监控入门</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T11:37:33+08:00">
-                2019-09-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Prometheus-Grafana"><a href="#Prometheus-Grafana" class="headerlink" title="Prometheus+Grafana"></a>Prometheus+Grafana</h2><h3 id="Prometheus"><a href="#Prometheus" class="headerlink" title="Prometheus"></a>Prometheus</h3><p>是由SoundCloud开发的开源监控报警系统和时序列数据库(TSDB)，prometheus是一个监控采集与数据存储框架（监控server端），具体采集什么数据依赖于具体的exporter。</p>
-<h3 id="Grafana"><a href="#Grafana" class="headerlink" title="Grafana:"></a>Grafana:</h3><p>一个高颜值的监控绘图程序，也是一个可视化面板（Dashboard），grafana的厉害之处除了高颜值，还支持多种数据源（支持Graphite、zabbix、InfluxDB、Prometheus和OpenTSDB作为数据源）、支持灵活丰富的dashboard配置选项。</p>
-<p>通过Grafana可以将Prometheus中存储的数据进行可视化，很优美的进行展示。</p>
-<h2 id="Prometheus介绍"><a href="#Prometheus介绍" class="headerlink" title="Prometheus介绍"></a>Prometheus介绍</h2><h3 id="什么是Prometheus"><a href="#什么是Prometheus" class="headerlink" title="什么是Prometheus"></a>什么是Prometheus</h3><p>Prometheus是一个开源监控系统，其前身是SoundCloud的警告工具包。</p>
-<p>若想实现对于服务器或数据库的监控，首先我们需要获取到想要进行监控的相关数据。这里需要先了解一个小工具：node_exporter</p>
-<p>举个例子，如果你有一台服务器，你想要获取它运行时的参数，比如当前的CPU负载、系统负载、内存消耗、硬盘使用量、网络IO等，那么你就可以在服务器上运行一个<code>node_exporter</code>，它能帮你收集好这些参数，并且暴露出一个HTTP接口，以便你访问查询。</p>
-<p>通过使用node_exporter我们可以获取到该服务器的许多系统参数，如果我们为您只想监控这一台服务器，或只需要某个特定的参数我们可以自行编写代码访问这个接口，匹配出想要的指标和值即可。但是，如果有很多台服务器，而且想要综合多台进行对比分析，更有甚者，希望将指标绘制成图表，或者说保留历史数据，以便查询过去某个时间点的服务器的运行状态，那么这将会变得很麻烦。<code>Prometheus</code>就是用来解决这个问题的。</p>
-<p>我们想要获取所有服务器上的node_exporter暴露出来的数据，就必须有个程序去定时访问这些接口。如果想要增加或者修改这些接口，那么就需要有个配置文件来记录这些服务器的地址。如果想要访问历史的某个时间点的数据，那么就必须按照<strong>时间顺序</strong>存储获取到的<strong>指标和值</strong>。如果想要将值绘制成图，也需要有代码去查询、计算和渲染。最后，你可能还希望：当服务器的某个指标超过一定的阈值时，向指定的接口发出告警信息。这一切都可以使用Prometheus来解决</p>
-<h3 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h3><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Prometheus.png" alt="Prometheus 架构图"></p>
-<h4 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h4><p>Prometheus的基本原理是通过HTTP协议周期性抓取被监控组件的状态，任意组件只要提供对应的HTTP接口就可以接入监控。不需要任何SDK或者其他的集成过程。这样做非常适合做虚拟化环境监控系统，比如VM、Docker、Kubernetes等。输出被监控组件信息的HTTP接口被叫做exporter 。</p>
-<h4 id="三大套件"><a href="#三大套件" class="headerlink" title="三大套件"></a>三大套件</h4><ul>
-<li>Prometheus Server 主程序，负责数据采集和存储，抓取、聚合、查询方面提供PromQL查询语言的支持。</li>
-<li>Alertmanager 警告管理器，主要用来实现报警功能。</li>
-<li>Push Gateway 主要是实现接收由Client push过来的指标数据，在指定的时间间隔，由主程序来抓取。</li>
-</ul>
-<h3 id="服务过程："><a href="#服务过程：" class="headerlink" title="服务过程："></a>服务过程：</h3><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/p.png" alt></p>
-<ul>
-<li>Prometheus Daemon负责定时去目标上抓取metrics(指标)数据，每个抓取目标需要暴露一个http服务的接口给它定时抓取。Prometheus支持通过配置文件、文本文件、Zookeeper、Consul、DNS SRV Lookup等方式指定抓取目标。Prometheus采用PULL的方式进行监控，即服务器可以直接通过目标PULL数据或者间接地通过中间网关来Push数据。</li>
-<li>Prometheus在本地存储抓取的所有数据，并通过一定规则进行清理和整理数据，并把得到的结果存储到新的时间序列中。</li>
-<li>Prometheus通过PromQL和其他API可视化地展示收集的数据。Prometheus支持很多方式的图表可视化，例如Grafana、自带的Promdash以及自身提供的模版引擎等等。Prometheus还提供HTTP API的查询方式，自定义所需要的输出。</li>
-<li>PushGateway支持Client主动推送metrics到PushGateway，而Prometheus只是定时去Gateway上抓取数据。</li>
-<li>Alertmanager是独立于Prometheus的一个组件，可以支持Prometheus的查询语句，提供十分灵活的报警方式。</li>
-</ul>
-<h2 id="Grafana-1"><a href="#Grafana-1" class="headerlink" title="Grafana"></a>Grafana</h2><h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>prometheus官方的dashboard不怎么给力，为了将采集的数据更好的可视化，目前将Grafana集成了进去。Grafana可以自定义数据源，并且保存多个dashboard，针对不同的系统可以使用不同的dashboard来进行监控。</p>
-<p>Grafana是一个跨平台的开源的度量分析和可视化工具，可以通过将采集的数据查询然后可视化的展示，并及时通知。它主要有以下六大特点：</p>
-<ul>
-<li>展示方式：快速灵活的客户端图表，面板插件有许多不同方式的可视化指标和日志，官方库中具有丰富的仪表盘插件，比如热图、折线图、图表等多种展示方式；</li>
-</ul>
-<ul>
-<li>数据源：Graphite，InfluxDB，OpenTSDB，Prometheus，Elasticsearch，CloudWatch和KairosDB等；</li>
-</ul>
-<ul>
-<li>通知提醒：以可视方式定义最重要指标的警报规则，Grafana将不断计算并发送通知，在数据达到阈值时通过Slack、PagerDuty等获得通知；</li>
-</ul>
-<ul>
-<li>混合展示：在同一图表中混合使用不同的数据源，可以基于每个查询指定数据源，甚至自定义数据源；</li>
-</ul>
-<ul>
-<li>注释：使用来自不同数据源的丰富事件注释图表，将鼠标悬停在事件上会显示完整的事件元数据和标记；</li>
-</ul>
-<ul>
-<li>过滤器：Ad-hoc过滤器允许动态创建新的键/值过滤器，这些过滤器会自动应用于使用该数据源的所有查询</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/09/MySQL connection failed/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/09/09/MySQL connection failed/" itemprop="url">案例1 · 数据库连接失败</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T09:40:34+08:00">
-                2019-09-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="数据库连接失败"><a href="#数据库连接失败" class="headerlink" title="数据库连接失败"></a>数据库连接失败</h2><h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><p>1）HeidiSQL是否能够连上数据库 ？</p>
-<p>2）登录服务器，查看 <code>mysqld</code> 进程是否存在，如果进程不存在，可能是服务器断电导致进程未自启动。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ ssh haieradmin@10.138.40.223 -p 18022</span><br><span class="line">$ ssh haieradmin@10.138.16.192$ </span><br><span class="line">ssh haieradmin@x.x.x.x (ssh root@x.x.x.x)  &apos;Haier,123/Haier@123/Changeme_123&apos;</span><br><span class="line">$ ps -ef | grep mysqld</span><br><span class="line">root      64511  64440  0 10:27 pts/2    00:00:00 grep --color=auto mysqld</span><br><span class="line">root      79355      1  0 Aug31 ?        00:00:00 /bin/sh/usr/local/mysql/bin/mysqld_safe --datadir=/data/mysql --pid-file=/data/mysql/mysql.pid</span><br><span class="line">mysql     79981  79355 99 Aug31 ?        2-01:38:14 /usr/local/mysql/bin/mysqld --basedir=/usr/local/mysql --datadir=/data/mysql --plugin-dir=/usr/local/mysql/lib/plugin --user=mysql --log-error=/data/mysql/error.log --pid-file=/data/mysql/mysql.pid --socket=/data/mysql/mysql.sock --port=3306</span><br></pre></td></tr></table></figure>
-
-<p>3）登录<code>mysql</code>，查看线程状态，查看是否有锁占用，或者线程大量阻塞情况。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -S /data/mysql/mysql.sock -usre -p&apos;sre@@p$i&apos;</span><br><span class="line">mysql&gt; show processlist;</span><br></pre></td></tr></table></figure>
-
-<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><ul>
-<li>如果是因为断电导致的进程未自启动，启动 <code>mysql</code> 进程</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ cd /etc/init.d</span><br><span class="line">$ ./mysqld stop/start</span><br><span class="line">$ cd /usr/local/mysql/support-files</span><br><span class="line">$ ./mysql.server stop/start</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>如果是因为有锁占用或线程大量阻塞，删除正在执行的锁表线程</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 杀掉ID为1的线程, 关闭连接</span><br><span class="line">kill id; </span><br><span class="line"># 查询出时间大于10的线程, 复制查询结果，批量执行</span><br><span class="line">select concat(&apos;kill &apos;, id, &apos;;&apos;) from information_schema.processlist where time &gt; 10;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/blog/page/2/">2</a><a class="page-number" href="/blog/page/3/">3</a><a class="extend next" rel="next" href="/blog/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/blog/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/4/">4</a><a class="extend next" rel="next" href="/blog/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1699,7 +1710,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-count">32</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

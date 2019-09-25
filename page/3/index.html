@@ -249,6 +249,290 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/23/Common-SQL/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/08/23/Common-SQL/" itemprop="url">Linux下MySQL常用命令</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-23T09:16:24+08:00">
+                2019-08-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="开启与关闭"><a href="#开启与关闭" class="headerlink" title="开启与关闭"></a>开启与关闭</h2><h3 id="开启"><a href="#开启" class="headerlink" title="开启"></a>开启</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service mysql start               #使用service启动</span><br><span class="line">/etc/init.d/mysqld start          #使用mysqld脚本启动服务</span><br></pre></td></tr></table></figure>
+
+<h3 id="关闭"><a href="#关闭" class="headerlink" title="关闭"></a>关闭</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service mysql stop                #使用service启动</span><br><span class="line">/etc/init.d/mysqld stop           #使用mysqld脚本关闭服务</span><br></pre></td></tr></table></figure>
+
+<h3 id="重启"><a href="#重启" class="headerlink" title="重启"></a>重启</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service mysql restart             #使用service启动</span><br><span class="line">/etc/inint.d/mysql restart        #使用mysqld脚本重启服务</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看"><a href="#查看" class="headerlink" title="查看"></a>查看</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep mysqld              #查看MySQL启动进程，验证是否启动成功</span><br></pre></td></tr></table></figure>
+
+<h2 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql -u 用户名 -p 密码            #密码明文</span><br><span class="line">mysql -u 用户名 -p                #密码密文</span><br></pre></td></tr></table></figure>
+
+<h2 id="修改密码"><a href="#修改密码" class="headerlink" title="修改密码"></a>修改密码</h2><h3 id="SET-PASSWORD命令（需登录）"><a href="#SET-PASSWORD命令（需登录）" class="headerlink" title="SET PASSWORD命令（需登录）"></a>SET PASSWORD命令（需登录）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">语法：mysql&gt; set password for 用户名@localhost = password(&apos;新密码&apos;);</span><br><span class="line">举例：mysql&gt;set password for root@localhost = password(&apos;123456&apos;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用sql语句更新-mysql-库中的-user-表（需登录）"><a href="#使用sql语句更新-mysql-库中的-user-表（需登录）" class="headerlink" title="使用sql语句更新 mysql 库中的 user 表（需登录）"></a>使用sql语句更新 mysql 库中的 user 表（需登录）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; use mysql; </span><br><span class="line">mysql&gt; update user set password=password(&apos;123&apos;) where user=&apos;root&apos; and host=&apos;localhost&apos;; </span><br><span class="line">mysql&gt; flush privileges;</span><br></pre></td></tr></table></figure>
+
+<h3 id="mysqladmin命令，明文（不需登录）"><a href="#mysqladmin命令，明文（不需登录）" class="headerlink" title="mysqladmin命令，明文（不需登录）"></a>mysqladmin命令，明文（不需登录）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">语法：mysqladmin -u用户名 -p旧密码 password 新密码</span><br><span class="line">举例：mysqladmin -uroot -p123 password 123456</span><br></pre></td></tr></table></figure>
+
+<h3 id="mysqladmin命令，密文（不需登录）"><a href="#mysqladmin命令，密文（不需登录）" class="headerlink" title="mysqladmin命令，密文（不需登录）"></a>mysqladmin命令，密文（不需登录）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">语法：mysqladmin -u用户名 -p旧密码 password+回车，然后输入两次新密码</span><br><span class="line">举例：mysqladmin -uroot -p123 password</span><br></pre></td></tr></table></figure>
+
+<h2 id="常用操作"><a href="#常用操作" class="headerlink" title="常用操作"></a>常用操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">SHOW DATABASES;                             #返回可用数据库列表</span><br><span class="line">USE db_name;                                #选择数据库</span><br><span class="line">SHOW STATUS;                                #用于显示广泛的服务器状态信息</span><br><span class="line">Show variables like &apos;%参数名%&apos;;              #查看MySQL数据库中的参数</span><br><span class="line">select version() from dual;                 #查看数据库版本信息</span><br><span class="line">SHOW COLUMNS FROM tbl_name;                 #返回tbl_name表中每个字段的信息</span><br><span class="line">show processlist;                           #显示用户正在运行的线程</span><br><span class="line">show binary logs;                           #列出当前binlog文件及值的大小</span><br><span class="line">show master status                          #查看MySQL当前的日志及状态</span><br><span class="line">show slave status \G                        #查看从属服务器线程的参数关键信息</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/23/mysqldump-数据迁移/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/08/23/mysqldump-数据迁移/" itemprop="url">mysqldump 数据迁移</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-23T09:12:00+08:00">
+                2019-08-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="mysqldump的备份与恢复"><a href="#mysqldump的备份与恢复" class="headerlink" title="mysqldump的备份与恢复"></a>mysqldump的备份与恢复</h2><p>mysqldump是MySQL数据库中自带的命令工具，是基础的一款备份工具。我们可以通过 /usr/local/mysql/bin/mysqldump -help 命令来查看其命令的使用说明</p>
+<p>这里使用mysqldump实现MySQL的数据迁移</p>
+<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><p>1、连接原服务器和新服务器的数据库，分别查看两个数据库的版本信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select version() from dual;</span><br></pre></td></tr></table></figure>
+
+<p>2、需要查看需要进行备份的数据库库名和大小</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show databases;</span><br></pre></td></tr></table></figure>
+
+<h3 id="备份数据库"><a href="#备份数据库" class="headerlink" title="备份数据库"></a>备份数据库</h3><p>1、登录原服务器，使用mysqldump对需要还原的数据库进行备份</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#备份单个库</span><br><span class="line">/usr/local/mysqlcosmo/bin/mysqldump  --single-transaction  -S /tmp/mysql-cosmodb.sock -uroot  -p&apos;root123&apos; cosmodb &gt;cosmodb.sql   </span><br><span class="line"></span><br><span class="line">#备份全库</span><br><span class="line">/usr/local/mysqlcosmo/bin/mysqldump  --single-transaction  -S /tmp/mysql-cosmodb.sock -uroot  -p&apos;root123&apos; -A &gt;all.sql   </span><br><span class="line"></span><br><span class="line">#备份单表，db1是库名 t为想备份的表名</span><br><span class="line">usr/local/mysqlcosmo/bin/mysqldump  --single-transaction  -S /tmp/mysql-cosmodb.sock -uroot  -p&apos;root123&apos; db1 t &gt;t.sql</span><br></pre></td></tr></table></figure>
+
+<p>2、将备份文件传送至新的服务器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp cosmodb.sql haieradmin@10.138.232.85:/tmp</span><br></pre></td></tr></table></figure>
+
+<p>​    若两台服务器间未配置互信，且不知道服务器密码，需先配置互信，或新建用户设置密码。</p>
+<h3 id="还原数据库"><a href="#还原数据库" class="headerlink" title="还原数据库"></a>还原数据库</h3><p>1、查看新数据库中是否有同名的数据库，防止直接还原时将该库覆盖。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show databases;</span><br></pre></td></tr></table></figure>
+
+<p>2、若没有可以新建一个数据库将数据还原至该库中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create database cosmodb;</span><br></pre></td></tr></table></figure>
+
+<p>3、将数据还原至新服务器的cosmodb库中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#恢复单个库</span><br><span class="line">mysql -uroot -p&apos;root123&apos; cosmodb &lt; cosmodb.sql  </span><br><span class="line"></span><br><span class="line">#恢复全库</span><br><span class="line">mysql -uroot -p&apos;root123&apos; cosmodb &lt; all.sql  </span><br><span class="line"></span><br><span class="line">#恢复db1库下的表t</span><br><span class="line">mysql -uroot -p&apos;root123&apos; db1 &lt; t.sql</span><br></pre></td></tr></table></figure>
+
+<h3 id="导出存储过程-amp-事件"><a href="#导出存储过程-amp-事件" class="headerlink" title="导出存储过程&amp;事件"></a>导出存储过程&amp;事件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#只导出存储过程和函数(不导出结构和数据，要同时导出结构的话，需要同时使用-d)</span><br><span class="line">mysqldump -R -ndt dbname -u root -p &gt; routines.sql</span><br><span class="line"></span><br><span class="line">#只导出事件</span><br><span class="line">mysqldump -E -ndt dbname -u root -p &gt; events.sql</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/16/Function/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1003,10 +1287,13 @@
 <p>6、启动MySQL数据库  ，可以用 ps -ef|grep mysqld 查看MySQL启动进程，看是否启动成功。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; /usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql 2&gt;&amp;1 &gt; /dev/null &amp;</span><br></pre></td></tr></table></figure>
 
-<p>7、设置开机自启动</p>
+<p>7、开启防火墙</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=3306/tcp --permanent</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p>8、设置开机自启动</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; cd /usr/local/mysql/bin</span><br><span class="line">shell&gt; cp mysql mysqladmin mysqlbinlog mysqld mysqld_safe mysqldump /usr/bin/</span><br><span class="line"></span><br><span class="line">shell&gt; vi /usr/local/mysql/support-files/mysql.server</span><br><span class="line">`mysqld_pid_file_path`=/data/mysql/mysql.pid</span><br><span class="line"></span><br><span class="line">shell&gt; cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</span><br><span class="line">shell&gt; chmod +x /etc/init.d/mysqld</span><br><span class="line">shell&gt; chkconfig --add mysqld</span><br><span class="line">shell&gt; chkconfig mysqld on</span><br><span class="line">shell&gt; chkconfig --list</span><br></pre></td></tr></table></figure>
 
-<p>8、设置用户</p>
+<p>9、设置用户</p>
 <p>数据库启动成功成功后，进入数据库的初始密码会在  /data/mysql/error.log  下面</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /data/mysql/error.log | grep password</span><br></pre></td></tr></table></figure>
 
@@ -1019,8 +1306,14 @@
 <p>进行权限的刷新并查看用户情况</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; flush privileges;</span><br><span class="line">mysql&gt; select user,host,authentication_string from mysql.user;</span><br></pre></td></tr></table></figure>
 
-<p>9、登录数据库</p>
+<p>10、登录数据库</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p</span><br><span class="line">mysql -S /data/mysql/mysql.sock -pHaier@123   #通过socket登录到指定端口的数据库</span><br></pre></td></tr></table></figure>
+
+<p><strong>注：有时由于重启数据库等原因会出现初始密码过期的情况</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@cmp25 init.d]# mysql -u root -p&apos;U1t)ZVy(T*af&apos; -S/data/mysql3100/mysql.sock</span><br><span class="line">ERROR 1862 (HY000): Your password has expired. To log in you must change it using a client that supports expired passwords.</span><br></pre></td></tr></table></figure>
+
+<p>解决方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#进入bin目录下</span><br><span class="line">cd /usr/local/mysql3100/bin/</span><br><span class="line">#修改密码</span><br><span class="line">[root@cmp25 bin]#  ./mysqladmin -uroot -p password -S/data/mysql3100/mysql.sock</span><br><span class="line">Enter password:            #输入原始密码</span><br><span class="line">New password:              #输入新密码</span><br><span class="line">Confirm new password:      #重复新密码</span><br></pre></td></tr></table></figure>
 
 <h2 id="MySQL彻底卸载"><a href="#MySQL彻底卸载" class="headerlink" title="MySQL彻底卸载"></a>MySQL彻底卸载</h2><p>1、关进程并删除mysqld</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#查看MySQL启动进程，</span><br><span class="line">ps -ef | grep mysqld     </span><br><span class="line">#若MySQL处于启动状态，停止MySQL服务</span><br><span class="line">cd /etc/init.d</span><br><span class="line">[root@cmp15 init.d]# ./mysqld stop</span><br><span class="line">#删除mysqld</span><br><span class="line">[root@cmp15 init.d]# rm -rf mysqld</span><br></pre></td></tr></table></figure>
@@ -1034,10 +1327,36 @@
 <p>4、删除配置文件my.cnf</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /etc/my.cnf</span><br></pre></td></tr></table></figure>
 
-<h2 id="MySQL的启动与关闭"><a href="#MySQL的启动与关闭" class="headerlink" title="MySQL的启动与关闭"></a>MySQL的启动与关闭</h2><p>使用单实例方法启动与关闭Mysql</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/mysqld start          #启动mysql服务</span><br><span class="line">/etc/init.d/mysqld stop           #关闭mysql服务</span><br></pre></td></tr></table></figure>
+<h2 id="MySQL的启动与关闭"><a href="#MySQL的启动与关闭" class="headerlink" title="MySQL的启动与关闭"></a>MySQL的启动与关闭</h2><h3 id="停止"><a href="#停止" class="headerlink" title="停止"></a>停止</h3><ul>
+<li>使用 <code>init.d</code>，<code>mysqld</code> 脚本来自于 <code>/usr/local/mysql/support-files/mysql.server</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /etc/init.d/mysqld stop</span><br></pre></td></tr></table></figure>
 
-<p><strong>注：/etc/init.d/mysqld 由 /usr/local/mysql/support-files/mysql.server复制而来的。</strong></p>
+<ul>
+<li>使用 <code>mysqladmin</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysqladmin -u&apos;xx&apos; -p&apos;xx&apos; shutdown</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>service</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl stop mysqld</span><br><span class="line">$ service mysql stop</span><br></pre></td></tr></table></figure>
+
+<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><ul>
+<li>使用 <code>init.d</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /etc/init.d/mysqld start</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>mysqld_safe</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &amp;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>service</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl start mysqld</span><br><span class="line">$ service mysql start</span><br></pre></td></tr></table></figure>
+
 <h2 id="MySQL5-6安装"><a href="#MySQL5-6安装" class="headerlink" title="MySQL5.6安装"></a>MySQL5.6安装</h2><p>1、下载安装包</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">groupadd mysql</span><br><span class="line">useradd -g mysql mysql -s /sbin/nologin</span><br><span class="line"></span><br><span class="line">tar -zxvf mysql-5.6.27-el7-x86_64.tar.gz -C /usr/local/</span><br><span class="line">ln -s mysql-5.6.27-el7-x86_64 mysql</span><br></pre></td></tr></table></figure>
 
@@ -1681,286 +2000,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/05/guide/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/08/05/guide/" itemprop="url">入职指南</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-05T16:10:39+08:00">
-                2019-08-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="主要安排"><a href="#主要安排" class="headerlink" title="主要安排"></a>主要安排</h2><ul>
-<li>安装相关软件：<a href="http://vpn.haier.net/" target="_blank" rel="noopener">vpn</a> / <a href="https://app.haier.net/?ihaier&201908051821" target="_blank" rel="noopener">iHaier</a> / 钉钉 / Xmind / HeidiSQL / Xshell / OneNote / Sublime Text3 / Typora</li>
-<li><a href="https://huiraoo.github.io/blog" target="_blank" rel="noopener">Github Page +Hexo + Next搭建个人博客</a></li>
-</ul>
-<h3 id="部分软件功能"><a href="#部分软件功能" class="headerlink" title="部分软件功能"></a>部分软件功能</h3><ul>
-<li><p><strong>HeidiSQL</strong>：用于简单化MySQL服务器和数据库管理的图形化界面。</p>
-</li>
-<li><p><strong>Xshell</strong>：在Windows界面下访问远端不同系统下的服务器。</p>
-</li>
-<li><p><strong>OneNote</strong>：电子笔记本。特点：免费、编辑功能强大、层级分明、布局自由适合资料的二次整理与创作。</p>
-</li>
-<li><p><strong>Sublime Text3</strong>：跨平台的代码编辑器，同时支持Windows、Linux等操作系统。主要功能：拼写检查、书签、完整的Python API，Goto功能，即时项目切换，多选择，多窗口等等。</p>
-</li>
-<li><p><strong>Typora</strong>：轻便简洁的Markdown编辑器，支持即时渲染技术，写个人博客时要用。</p>
-<p> <strong>Typora常用快捷键：</strong><u>下划线</u>  ：Ctrl+U </p>
-<p>​                                   <strong>字体加粗</strong>：Ctrl +B</p>
-<p>​                                    <em>斜体</em>  ：Ctrl+I</p>
-<p>​                                  <del>删除线</del>    ：Alt+Shift+5</p>
-<pre><code>n级标题  ：Ctrl+n</code></pre></li>
-</ul>
-<h3 id="hexo命令"><a href="#hexo命令" class="headerlink" title="hexo命令"></a>hexo命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new &quot;My New Post&quot;       #新建文章</span><br><span class="line">$ hexo new page &quot;My New Page&quot;  #新建页面</span><br><span class="line">$ hexo server                  #启动服务</span><br><span class="line">$ hexo generate                #生成静态文件</span><br><span class="line">$ hexo g -d                    #生成+部署</span><br><span class="line">$ hexo g -s                    #生成+预览</span><br></pre></td></tr></table></figure>
-
-<p>​            </p>
-<p>​          </p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/05/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/08/05/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-05T14:08:27+08:00">
-                2019-08-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><a class="page-number" href="/blog/page/2/">2</a><span class="page-number current">3</span>
+    <a class="extend prev" rel="prev" href="/blog/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><a class="page-number" href="/blog/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/blog/page/4/">4</a><a class="extend next" rel="next" href="/blog/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2006,7 +2050,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-count">32</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

@@ -79,21 +79,21 @@
 
 
 
-<meta name="description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备。 2、增量">
+<meta name="description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备，备份过程中">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Percona XtraBackup安装实践">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2019/09/11/Xtrabackup/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备。 2、增量">
+<meta property="og:description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备，备份过程中">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup1.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup2.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup3.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/0.png">
-<meta property="og:updated_time" content="2019-09-12T02:32:04.732Z">
+<meta property="og:updated_time" content="2019-09-24T08:50:04.384Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Percona XtraBackup安装实践">
-<meta name="twitter:description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备。 2、增量">
+<meta name="twitter:description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备，备份过程中">
 <meta name="twitter:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup1.png">
 
 
@@ -326,7 +326,7 @@
       
         <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。</p>
 <p><strong>XtraBackup优势 ：</strong></p>
-<p>1、无需停止数据库进行 InnoDB 热备。</p>
+<p>1、无需停止数据库进行 InnoDB 热备，备份过程中不会锁表，不影响现有业务。</p>
 <p>2、增量备份 MySQL。</p>
 <p>3、流压缩到传输到其它服务器。</p>
 <p>4、能比较容易地创建主从同步。</p>
@@ -471,7 +471,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-count">32</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
