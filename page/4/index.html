@@ -249,6 +249,665 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/09/Download-MySQL/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/08/09/Download-MySQL/" itemprop="url">MySQL的安装部署与卸载</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-09T11:21:53+08:00">
+                2019-08-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="MySQL5-7安装"><a href="#MySQL5-7安装" class="headerlink" title="MySQL5.7安装"></a>MySQL5.7安装</h2><p>1、创建用户，指定MySQL所在的用户组</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; groupadd mysql </span><br><span class="line">shell&gt; useradd -g mysql mysql -s /sbin/nologin</span><br></pre></td></tr></table></figure>
+
+<p>2、下载软件包，并将解压MySQL软件包至  /usr/local/  目录下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; scp mysql-5.7.23-el7-x86_64.tar.gz root@x.x.x.x:/usr/local/src/     </span><br><span class="line">shell&gt; tar -zxvf mysql-5.7.23-el7-x86_64.tar.gz -C /usr/local/</span><br><span class="line">shell&gt; ln -s /usr/local/mysql-5.7.23-el7-x86_64 /usr/local/mysql       #做软链方便日后的升级</span><br><span class="line">shell&gt; chown mysql:mysql -R /usr/local/mysql                           #给MySQL目录授权</span><br></pre></td></tr></table></figure>
+
+<p>3、创建MySQL的数据目录，并给数据目录赋权。这里选择将目录创建在  /data/mysql 下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; mkdir -p /data/mysql    </span><br><span class="line">shell&gt; chown mysql:mysql -R /data/mysql                                #给收据目录授权</span><br></pre></td></tr></table></figure>
+
+<p>4、编辑配置文件my.cnf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; vim /etc/my.cnf     # 进入my.cnf中，并进行文件编辑</span><br></pre></td></tr></table></figure>
+
+<p>更改配置文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">port                      = 3306</span><br><span class="line">socket                    = /data/mysql/mysql.sock</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">port                      = 3306</span><br><span class="line">socket                    = /data/mysql/mysql.sock</span><br><span class="line">pid_file                  = /data/mysql/mysql.pid</span><br><span class="line">basedir                   = /usr/local/mysql</span><br><span class="line">datadir                   = /data/mysql</span><br><span class="line">character_set_server      = utf8</span><br><span class="line"></span><br><span class="line"># LOG</span><br><span class="line">slow_query_log            = 1</span><br><span class="line">long_query_time           = 5</span><br><span class="line">log_error                 = /data/mysql/error.log</span><br><span class="line">slow_query_log_file       = /data/mysql/slow.log</span><br><span class="line"></span><br><span class="line"># INNODB</span><br><span class="line">innodb_data_home_dir      = /data/mysql</span><br><span class="line">innodb_buffer_pool_size   = 10240M</span><br><span class="line">innodb_log_file_size      = 1G</span><br><span class="line">innodb_data_file_path     = ibdata1:1G:autoextend</span><br><span class="line"></span><br><span class="line"># OTHER</span><br><span class="line">max_connections           = 3000</span><br><span class="line">interactive_timeout       = 600</span><br><span class="line">wait_timeout              = 600</span><br><span class="line">lower_case_table_names    = 1</span><br><span class="line">log_timestamps            = SYSTEM</span><br><span class="line">explicit_defaults_for_timestamp = 1</span><br><span class="line">skip-ssl</span><br><span class="line">skip-name-resolve</span><br><span class="line"></span><br><span class="line"># REPLICATION</span><br><span class="line">server-id                 = 3306100</span><br><span class="line">log-bin                   = /data/mysql/mysql-bin</span><br><span class="line">sync_binlog               = 0</span><br><span class="line">max_binlog_size           = 1024M</span><br><span class="line">binlog-format             = row</span><br><span class="line">expire_logs_days          = 15</span><br></pre></td></tr></table></figure>
+
+<p>5、对数据库进行初始化操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; /usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf --basedir=/usr/local/mysql --datadir=/data/mysql --user=mysql --initialize</span><br></pre></td></tr></table></figure>
+
+<p>6、启动MySQL数据库  ，可以用 ps -ef|grep mysqld 查看MySQL启动进程，看是否启动成功。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; /usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql 2&gt;&amp;1 &gt; /dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<p>7、开启防火墙</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=3306/tcp --permanent</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p>8、设置开机自启动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; cd /usr/local/mysql/bin</span><br><span class="line">shell&gt; cp mysql mysqladmin mysqlbinlog mysqld mysqld_safe mysqldump /usr/bin/</span><br><span class="line"></span><br><span class="line">shell&gt; vi /usr/local/mysql/support-files/mysql.server</span><br><span class="line">`mysqld_pid_file_path`=/data/mysql/mysql.pid</span><br><span class="line"></span><br><span class="line">shell&gt; cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</span><br><span class="line">shell&gt; chmod +x /etc/init.d/mysqld</span><br><span class="line">shell&gt; chkconfig --add mysqld</span><br><span class="line">shell&gt; chkconfig mysqld on</span><br><span class="line">shell&gt; chkconfig --list</span><br></pre></td></tr></table></figure>
+
+<p>9、设置用户</p>
+<p>数据库启动成功成功后，进入数据库的初始密码会在  /data/mysql/error.log  下面</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /data/mysql/error.log | grep password</span><br></pre></td></tr></table></figure>
+
+<p>使用初始密码进入数据库后，修改数据库的root密码，设置为永不过期</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SET PASSWORD = &apos;Haier@123&apos;;</span><br><span class="line">mysql&gt; ALTER USER &apos;root&apos;@&apos;localhost&apos; Password EXPIRE NEVER;</span><br><span class="line">mysql&gt; flush privileges;</span><br></pre></td></tr></table></figure>
+
+<p>创建用户并授权</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#创建用户src</span><br><span class="line">mysql&gt; CREATE USER &apos;sre&apos;@&apos;%&apos; IDENTIFIED BY PASSWORD &apos;*66CC8D8F94978869E17ABDA6FD2E1A5D817E619E&apos;;</span><br><span class="line">mysql&gt; GRANT all privileges on *.* to &apos;sre&apos;@&apos;%&apos; WITH GRANT OPTION;</span><br><span class="line">#创建用户hdm</span><br><span class="line">mysql&gt; CREATE USER &apos;hdm&apos;@&apos;%&apos; IDENTIFIED BY PASSWORD &apos;*14533888C6CA3952B3957903FF7E69469C7E3A2B&apos;;</span><br><span class="line">mysql&gt; GRANT SELECT, SHOW DATABASES, PROCESS, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO &apos;hdm&apos;@&apos;%&apos;;</span><br></pre></td></tr></table></figure>
+
+<p>进行权限的刷新并查看用户情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; flush privileges;</span><br><span class="line">mysql&gt; select user,host,authentication_string from mysql.user;</span><br></pre></td></tr></table></figure>
+
+<p>10、登录数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p</span><br><span class="line">mysql -S /data/mysql/mysql.sock -pHaier@123   #通过socket登录到指定端口的数据库</span><br></pre></td></tr></table></figure>
+
+<p><strong>注：有时由于重启数据库等原因会出现初始密码过期的情况</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@cmp25 init.d]# mysql -u root -p&apos;U1t)ZVy(T*af&apos; -S/data/mysql3100/mysql.sock</span><br><span class="line">ERROR 1862 (HY000): Your password has expired. To log in you must change it using a client that supports expired passwords.</span><br></pre></td></tr></table></figure>
+
+<p>解决方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#进入bin目录下</span><br><span class="line">cd /usr/local/mysql3100/bin/</span><br><span class="line">#修改密码</span><br><span class="line">[root@cmp25 bin]#  ./mysqladmin -uroot -p password -S/data/mysql3100/mysql.sock</span><br><span class="line">Enter password:            #输入原始密码</span><br><span class="line">New password:              #输入新密码</span><br><span class="line">Confirm new password:      #重复新密码</span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL彻底卸载"><a href="#MySQL彻底卸载" class="headerlink" title="MySQL彻底卸载"></a>MySQL彻底卸载</h2><p>1、关进程并删除mysqld</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#查看MySQL启动进程，</span><br><span class="line">ps -ef | grep mysqld     </span><br><span class="line">#若MySQL处于启动状态，停止MySQL服务</span><br><span class="line">cd /etc/init.d</span><br><span class="line">[root@cmp15 init.d]# ./mysqld stop</span><br><span class="line">#删除mysqld</span><br><span class="line">[root@cmp15 init.d]# rm -rf mysqld</span><br></pre></td></tr></table></figure>
+
+<p>2、删除数据目录，这里数据文件存储在在  /data/mysql 目录中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /data/</span><br><span class="line">rm -rf mysql</span><br></pre></td></tr></table></figure>
+
+<p>3、删除安装目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/                      </span><br><span class="line">[root@cmp15 local]# rm -rf mysql</span><br></pre></td></tr></table></figure>
+
+<p>4、删除配置文件my.cnf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /etc/my.cnf</span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL的启动与关闭"><a href="#MySQL的启动与关闭" class="headerlink" title="MySQL的启动与关闭"></a>MySQL的启动与关闭</h2><h3 id="停止"><a href="#停止" class="headerlink" title="停止"></a>停止</h3><ul>
+<li>使用 <code>init.d</code>，<code>mysqld</code> 脚本来自于 <code>/usr/local/mysql/support-files/mysql.server</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /etc/init.d/mysqld stop</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>mysqladmin</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysqladmin -u&apos;xx&apos; -p&apos;xx&apos; shutdown</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>service</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl stop mysqld</span><br><span class="line">$ service mysql stop</span><br></pre></td></tr></table></figure>
+
+<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><ul>
+<li>使用 <code>init.d</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /etc/init.d/mysqld start</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>mysqld_safe</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &amp;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>service</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl start mysqld</span><br><span class="line">$ service mysql start</span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL5-6安装"><a href="#MySQL5-6安装" class="headerlink" title="MySQL5.6安装"></a>MySQL5.6安装</h2><p>1、下载安装包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">groupadd mysql</span><br><span class="line">useradd -g mysql mysql -s /sbin/nologin</span><br><span class="line"></span><br><span class="line">tar -zxvf mysql-5.6.27-el7-x86_64.tar.gz -C /usr/local/</span><br><span class="line">ln -s mysql-5.6.27-el7-x86_64 mysql</span><br></pre></td></tr></table></figure>
+
+<p>2、编辑配置文件my.cnf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">port                      = 3306</span><br><span class="line">socket                    = /data/mysql/mysql.sock</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">port                      = 3306</span><br><span class="line">socket                    = /data/mysql/mysql.sock</span><br><span class="line">pid_file                  = /data/mysql/mysql.pid</span><br><span class="line">basedir                   = /usr/local/mysql</span><br><span class="line">datadir                   = /data/mysql</span><br><span class="line">character_set_server      = utf8</span><br><span class="line"></span><br><span class="line"># LOG</span><br><span class="line">slow_query_log            = 1</span><br><span class="line">long_query_time           = 5</span><br><span class="line">log_error                 = /data/mysql/error.log</span><br><span class="line">slow_query_log_file       = /data/mysql/slow.log</span><br><span class="line"></span><br><span class="line"># INNODB</span><br><span class="line">innodb_data_home_dir      = /data/mysql</span><br><span class="line">innodb_buffer_pool_size   = 10240M</span><br><span class="line">innodb_log_file_size      = 1G</span><br><span class="line">innodb_data_file_path     = ibdata1:1G:autoextend</span><br><span class="line"></span><br><span class="line"># OTHER</span><br><span class="line">max_connections           = 3000</span><br><span class="line">interactive_timeout       = 600</span><br><span class="line">wait_timeout              = 600</span><br><span class="line">lower_case_table_names    = 1</span><br><span class="line"></span><br><span class="line"># REPLICATION</span><br><span class="line">server-id                 = 3306100</span><br><span class="line">log-bin                   = /data/mysql/mysql-bin</span><br><span class="line">sync_binlog               = 0</span><br><span class="line">max_binlog_size           = 1024M</span><br><span class="line">binlog-format             = row</span><br><span class="line">expire_logs_days          = 15</span><br></pre></td></tr></table></figure>
+
+<p>3、创建MySQL的数据目录，并给数据目录赋权。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/mysql</span><br><span class="line">chown mysql:mysql -R /usr/local/mysql</span><br><span class="line">chown mysql:mysql -R /data/mysql</span><br></pre></td></tr></table></figure>
+
+<p>4、初始化</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/scripts/mysql_install_db  --basedir=/usr/local/mysql --defaults-file=/etc/my.cnf --user=mysql</span><br></pre></td></tr></table></figure>
+
+<p>5、启动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql 2&gt;&amp;1 &gt; /dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<p>6、开启防火墙</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=3306/tcp --permanent</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p>7、设置开机自启动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/mysql/bin</span><br><span class="line">cp mysql mysqladmin mysqlbinlog mysqld mysqld_safe mysqldump /usr/bin/</span><br><span class="line"></span><br><span class="line">vi /usr/local/mysql/support-files/mysql.server</span><br><span class="line">`mysqld_pid_file_path`=/data/mysql/mysql.pid</span><br><span class="line"></span><br><span class="line">cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</span><br><span class="line">chmod +x /etc/init.d/mysqld</span><br><span class="line">chkconfig --add mysqld</span><br><span class="line">chkconfig mysqld on</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/09/user-management/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/08/09/user-management/" itemprop="url">MySQL的用户权限管理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-09T09:49:59+08:00">
+                2019-08-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="MySQL的用户权限管理"><a href="#MySQL的用户权限管理" class="headerlink" title="MySQL的用户权限管理"></a>MySQL的用户权限管理</h2><p>MySQL数据库账号安全对DBA来说至关重要，工作中的数据库环境一般分为测试环境和生产环境，工作时常需要给开发人员或其他人员分配权限，权限的申请流程需要设置规范，使人们按照规则来办事。</p>
+<h3 id="主要内容"><a href="#主要内容" class="headerlink" title="主要内容"></a>主要内容</h3><p>1、可以限制用户访问那些数据库、数据表；</p>
+<p>2、可以限制用户可以对那些表进行select、create、delete、alter、insert、update等操作；</p>
+<p>3、限制用户登录的IP或域名；</p>
+<p>4、可以限制用户自己的权限可以授权给其他用户</p>
+<h3 id="用户分类"><a href="#用户分类" class="headerlink" title="用户分类"></a>用户分类</h3><p>MySQL数据库的用户一般分为两类：</p>
+<p>1、超级管理员用户<strong>root</strong>。</p>
+<p>2、由root用户创建的<strong>普通用户</strong>，普通用户的权限由root用户进行分配。</p>
+<p>root用户避免作为Web连接用，超级管理员用户（root用户和all privileges权限用户）只能归DBA管理。</p>
+<h3 id="查看用户"><a href="#查看用户" class="headerlink" title="查看用户"></a>查看用户</h3><p><strong>MySQL5.6</strong> 查看用户情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select user,host,password from user</span><br></pre></td></tr></table></figure>
+
+<p><strong>MySQL5.7</strong> 查看用户情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">use mysql</span><br><span class="line">select user,host,authentication_string from user;</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h3><p>创建用户时，最好专库专账号，避免一个账号管理多个库。</p>
+<p><strong>创建用户语法：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create user 用户名@主机ip identified by ‘密码’;</span><br></pre></td></tr></table></figure>
+
+<p>给开发人员进行权限分配时，可以分配只读权限和读写权限用户。</p>
+<p><strong>创建只读用户：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">create user &apos;erp_read&apos;@&apos;192.168.56.%&apos; identified by &apos;erp123&apos;;       #为erp库创建只读用户</span><br><span class="line">grant select on erp.* to &apos;erp_read&apos;@&apos;192.168.56.%&apos; identified by &apos;erp123&apos;;</span><br><span class="line">flush privileges;       #刷新权限</span><br></pre></td></tr></table></figure>
+
+<p><strong>创建读写用户：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">create user &apos;erp_user&apos;@&apos;192.168.56.%&apos; identified by &apos;erp123&apos;;    为erp库创建读写用户</span><br><span class="line">grant select,insert,update,delete on erp.* to &apos;erp_user&apos;@&apos;192.168.56.%&apos; identified by &apos;erp123&apos;;</span><br><span class="line">flush privileges;      #刷新权限</span><br></pre></td></tr></table></figure>
+
+<p><strong>修改用户密码</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set password for 用户名@主机ip = password(&apos;新密码&apos;);</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/09/search-pv-uv/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/08/09/search-pv-uv/" itemprop="url">查询系统中的pv/uv数据</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-09T09:49:08+08:00">
+                2019-08-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="连接至数据库"><a href="#连接至数据库" class="headerlink" title="连接至数据库"></a>连接至数据库</h2><p>打开数据库管理系统，新建MySQL连接，输入对应的ip地址、用户名、密码、连接至数据库</p>
+<h2 id="查询pv-uv数据"><a href="#查询pv-uv数据" class="headerlink" title="查询pv/uv数据"></a>查询pv/uv数据</h2><p>进入matomo库中的matomo_site表查看需要查询数据的系统所对应的id号码（idsite）。</p>
+<p>新建查询，将需要进行pv/uv数据查询的系统所对应的idsite填入，并修改日期范围。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line">  a.days,</span><br><span class="line">  a.count AS uv,</span><br><span class="line">  b.count AS pv </span><br><span class="line">FROM</span><br><span class="line">  (</span><br><span class="line">  SELECT</span><br><span class="line">    DATE_FORMAT(</span><br><span class="line">      date_add( uv.visit_last_action_time, INTERVAL 8 HOUR ),</span><br><span class="line">      &apos;%Y%m%d&apos; </span><br><span class="line">    ) days,</span><br><span class="line">    count( 1 ) count </span><br><span class="line">  FROM</span><br><span class="line">    matomo_log_visit uv </span><br><span class="line">  WHERE</span><br><span class="line">    uv.idsite =                                #填入系统对应的idsite</span><br><span class="line">    AND date_add( uv.visit_last_action_time, INTERVAL 8 HOUR ) BETWEEN &apos;2019-07-01 00:00:00&apos; </span><br><span class="line">    AND &apos;2019-07-30 23:59:59&apos;                 #修改所要导出数据的日期范围。</span><br><span class="line">  GROUP BY</span><br><span class="line">    days </span><br><span class="line">  ) a,</span><br><span class="line">  (</span><br><span class="line">  SELECT</span><br><span class="line">    DATE_FORMAT(</span><br><span class="line">      date_add( pv.server_time, INTERVAL 8 HOUR ),</span><br><span class="line">      &apos;%Y%m%d&apos; </span><br><span class="line">    ) days,</span><br><span class="line">    count( 1 ) count </span><br><span class="line">  FROM</span><br><span class="line">    matomo_log_link_visit_action pv </span><br><span class="line">  WHERE    </span><br><span class="line">    pv.idsite =                                #填入系统对应的idsite</span><br><span class="line">    AND date_add( pv.server_time, INTERVAL 8 HOUR ) BETWEEN &apos;2019-07-01 00:00:00&apos; </span><br><span class="line">    AND &apos;2019-07-30 23:59:59&apos; </span><br><span class="line">    AND pv.idaction_name IS NOT NULL </span><br><span class="line">  GROUP BY</span><br><span class="line">    days </span><br><span class="line">  ) b </span><br><span class="line">WHERE</span><br><span class="line">  a.days = b.days </span><br><span class="line">ORDER BY</span><br><span class="line">  a.days</span><br></pre></td></tr></table></figure>
+
+<h2 id="导出查询结果"><a href="#导出查询结果" class="headerlink" title="导出查询结果"></a>导出查询结果</h2><p>点击导出结果，选择导出当前结果，选择导出格式为Excel数据表进行导出。即可得到包含有系统pv/uv数据的Excel表格。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/09/introduction-to-Linux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/08/09/introduction-to-Linux/" itemprop="url">Linux入门基础</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-09T09:48:11+08:00">
+                2019-08-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Linux目录介绍"><a href="#Linux目录介绍" class="headerlink" title="Linux目录介绍"></a>Linux目录介绍</h2><p><strong>/etc：</strong>(etcetera) 系统配置文件存放的目录，不建议在此目录下存放可执行文件。</p>
+<p><strong>/usr：</strong>(unix shared resources) 应用程序存放目录，</p>
+<ul>
+<li>/usr/bin ：存放应用程序，</li>
+<li>/usr/share ：存放共享数据，</li>
+<li>/usr/lib： 存放不能直接运行的，却是许多程序运行所必需的一些函数库文件。</li>
+<li>/usr/local:存放软件升级包。</li>
+</ul>
+<p><strong>/root：</strong> 系统管理员root的家目录，系统第一个启动的分区为/，所以最好将/root和/放置在一个分区下。</p>
+<h2 id="Linux常用指令"><a href="#Linux常用指令" class="headerlink" title="Linux常用指令"></a>Linux常用指令</h2><p><strong>cd命令：</strong></p>
+<p>用于切换当前目录，它的参数是要切换到的目录的路径，可以是绝对路径，也可以是相对路径。</p>
+<ul>
+<li><p>cd /root/Docements         # 切换到目录/root/Docements  </p>
+</li>
+<li><p>cd ./path                             # 切换到当前目录下的path目录中，“.”表示当前目录    </p>
+</li>
+<li><p>cd ../path                            # 切换到上层目录中的path目录中，“..”表示上一层目录</p>
+</li>
+</ul>
+<p><strong>ls命令：</strong></p>
+<p>ls命令是用来查看文件与目录的命令，list之意，它的参数非常多，下面就列出一些常用的参数 。</p>
+<ul>
+<li><p>-l ：一般直接使用ll，列出长数据串，包含文件的属性与权限数据等</p>
+</li>
+<li><p>-a ：列出全部的文件，连同隐藏文件（开头为.的文件）一起列出来（常用）  </p>
+</li>
+<li><p>-d ：仅列出目录本身，而不是列出目录的文件数据  </p>
+</li>
+<li><p>-h ：将文件容量以较易读的方式（GB，kB等）列出来  </p>
+</li>
+<li><p>-R ：连同子目录的内容一起列出（递归列出），等于该目录下的所有文件都会显示出来  </p>
+</li>
+</ul>
+<p><strong>pwd</strong>：查看用户当前目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">df -h                #查看磁盘占用比例</span><br><span class="line">ls -lht              #查看目录下所有文件大小总量</span><br><span class="line">du -sh * |sort -nr   #将当前目录下的文件从大到小排序  -n：从小到大排序</span><br><span class="line">tail -f 文件名        #动态查看日志信息</span><br><span class="line">tail -n 20 文件名     #查看最后一部分日志</span><br><span class="line">rm -rf               #删除文件</span><br><span class="line">top                  #动态查看cpu状态</span><br><span class="line"></span><br><span class="line">#服务器创建新用户</span><br><span class="line">$sudo useradd -m -s /bin/bash userName    // 在/home目录下新建userName目录</span><br><span class="line">$sudo passwd userName                     //设置密码</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/06/Database-Foundation/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -720,7 +1379,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">37</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="Mino&#39;s blog">
 <meta property="og:description" content="插入数据库报错问题现象执行包含中文的插入语句报错 1234#向employees的test表中插入数据mysql&amp;gt; insert into test(name,age,address) values(&apos;xujinliang&apos;,32,&apos;山东省青岛市&apos;);#报错信息ERROR 1366 (HY000): Incorrect string value: &apos;\xE5\xB1\xB1\xE4\xB8\">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-26T02:35:09.483Z">
+<meta property="og:updated_time" content="2019-09-26T02:45:29.899Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL常见问题">
 <meta name="twitter:description" content="插入数据库报错问题现象执行包含中文的插入语句报错 1234#向employees的test表中插入数据mysql&amp;gt; insert into test(name,age,address) values(&apos;xujinliang&apos;,32,&apos;山东省青岛市&apos;);#报错信息ERROR 1366 (HY000): Incorrect string value: &apos;\xE5\xB1\xB1\xE4\xB8\">
@@ -337,8 +337,7 @@
 <h4 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h4><p><strong>创建数据库和数据表时设置数据库的默认编码`utf8</strong>`</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#创建数据库</span></span><br><span class="line"><span class="string">CREATE</span> <span class="string">DATABASE</span> <span class="string">test</span> <span class="string">DEFAULT</span> <span class="string">CHARACTER</span> <span class="string">SET</span> <span class="string">utf8</span> <span class="string">COLLATE</span> <span class="string">utf8_general_ci;</span></span><br><span class="line"><span class="comment">#创建数据表</span></span><br><span class="line"><span class="string">CREATE</span> <span class="string">TABLE</span> <span class="string">`test`</span> <span class="string">(</span></span><br><span class="line">	<span class="string">`id`</span> <span class="string">BIGINT(20)</span> <span class="string">UNSIGNED</span> <span class="string">NOT</span> <span class="literal">NULL</span> <span class="string">AUTO_INCREMENT,</span></span><br><span class="line">	<span class="string">`name`</span> <span class="string">CHAR(20)</span> <span class="string">NOT</span> <span class="literal">NULL</span><span class="string">,</span></span><br><span class="line">	<span class="string">`age`</span> <span class="string">TINYINT(3)</span> <span class="string">UNSIGNED</span> <span class="string">NOT</span> <span class="literal">NULL</span> <span class="string">DEFAULT</span> <span class="string">'0'</span><span class="string">,</span></span><br><span class="line">	<span class="string">`gmt_create`</span> <span class="string">DATETIME</span> <span class="string">NOT</span> <span class="literal">NULL</span> <span class="string">DEFAULT</span> <span class="string">CURRENT_TIMESTAMP,</span></span><br><span class="line">	<span class="string">`gmt_modified`</span> <span class="string">DATETIME</span> <span class="string">NOT</span> <span class="literal">NULL</span> <span class="string">DEFAULT</span> <span class="string">CURRENT_TIMESTAMP</span> <span class="string">ON</span> <span class="string">UPDATE</span> <span class="string">CURRENT_TIMESTAMP,</span></span><br><span class="line">	<span class="string">`address`</span> <span class="string">VARCHAR(50)</span> <span class="literal">NULL</span> <span class="string">DEFAULT</span> <span class="literal">NULL</span><span class="string">,</span></span><br><span class="line">	<span class="string">PRIMARY</span> <span class="string">KEY</span> <span class="string">(`id`)</span></span><br><span class="line"><span class="string">)</span></span><br><span class="line"><span class="string">ENGINE=InnoDB</span></span><br><span class="line"><span class="string">DEFAULT</span> <span class="string">CHARSET=latin1</span></span><br><span class="line"><span class="string">AUTO_INCREMENT=4;</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h4><p>修改表字段字符集，当字段字符集<code>UTF-8</code>时，数据库和数据表的字符集为<code>latin1</code>仍可以存入中文。</p>
-<h5 id="查看修改字符集语句"><a href="#查看修改字符集语句" class="headerlink" title="查看修改字符集语句"></a>查看修改字符集语句</h5><p><strong>查看字符集：</strong></p>
+<h4 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h4><h5 id="查看修改字符集语句"><a href="#查看修改字符集语句" class="headerlink" title="查看修改字符集语句"></a>查看修改字符集语句</h5><p><strong>查看字符集：</strong></p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看mysql的字符集</span></span><br><span class="line"><span class="string">show</span> <span class="string">variables</span> <span class="string">where</span> <span class="string">Variable_name</span> <span class="string">like</span> <span class="string">'%char%'</span><span class="string">;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#查看某一个数据库字符集(enterprises为数据库)</span></span><br><span class="line"><span class="string">show</span> <span class="string">create</span> <span class="string">database</span> <span class="string">enterprises;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#查看某一个数据表字符集：(employees为数据表)</span></span><br><span class="line"><span class="string">show</span> <span class="string">create</span> <span class="string">table</span> <span class="string">employees;</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>修改字符集：</strong></p>
@@ -380,8 +379,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2019/09/25/pt-online-schema-change/" rel="next" title="pt-online-schema-change">
-                <i class="fa fa-chevron-left"></i> pt-online-schema-change
+              <a href="/blog/2019/09/25/pt-online-schema-change/" rel="next" title="percona-toolkit工具使用介绍">
+                <i class="fa fa-chevron-left"></i> percona-toolkit工具使用介绍
               </a>
             
           </div>
@@ -389,6 +388,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2019/09/26/MySQL-SQL/" rel="prev" title="SQL概述">
+                SQL概述 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -465,7 +468,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">37</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
