@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="pt-online-schema-changept-online-schema-change简介pt-online-schema-change是percona公司开发的一个工具，可以在percona-toolkit包中找到，它可以在线修改表结构。pt-online-schema-change通过改进原生ddl的方式，达到不锁表在线修改表结构。 应用场景在线数据库的维护中，涉及到研发修改表结构的情况">
+<meta name="description" content="pt-online-schema-change简介pt-online-schema-change是percona公司开发的一个工具，可以在percona-toolkit包中找到，它可以在线修改表结构。pt-online-schema-change通过改进原生ddl的方式，达到不锁表在线修改表结构。 应用场景在线数据库的维护中，涉及到研发修改表结构的情况，修改一些小表影响很小，而修改大表时，往往影响">
 <meta property="og:type" content="article">
-<meta property="og:title" content="percona-toolkit工具使用介绍">
+<meta property="og:title" content="pt-online-schema-change">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2019/09/25/pt-online-schema-change/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="pt-online-schema-changept-online-schema-change简介pt-online-schema-change是percona公司开发的一个工具，可以在percona-toolkit包中找到，它可以在线修改表结构。pt-online-schema-change通过改进原生ddl的方式，达到不锁表在线修改表结构。 应用场景在线数据库的维护中，涉及到研发修改表结构的情况">
+<meta property="og:description" content="pt-online-schema-change简介pt-online-schema-change是percona公司开发的一个工具，可以在percona-toolkit包中找到，它可以在线修改表结构。pt-online-schema-change通过改进原生ddl的方式，达到不锁表在线修改表结构。 应用场景在线数据库的维护中，涉及到研发修改表结构的情况，修改一些小表影响很小，而修改大表时，往往影响">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-26T13:39:45.071Z">
+<meta property="og:updated_time" content="2019-09-26T13:46:22.761Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="percona-toolkit工具使用介绍">
-<meta name="twitter:description" content="pt-online-schema-changept-online-schema-change简介pt-online-schema-change是percona公司开发的一个工具，可以在percona-toolkit包中找到，它可以在线修改表结构。pt-online-schema-change通过改进原生ddl的方式，达到不锁表在线修改表结构。 应用场景在线数据库的维护中，涉及到研发修改表结构的情况">
+<meta name="twitter:title" content="pt-online-schema-change">
+<meta name="twitter:description" content="pt-online-schema-change简介pt-online-schema-change是percona公司开发的一个工具，可以在percona-toolkit包中找到，它可以在线修改表结构。pt-online-schema-change通过改进原生ddl的方式，达到不锁表在线修改表结构。 应用场景在线数据库的维护中，涉及到研发修改表结构的情况，修改一些小表影响很小，而修改大表时，往往影响">
 
 
 
@@ -125,7 +125,7 @@
 
 
 
-  <title>percona-toolkit工具使用介绍 | Mino's blog</title>
+  <title>pt-online-schema-change | Mino's blog</title>
   
 
 
@@ -269,7 +269,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">percona-toolkit工具使用介绍</h1>
+          <h1 class="post-title" itemprop="name headline">pt-online-schema-change</h1>
         
 
         <div class="post-meta">
@@ -319,7 +319,7 @@
       
 
       
-        <h1 id="pt-online-schema-change"><a href="#pt-online-schema-change" class="headerlink" title="pt-online-schema-change"></a>pt-online-schema-change</h1><h2 id="pt-online-schema-change简介"><a href="#pt-online-schema-change简介" class="headerlink" title="pt-online-schema-change简介"></a>pt-online-schema-change简介</h2><p><code>pt-online-schema-change</code>是<code>percona</code>公司开发的一个工具，可以在<code>percona-toolkit</code>包中找到，它可以在线修改表结构。<code>pt-online-schema-change</code>通过改进原生<code>ddl</code>的方式，达到不锁表在线修改表结构。</p>
+        <h2 id="pt-online-schema-change简介"><a href="#pt-online-schema-change简介" class="headerlink" title="pt-online-schema-change简介"></a>pt-online-schema-change简介</h2><p><code>pt-online-schema-change</code>是<code>percona</code>公司开发的一个工具，可以在<code>percona-toolkit</code>包中找到，它可以在线修改表结构。<code>pt-online-schema-change</code>通过改进原生<code>ddl</code>的方式，达到不锁表在线修改表结构。</p>
 <h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p>在线数据库的维护中，涉及到研发修改表结构的情况，修改一些小表影响很小，而修改大表时，往往影响业务的正常运转。</p>
 <h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><ul>
 <li>创建一个和要执行 <code>alter</code>操作的表一样的新的空表结构(是alter之前的结构)</li>
@@ -368,42 +368,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The new table `employees`.`_new_test_new` does not have a PRIMARY KEY or a unique index which is required for the DELETE trigger.</span><br><span class="line">Please check you have at least one UNIQUE and NOT NULLABLE index.</span><br></pre></td></tr></table></figure>
 
 <p>源表没有主键，无法创建<code>DELETE</code>触发器</p>
-<h1 id="pt-slave-restart"><a href="#pt-slave-restart" class="headerlink" title="pt-slave-restart"></a>pt-slave-restart</h1><h2 id="pt-slave-restart简介"><a href="#pt-slave-restart简介" class="headerlink" title="pt-slave-restart简介"></a>pt-slave-restart简介</h2><h3 id="应用场景-1"><a href="#应用场景-1" class="headerlink" title="应用场景"></a>应用场景</h3><p><code>pt-slave-restart</code>是一个可以在MySQL主从复制出错后，可以监控跳过特定错误并自动重启主从复制的工具。</p>
-<h3 id="工作原理-1"><a href="#工作原理-1" class="headerlink" title="工作原理"></a>工作原理</h3><p><code>pt-slave-restart</code>监控一个或者多个MySQL主从复制的slave，并试图跳过引起错误的语句。它以指数变化的休眠时间智能地检查 slave。你可以指定要跳过的错误然后运行slave一直到一个确定的binlog位置。</p>
-<p><code>pt-slave-restart</code>一旦检测到slave有错误就会打印一行信息。默认情况下该信息包括：timestamp,、connection information、relay_log_file、relay_log_pos、last_errno。可以使用<code>--verbose</code>选项添加更多信息，也可以使用<code>--quiet</code>选项阻止所有输出。</p>
-<p>sleep</p>
-<p><code>pt-slave-restart</code> 在检测slave的过程中智能的进行休眠，所以当前的休眠时间是会改变的。</p>
-<ul>
-<li>初始的sleep 时间通过<code>--sleep</code>给出。</li>
-<li>若检测发现错误，将sleep时间改成之前的一半。</li>
-<li>若检测没有发现错误，将sleep时间改成之前的两倍。</li>
-<li>通过<code>--min-sleep</code>和<code>--max-sleep</code>参数限定sleep时间的下界和上界。</li>
-<li>一旦检测到错误，<code>pt-slave-restart</code>假定接下来很可能发生另一个错误,因此它将比较当前的sleep时间和初始的sleep时间，选取更小的值作为新的sleep时间。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">从Percona Toolkit 2.2.8版本起，pt-slave-restart开始支持由MySQL 5.6.5版本引入的GTID复制。</span><br><span class="line">注意：</span><br><span class="line">当采用多线程复制（slave_parallel_workers &gt; 0）时，pt-slave-restart不能跳过事务。pt-slave-restart不能确定GTID事件是哪个特定slave线程执行失败的事务。</span><br><span class="line">默认行为是跳过来自master的下一个事务。由于每个服务器都有它自己的UUID，因此写可以来自不同的服务器。</span><br><span class="line">参考–master-uuid。</span><br></pre></td></tr></table></figure>
 
-<h3 id="常用参数-1"><a href="#常用参数-1" class="headerlink" title="常用参数"></a>常用参数</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span><span class="bullet">-host=xxx</span> <span class="bullet">--user=xxx</span> <span class="bullet">--password=xxx</span>   <span class="comment">#连接实例信息，缩写-h xxx -u xxx -p xxx</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-port</span>               <span class="comment">#连接的端口号，缩写 -P</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-help</span>               <span class="comment">#显示帮助并退出</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-always</span>             <span class="comment">#永不停止slave线程，启用后pt-slave-restart将不允许手动停止从服务器</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-ask-pass</span>           <span class="comment">#替换`-p`命令，不显示密码输入</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-error-numbers</span>      <span class="comment">#指定要跳过哪些错误，可用`,`进行分隔</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-error-text</span>         <span class="comment">#根据错误信息进行匹配跳过</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-log`</span>               <span class="comment">#输出到文件</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-recurse</span>            <span class="comment">#在主端执行，监控从端</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-runtime</span>  <span class="string">`</span>         <span class="comment">#工具执行多长时间后退出：默认秒， m=minute,h=hours,d=days</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-slave-user</span>         <span class="comment">#从库账号，在主库运行时使用</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-slave-password`</span>    <span class="comment">#从库密码，在主库运行时使用</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-skip-count</span>         <span class="comment">#一次跳过错误的个数，默认为1</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-master-uuid</span>        <span class="comment">#级联复制的时候，指定跳过上级或者上上级事务的错误</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-until-master</span>       <span class="comment">#到达指定的master_log_pos,file位置后停止，格式：”file:pos“</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-until-relay</span>        <span class="comment">#和上面一样，但根据relay_log的位置来停止</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-sleep</span>              <span class="comment">#检查slave间隔的初始sleep秒数，默认为1</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="pt-slave-restart使用"><a href="#pt-slave-restart使用" class="headerlink" title="pt-slave-restart使用"></a>pt-slave-restart使用</h2><h3 id="使用示例-1"><a href="#使用示例-1" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#跳过指定错误</span></span><br><span class="line"><span class="string">pt-slave-restart</span> <span class="bullet">--user=root</span> <span class="bullet">--ask-pass</span> <span class="string">socket=/data/mysql/3304/tmp/mysql3304.sock</span>  <span class="bullet">--error-numbers=1062</span></span><br></pre></td></tr></table></figure>
-
-<h1 id="pt-query-digest"><a href="#pt-query-digest" class="headerlink" title="pt-query-digest"></a>pt-query-digest</h1><h2 id="pt-query-digest简介"><a href="#pt-query-digest简介" class="headerlink" title="pt-query-digest简介"></a>pt-query-digest简介</h2><h3 id="应用场景-2"><a href="#应用场景-2" class="headerlink" title="应用场景"></a>应用场景</h3><p><code>pt-query-digest</code>提供慢日志分析功能，可以统计出查询执行时间、次数、占比等，并把分析结果输出到文件中，然后借助分析结果找出问题进行优化。</p>
-<h3 id="pt-query-digest使用"><a href="#pt-query-digest使用" class="headerlink" title="pt-query-digest使用"></a>pt-query-digest使用</h3><p>分析慢查询日志</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
-
-<p>分析最近12个小时内的查询</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest --since=12h  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
-
-<p> 分析最近指定范围内的查询</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest dzspdb-slow.log --since &apos;2019-08-25 10:00:00&apos; --until &apos;2019-09-25 10:00:00&apos; &gt; dzsp_slow_report.log</span><br></pre></td></tr></table></figure>
-
-<h1 id="pt-archiver"><a href="#pt-archiver" class="headerlink" title="pt-archiver"></a>pt-archiver</h1><h2 id="pt-archiver简介"><a href="#pt-archiver简介" class="headerlink" title="pt-archiver简介"></a>pt-archiver简介</h2><h3 id="应用场景-3"><a href="#应用场景-3" class="headerlink" title="应用场景"></a>应用场景</h3><p><code>pt-archiver</code> 是 <code>Percona</code> 官方提供的归档工具，用于归档大型表中的记录到另一个表或文件。</p>
-<p><strong>功能</strong>：</p>
-<ul>
-<li>归档到操作系统文件</li>
-<li>归档到同实例不同库下的表（<strong>tips</strong>：归档操作前，目标表要存在）</li>
-<li>归档到不同实例下的表（<strong>tips</strong>：归档操作前，目标表要存在）</li>
-</ul>
-<h2 id="pt-archiver使用"><a href="#pt-archiver使用" class="headerlink" title="pt-archiver使用"></a>pt-archiver使用</h2>
       
     </div>
     
@@ -562,7 +527,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#pt-online-schema-change"><span class="nav-number">1.</span> <span class="nav-text">pt-online-schema-change</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#pt-online-schema-change简介"><span class="nav-number">1.1.</span> <span class="nav-text">pt-online-schema-change简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#应用场景"><span class="nav-number">1.1.1.</span> <span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工作原理"><span class="nav-number">1.1.2.</span> <span class="nav-text">工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常用参数"><span class="nav-number">1.1.3.</span> <span class="nav-text">常用参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pt-online-schema-change使用"><span class="nav-number">1.2.</span> <span class="nav-text">pt-online-schema-change使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用示例"><span class="nav-number">1.2.1.</span> <span class="nav-text">使用示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#添加表字段"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">添加表字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改表字段"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">修改表字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#添加删除索引"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">添加删除索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改主键"><span class="nav-number">1.2.1.4.</span> <span class="nav-text">修改主键</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#报错案例"><span class="nav-number">1.2.2.</span> <span class="nav-text">报错案例</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#pt-slave-restart"><span class="nav-number">2.</span> <span class="nav-text">pt-slave-restart</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#pt-slave-restart简介"><span class="nav-number">2.1.</span> <span class="nav-text">pt-slave-restart简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#应用场景-1"><span class="nav-number">2.1.1.</span> <span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工作原理-1"><span class="nav-number">2.1.2.</span> <span class="nav-text">工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常用参数-1"><span class="nav-number">2.1.3.</span> <span class="nav-text">常用参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pt-slave-restart使用"><span class="nav-number">2.2.</span> <span class="nav-text">pt-slave-restart使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用示例-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">使用示例</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#pt-query-digest"><span class="nav-number">3.</span> <span class="nav-text">pt-query-digest</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#pt-query-digest简介"><span class="nav-number">3.1.</span> <span class="nav-text">pt-query-digest简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#应用场景-2"><span class="nav-number">3.1.1.</span> <span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pt-query-digest使用"><span class="nav-number">3.1.2.</span> <span class="nav-text">pt-query-digest使用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#pt-archiver"><span class="nav-number">4.</span> <span class="nav-text">pt-archiver</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#pt-archiver简介"><span class="nav-number">4.1.</span> <span class="nav-text">pt-archiver简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#应用场景-3"><span class="nav-number">4.1.1.</span> <span class="nav-text">应用场景</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pt-archiver使用"><span class="nav-number">4.2.</span> <span class="nav-text">pt-archiver使用</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#pt-online-schema-change简介"><span class="nav-number">1.</span> <span class="nav-text">pt-online-schema-change简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#应用场景"><span class="nav-number">1.1.</span> <span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工作原理"><span class="nav-number">1.2.</span> <span class="nav-text">工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常用参数"><span class="nav-number">1.3.</span> <span class="nav-text">常用参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pt-online-schema-change使用"><span class="nav-number">2.</span> <span class="nav-text">pt-online-schema-change使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用示例"><span class="nav-number">2.1.</span> <span class="nav-text">使用示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#添加表字段"><span class="nav-number">2.1.1.</span> <span class="nav-text">添加表字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改表字段"><span class="nav-number">2.1.2.</span> <span class="nav-text">修改表字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#添加删除索引"><span class="nav-number">2.1.3.</span> <span class="nav-text">添加删除索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改主键"><span class="nav-number">2.1.4.</span> <span class="nav-text">修改主键</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#报错案例"><span class="nav-number">2.2.</span> <span class="nav-text">报错案例</span></a></li></ol></li></ol></div>
             
 
           </div>
