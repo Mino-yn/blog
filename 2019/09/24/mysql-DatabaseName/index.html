@@ -87,7 +87,7 @@
 <meta property="og:description" content="方法一1、查看MySQL数据库进程 1$ ps -ef|grep mysql  记录下socket地址  2、下载脚本rename_db.sh 至tmp目录下 12$ cd /tmp$ wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/rename_db.sh  给脚本赋权 1$ chmod +x /tmp/rename_db.sh  3">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/20190924223130.png">
-<meta property="og:updated_time" content="2019-09-30T00:58:00.262Z">
+<meta property="og:updated_time" content="2019-09-30T08:21:31.634Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="修改数据库名">
 <meta name="twitter:description" content="方法一1、查看MySQL数据库进程 1$ ps -ef|grep mysql  记录下socket地址  2、下载脚本rename_db.sh 至tmp目录下 12$ cd /tmp$ wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/rename_db.sh  给脚本赋权 1$ chmod +x /tmp/rename_db.sh  3">
@@ -337,11 +337,9 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ ./rename_db.sh -o users -n user-original -u root -p Haier@123 -s /data/mysql3100/mysql.sock</span><br><span class="line"># -o    修改前数据库名称</span><br><span class="line"># -n    修改后数据库名称</span><br><span class="line"># -u    连接MySQL数据库用户名</span><br><span class="line"># -p    连接MySQL数据库密码</span><br><span class="line"># -s    MySQL数据库socket地址</span><br><span class="line"># 注：选项参数的格式必须是-d val，而不能是中间没有空格的-dval。</span><br><span class="line"># 新的数据库中只有表，视图仍是原数据库名，需要重建试图。</span><br></pre></td></tr></table></figure>
 
 <p>4、根据需要删除原数据库</p>
-<h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><p>1.创建需要改成新名的数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$</span><br></pre></td></tr></table></figure>
-
-<p>2.mysqldum导出要改名的数据库</p>
-<p>3.删除原来的旧库</p>
+<h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><p>1、创建需要改成新名的数据库。</p>
+<p>2、mysqldump导出要改名的数据库。</p>
+<p>3、删除原来的旧库。</p>
 <p>这种方法是安全的，但是如果数据量大，会很耗时</p>
 
       
