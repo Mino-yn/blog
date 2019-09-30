@@ -249,142 +249,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/29/my-cnf/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/08/29/my-cnf/" itemprop="url">MySQL的配置文件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-29T15:46:02+08:00">
-                2019-08-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>my.cnf是数据库的配置文件，my.cnf文件就是把在命令行上启动MySQL时后面的参数用my.cnf配置好，使得在下载启动时无需再命令上加参数。</p>
-<p>MySQL的很多性能优化工作、主从复制等都是在调整参数以适应不同时期不同数量级的数据，因此理解my.cnf中的参数非常重要，只有理解了参数设置，才能对数据库进行某些方面的调优工作。</p>
-<p>my.cnf文件，分为Client section 和 Server section两块</p>
-<h3 id="Client-section"><a href="#Client-section" class="headerlink" title="Client section"></a>Client section</h3><p>配置MySQL客户端参数，常见参数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[client]             #客户端设置，客户端默认的连接参数</span><br><span class="line">port                      = 3306                       #连接服务器默认端口            </span><br><span class="line">socket                    = /data/mysql/mysql.sock     #用于本地连接的套接字文件，与服务端配置相同</span><br><span class="line">default-character-set     = utf8mb4                #编码</span><br></pre></td></tr></table></figure>
-
-<h3 id="Server-section"><a href="#Server-section" class="headerlink" title="Server section"></a>Server section</h3><p>可以通过 show variables like ‘%参数名%’ 来查看MySQL数据库中的参数。</p>
-<p>MySQL Server端核心参数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">innodb_buffer_pool                   #缓存被访问过的表和索引文件，一般设置为物理内存的50%-80%</span><br><span class="line">innodb_buffer_pool_instance          #把innodb_buffer_pool划分为多个实例，提高并发性</span><br><span class="line">innodb_buffer_pool_load_at_startup   #开启这两个参数后可将热数据快速加载回来 </span><br><span class="line">innodb_buffer_pool_dump_at_shutdown </span><br><span class="line">innodb_data_file_path                #指定系统表空间文件的路径和ibdata1文件的大小，建议1G</span><br><span class="line">innodb_thread_concurrency            #InnoDB内核最大并发线程数，默认为0，代表不受限制</span><br><span class="line">max_connections                      #MySQL数据库的最大连接数	</span><br><span class="line">expire_logs_days                     #binlog的过期时间，单位：天</span><br><span class="line">slow_query_log                       #慢查询日志的开关，生产环境需开启慢查询</span><br><span class="line">long_query_time                      #慢查询时间，单位：秒  SQL语句超过该参数所设时间，将被记录至慢查询日志</span><br><span class="line">server-id                            #标识MySQL主从结构中的唯一标识，搭建主从环境时，两台机器的server-id不能一样</span><br><span class="line">binlog_format                        #二进制日志格式，Binlog格式：statement、row、mixed 生产环境建议使用row</span><br><span class="line">lower_case_table_names               #表名是否区分大小写，0:区分 1:不区分，以小写储存</span><br></pre></td></tr></table></figure>
-
-<h3 id="参数类型"><a href="#参数类型" class="headerlink" title="参数类型"></a>参数类型</h3><p>MySQL数据库将参数分为两类：1、动态参数  2、静态参数</p>
-<h4 id="动态参数"><a href="#动态参数" class="headerlink" title="动态参数"></a>动态参数</h4><p>在MySQL实例的运行过程中，可以对动态参数进行在线修改，可通过 set global 或 set session 两个命令进行设置</p>
-<p><strong>global：</strong> 全局参数，用global进行修改，退出当前会话后仍然生效，但重启数据库，参数仍会失效。</p>
-<p><strong>session：</strong> 只针对当前会话生效，退出后设置的参数立即失效。</p>
-<h4 id="静态参数："><a href="#静态参数：" class="headerlink" title="静态参数："></a>静态参数：</h4><p>在线无法修改参数，只能将需要修改的参数写到配置文件中，重启数据库才可以</p>
-<h3 id="my-cnf"><a href="#my-cnf" class="headerlink" title="my.cnf"></a>my.cnf</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">[client]     #客户端设置，客户端默认的连接参数</span><br><span class="line">port                      = 3306                     #连接服务器默认端口            </span><br><span class="line">socket                    = /data/mysql/mysql.sock   #用于本地连接的套接字文件，与服务端配置相同</span><br><span class="line"></span><br><span class="line">[mysqld]     #服务端基本设置</span><br><span class="line">port                      = 3306                     #指定MySQL开放的端口</span><br><span class="line">socket                    = /data/mysql/mysql.sock   #套接字文件</span><br><span class="line">pid_file                  = /data/mysql/mysql.pid    #pid文件所在目录</span><br><span class="line">basedir                   = /usr/local/mysql         #MySQL的安装目录</span><br><span class="line">datadir                   = /data/mysql              #MySQL数据文件存放目录</span><br><span class="line">character_set_server      = utf8                     #服务端默认编码</span><br><span class="line"></span><br><span class="line"># LOG        #日志设置</span><br><span class="line">slow_query_log            = 1                        #慢查询日志的开关</span><br><span class="line">long_query_time           = 5                        #慢查询时间</span><br><span class="line">log_error                 = /data/mysql/error.log    #错误日志路径</span><br><span class="line">slow_query_log_file       = /data/mysql/slow.log     #慢查询日志路径</span><br><span class="line"></span><br><span class="line"># INNODB</span><br><span class="line">innodb_data_home_dir      = /data/mysql              #innodb引擎的共享表空间数据文件根目录</span><br><span class="line">innodb_buffer_pool_size   = 10240M                   #缓存被访问过的表和索引文件，位于主内存中</span><br><span class="line">innodb_log_file_size      = 1G                       #Redo log日志的大小</span><br><span class="line">innodb_data_file_path     = ibdata1:1G:autoextend    #指定innodb共享表空间文件的路径和ibdatal文件的大小</span><br><span class="line"></span><br><span class="line"># OTHER</span><br><span class="line">max_connections           = 3000                     #MySQL数据库的最大连接数</span><br><span class="line">interactive_timeout       = 600                      #服务器关闭交互式连接前等待活动的时间</span><br><span class="line">wait_timeout              = 600                      #服务器关闭非交互式连接前等待活动的时间</span><br><span class="line">lower_case_table_names    = 1                        #表名是否区分大小写，0区分大小写，1不区分。默认：0 </span><br><span class="line">log_timestamps            = SYSTEM                   #控制 error log、slow_log、genera log等记录日志的显示时间为系统时间</span><br><span class="line">explicit_defaults_for_timestamp = 1                  #未指定timestamp列为not null时允许向timestamp列插入null值</span><br><span class="line">skip-ssl                                             #关闭ssl功能</span><br><span class="line">skip-name-resolve                                    #禁用DNS解析</span><br><span class="line"></span><br><span class="line"># REPLICATION</span><br><span class="line">server-id                 = 3306100                  #用于表示MySQL主从关系的唯一标识，搭建主从环境时，两台机器的server-id不能一样</span><br><span class="line">log-bin                   = /data/mysql/mysql-bin    #二进制文件路径</span><br><span class="line">sync_binlog               = 0                        #MySQL不控制binlog的刷新，由文件系统自己控制它的缓存的刷新。</span><br><span class="line">max_binlog_size           = 1024M                    #最大二进制日志文件大小</span><br><span class="line">binlog-format             = row                      #二进制日志的格式，有statement、row、mixed三种，生产环境使用row格式更安全，不会出现跨库复制丢数据的情况</span><br><span class="line">expire_logs_days          = 15                       #binlog的过期时间，单位为天</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/29/MySQL索引/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2054,6 +1918,177 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/14/MySQL-Crash-Course/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/08/14/MySQL-Crash-Course/" itemprop="url">MySQL使用与数据检索</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-14T14:55:03+08:00">
+                2019-08-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="第3章-使用MySQL"><a href="#第3章-使用MySQL" class="headerlink" title="第3章 使用MySQL"></a>第3章 使用MySQL</h2><p>如何用USE选择数据库，用SHOW查看MySQL数据库、表和内部信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">USE db_name;                     #选择数据库,需要先使用USE打开数据库才能读取其中的信息</span><br><span class="line">SHOW DATABASES;                  #返回可用数据库列表</span><br><span class="line">SHOW TABLES;                     #返回当前数据库内可用列表</span><br><span class="line">SHOW COLUMNS FROM tbl_name;      #返回tbl_name表中每个字段的信息</span><br><span class="line">DESCRIBE tbl_name;               #SHOW COLUMNS FROM tbl_name;的快捷方式</span><br><span class="line">SHOW STATUS;                     #用于显示广泛的服务器状态信息</span><br><span class="line">SHOW CREATE DATABASE db_name;    #显示创建特定数据库</span><br><span class="line">SHOW CREATE TABLE;               #显示创建特定的表</span><br><span class="line">HELP SHOW;                       #显示允许的SHOW语句</span><br></pre></td></tr></table></figure>
+
+<h2 id="第4章-检索数据"><a href="#第4章-检索数据" class="headerlink" title="第4章 检索数据"></a>第4章 检索数据</h2><p>如何使用SQL的SELECT语句来检索单个表列、多个表列以及所有表列。</p>
+<p><strong>检索单个列</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT col_name</span><br><span class="line">FROM tbl_name;</span><br></pre></td></tr></table></figure>
+
+<p><strong>检索多个列</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT col_name1,col_name2,col_name3</span><br><span class="line">FROM tbl_name;</span><br></pre></td></tr></table></figure>
+
+<p><strong>检索所有列</strong></p>
+<p>一般最好不使用通配符（*），检索不需要的列通常会降低检索和应用程序的性能。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT *</span><br><span class="line">FROM tbl_name;</span><br></pre></td></tr></table></figure>
+
+<p><strong>检索不同的行</strong></p>
+<p>使用关键字DISTINCT ，注：不能部分使用DISTINCT，DISTINCT应用于所有列，而不仅是前置它的列。    </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT DISTINCT col_name           </span><br><span class="line">FROM tbl_name;</span><br></pre></td></tr></table></figure>
+
+<p><strong>限制结果</strong></p>
+<p>SELECT语句返回所有匹配的行，为了返回指定的行，可以使用LIMIT子句。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT col_name                   #使用SELECT语句检索单个列，LIMIT n指示MySQL返回不多于n行</span><br><span class="line">FROM tblname</span><br><span class="line">LIMIT n;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT col_name                   #LIMIT n,m指示MySQL返回从行n开始的m行。</span><br><span class="line">FROM tblname</span><br><span class="line">LIMIT n,m;</span><br></pre></td></tr></table></figure>
+
+<p>注：检索出来的第一行为行0而不是行1，LIMIT1,1将检索出第二行，LIMIT检索记录行6-15</p>
+<p><strong>使用完全限定的表名</strong></p>
+<p>可以使用完全限定的列名或者表名,</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT tbl_name.col_name            #使用完全限定的列名</span><br><span class="line">FROM tbl_name;</span><br><span class="line">SELECT tbl_name.col_name            #使用完全限定的列名和表名</span><br><span class="line">FROM db_name.col_name;</span><br></pre></td></tr></table></figure>
+
+<h2 id="第5章-排序检索数据"><a href="#第5章-排序检索数据" class="headerlink" title="第5章 排序检索数据"></a>第5章 排序检索数据</h2><p>关系数据库设计理论认为，如果不明确规定排序顺序，则不应该假定检索出的数据的顺序有意义。</p>
+<p><strong>按单个列排序</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT col_name1     #col_name1与col_name2可以相同也可以不同</span><br><span class="line">FROM tbl_name        #即可以用检索列排序数据也可用非检索列排序数据。</span><br><span class="line">ORDER BY col_name2;</span><br></pre></td></tr></table></figure>
+
+<p><strong>按多个列排序</strong></p>
+<p>为了按多个列排序，只要指定列名与列名之间用逗号分开即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT col_name1,col_name2,col_name3</span><br><span class="line">FROM tbl_name </span><br><span class="line">ORDER BY  col_name4,col_name5;</span><br></pre></td></tr></table></figure>
+
+<p>注：先根据col_name4进行排序，当 col_name4相同时，才根据 col_name5进行排序。  如果col_name4的所有值都是唯一的，则不会按col_name5进行排序。</p>
+<p><strong>指定排序方向</strong></p>
+<p>数据排序默认按升序排序，若想进行降序排序，需要指定DESC关键字。</p>
+<p>以价格降序排序产品：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_id,prod_price,prod_name</span><br><span class="line">FROM products</span><br><span class="line">ORDER BY prod_price DESC;</span><br></pre></td></tr></table></figure>
+
+<p>以价格降序排序产品后，再对产品名排序：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_id,prod_price,prod_name</span><br><span class="line">FROM products</span><br><span class="line">ORDER BY prod_price DESC,prod_name; #对prod_price以降序排序，prod_name仍按标准的升序排序</span><br></pre></td></tr></table></figure>
+
+<p>注：1、DESC关键字只应用到直接位于其前面的列名，若想在多个列上进行降序排序，必须对每个列指定DESC关键字。</p>
+<p>​        2、与DESC相反的关键字是ASC，用来指定升序，由于默认排序顺序是升序的，所以一般不指定。</p>
+<p>​        3、ORDER BY子句应位于FROM之后，LIMIT需位于ORDER BY之后。</p>
+<p>如：使用ORDER BY和LIMIT组合，找出最昂贵的物品的价格</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_price</span><br><span class="line">FROM products</span><br><span class="line">ORDER BY prod_price DESC</span><br><span class="line">LIMIT 1;</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2104,7 +2139,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-count">37</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
