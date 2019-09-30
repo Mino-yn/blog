@@ -249,6 +249,125 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/29/character-set/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/29/character-set/" itemprop="url">character set</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-29T15:43:54+08:00">
+                2019-09-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/26/pt-archiver/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -600,11 +719,11 @@
       
         
           
-            <h2 id="pt-slave-restart简介"><a href="#pt-slave-restart简介" class="headerlink" title="pt-slave-restart简介"></a>pt-slave-restart简介</h2><h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p><code>pt-slave-restart</code>是一个可以在MySQL主从复制出错后，可以监控跳过特定错误并自动重启主从复制的工具。</p>
-<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p><code>pt-slave-restart</code>监控一个或者多个MySQL主从复制的slave，并试图跳过引起错误的语句。它以指数变化的休眠时间智能地检查 slave。你可以指定要跳过的错误然后运行slave一直到一个确定的binlog位置。</p>
-<p><code>pt-slave-restart</code>一旦检测到slave有错误就会打印一行信息。默认情况下该信息包括：timestamp,、connection information、relay_log_file、relay_log_pos、last_errno。可以使用<code>--verbose</code>选项添加更多信息，也可以使用<code>--quiet</code>选项阻止所有输出。</p>
-<p>sleep</p>
-<p><code>pt-slave-restart</code> 在检测slave的过程中智能的进行休眠，所以当前的休眠时间是会改变的。</p>
+            <h2 id="pt-slave-restart简介"><a href="#pt-slave-restart简介" class="headerlink" title="pt-slave-restart简介"></a>pt-slave-restart简介</h2><h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p><code>pt-slave-restart</code>是一个在MySQL主从复制出错后，可以监控跳过特定错误并自动重启主从复制的工具。</p>
+<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p><code>pt-slave-restart</code>监控一个或者多个MySQL主从复制的slave，并试图跳过引起错误的语句。它以指数变化的休眠时间智能地检查 slave。你可以指定要跳过的错误，然后运行slave一直到一个确定的binlog位置。</p>
+<p><code>pt-slave-restart</code>一旦检测到slave有错误就会打印一行信息。默认情况下该信息包括：timestamp、connection information、relay_log_file、relay_log_pos、last_errno。可以使用<code>--verbose</code>选项添加更多信息，也可以使用<code>--quiet</code>选项阻止所有输出。</p>
+<p><strong>sleep</strong></p>
+<p><code>pt-slave-restart</code> 在检测slave的过程中智能的进行休眠，所以当前的休眠时间是会改变的，设定策略：</p>
 <ul>
 <li>初始的sleep 时间通过<code>--sleep</code>给出。</li>
 <li>若检测发现错误，将sleep时间改成之前的一半。</li>
@@ -612,7 +731,7 @@
 <li>通过<code>--min-sleep</code>和<code>--max-sleep</code>参数限定sleep时间的下界和上界。</li>
 <li>一旦检测到错误，<code>pt-slave-restart</code>假定接下来很可能发生另一个错误,因此它将比较当前的sleep时间和初始的sleep时间，选取更小的值作为新的sleep时间。</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">从Percona Toolkit 2.2.8版本起，pt-slave-restart开始支持由MySQL 5.6.5版本引入的GTID复制。</span><br><span class="line">注意：</span><br><span class="line">当采用多线程复制（slave_parallel_workers &gt; 0）时，pt-slave-restart不能跳过事务。pt-slave-restart不能确定GTID事件是哪个特定slave线程执行失败的事务。</span><br><span class="line">默认行为是跳过来自master的下一个事务。由于每个服务器都有它自己的UUID，因此写可以来自不同的服务器。</span><br><span class="line">参考–master-uuid。</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">从Percona Toolkit 2.2.8版本起，pt-slave-restart开始支持由MySQL 5.6.5版本引入的GTID复制（保证了每个在主库上提交的事务在集群中有一个唯一的ID）。</span><br><span class="line">注意：</span><br><span class="line">当采用多线程复制（slave_parallel_workers &gt; 0）时，pt-slave-restart不能跳过事务。pt-slave-restart不能确定GTID事件是哪个特定slave线程执行失败的事务。</span><br><span class="line">默认行为是跳过来自master的下一个事务。由于每个服务器都有它自己的UUID，因此写可以来自不同的服务器。</span><br><span class="line">参考–master-uuid。</span><br></pre></td></tr></table></figure>
 
 <h3 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span><span class="bullet">-host=xxx</span> <span class="bullet">--user=xxx</span> <span class="bullet">--password=xxx</span>   <span class="comment">#连接实例信息，缩写-h xxx -u xxx -p xxx</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-port</span>               <span class="comment">#连接的端口号，缩写 -P</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-help</span>               <span class="comment">#显示帮助并退出</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-always</span>             <span class="comment">#永不停止slave线程，启用后pt-slave-restart将不允许手动停止从服务器</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-ask-pass</span>           <span class="comment">#替换`-p`命令，不显示密码输入</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-error-numbers</span>      <span class="comment">#指定要跳过哪些错误，可用`,`进行分隔</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-error-text</span>         <span class="comment">#根据错误信息进行匹配跳过</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-log`</span>               <span class="comment">#输出到文件</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-recurse</span>            <span class="comment">#在主端执行，监控从端</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-runtime</span>  <span class="string">`</span>         <span class="comment">#工具执行多长时间后退出：默认秒， m=minute,h=hours,d=days</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-slave-user</span>         <span class="comment">#从库账号，在主库运行时使用</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-slave-password`</span>    <span class="comment">#从库密码，在主库运行时使用</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-skip-count</span>         <span class="comment">#一次跳过错误的个数，默认为1</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-master-uuid</span>        <span class="comment">#级联复制的时候，指定跳过上级或者上上级事务的错误</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-until-master</span>       <span class="comment">#到达指定的master_log_pos,file位置后停止，格式：”file:pos“</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-until-relay</span>        <span class="comment">#和上面一样，但根据relay_log的位置来停止</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-sleep</span>              <span class="comment">#检查slave间隔的初始sleep秒数，默认为1</span></span><br></pre></td></tr></table></figure>
 
@@ -939,6 +1058,43 @@
 <li><p>若上述值不存在，则使用<code>character_set_server</code>设定值。</p>
 </li>
 </ul>
+<h2 id="找不到mysql-sock文件"><a href="#找不到mysql-sock文件" class="headerlink" title="找不到mysql.sock文件"></a>找不到mysql.sock文件</h2><h3 id="问题现象-1"><a href="#问题现象-1" class="headerlink" title="问题现象"></a>问题现象</h3><p>使用<code>mysql</code>、<code>mysqladmin</code>、<code>mysqldump</code>等命令管理数据库时，报错：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">ERROR</span> <span class="number">2002</span> <span class="string">(HY000):</span> <span class="string">Can't</span> <span class="string">connect</span> <span class="string">to</span> <span class="string">local</span> <span class="string">MySQL</span> <span class="string">server</span> <span class="string">through</span> <span class="string">socket</span> <span class="string">'/data/mysql-tdds/mysql.sock'</span> <span class="string">(2)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="原因分析-1"><a href="#原因分析-1" class="headerlink" title="原因分析"></a>原因分析</h3><p>下面通过三种方式连接数据库，观察提示的错误信息</p>
+<p>1、直接使用用户名和密码，不加主机主机名参数。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@mysql-s</span> <span class="string">init.d]#</span> <span class="string">mysql</span> <span class="bullet">-u</span> <span class="string">root</span> <span class="bullet">-p123456</span></span><br><span class="line"><span class="attr">mysql:</span> <span class="string">[Warning]</span> <span class="string">Using</span> <span class="string">a</span> <span class="string">password</span> <span class="string">on</span> <span class="string">the</span> <span class="string">command</span> <span class="string">line</span> <span class="string">interface</span> <span class="string">can</span> <span class="string">be</span> <span class="string">insecure.</span></span><br><span class="line"><span class="string">ERROR</span> <span class="number">2002</span> <span class="string">(HY000):</span> <span class="string">Can't</span> <span class="string">connect</span> <span class="string">to</span> <span class="string">local</span> <span class="string">MySQL</span> <span class="string">server</span> <span class="string">through</span> <span class="string">socket</span> <span class="string">'/data/mysql-tdds/mysql.sock'</span> <span class="string">(2)</span></span><br></pre></td></tr></table></figure>
+
+<p>2、使用带了主机名 <code>localhost</code>参数的<code>mysql -h localhost</code>命令。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@mysql-s</span> <span class="string">init.d]#</span> <span class="string">mysql</span> <span class="bullet">-h</span> <span class="string">localhost</span> <span class="bullet">-u</span> <span class="string">root</span> <span class="bullet">-p123456</span></span><br><span class="line"><span class="attr">mysql:</span> <span class="string">[Warning]</span> <span class="string">Using</span> <span class="string">a</span> <span class="string">password</span> <span class="string">on</span> <span class="string">the</span> <span class="string">command</span> <span class="string">line</span> <span class="string">interface</span> <span class="string">can</span> <span class="string">be</span> <span class="string">insecure.</span></span><br><span class="line"><span class="string">ERROR</span> <span class="number">2002</span> <span class="string">(HY000):</span> <span class="string">Can't</span> <span class="string">connect</span> <span class="string">to</span> <span class="string">local</span> <span class="string">MySQL</span> <span class="string">server</span> <span class="string">through</span> <span class="string">socket</span> <span class="string">'/data/mysql-tdds/mysql.sock'</span> <span class="string">(2)</span></span><br></pre></td></tr></table></figure>
+
+<p>3、使用带了主机名<code>127.0.0.1</code>参数的<code>mysql -h 127.0.0.1</code> 命令。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@mysql-s</span> <span class="string">~]#</span> <span class="string">mysql</span> <span class="bullet">-h</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span> <span class="bullet">-u</span> <span class="string">root</span> <span class="bullet">-p123456</span></span><br><span class="line"><span class="attr">mysql:</span> <span class="string">[Warning]</span> <span class="string">Using</span> <span class="string">a</span> <span class="string">password</span> <span class="string">on</span> <span class="string">the</span> <span class="string">command</span> <span class="string">line</span> <span class="string">interface</span> <span class="string">can</span> <span class="string">be</span> <span class="string">insecure.</span></span><br><span class="line"><span class="string">ERROR</span> <span class="number">1045</span> <span class="string">(28000):</span> <span class="string">Access</span> <span class="string">denied</span> <span class="string">for</span> <span class="string">user</span> <span class="string">'root'</span><span class="string">@'localhost'</span> <span class="string">(using</span> <span class="attr">password:</span> <span class="literal">YES</span><span class="string">)</span></span><br></pre></td></tr></table></figure>
+
+<p>　可以发现，前两种连接方式都报错： Can’t connect to local MySQL server through socket ‘/data/mysql-tdds/mysql.sock’。而第三种方式连接是不会产生标题中的错误的（这里报错是由于密码错误）。</p>
+<p>​    当使用<code>localhost</code>作为主机名参数连接 <code>mysql</code> 服务端时 ( 未设置 -h 参数，服务器会默认使用 <code>localhost</code> 作为主机名)，<code>mysql</code> 客户端会认为是连接本机，会使用 UNIX socket 方式 （比<code>TCP/IP</code>方式使用<code>IP:端口</code> 的效率更高），尝试以<code>socket</code>文件进行连接。此时根据<code>mysql</code> 的配置文件 <code>my.cnf</code>未找到相应的<code>socket</code>文件就会引发该错误。</p>
+<p>​    当使用 <code>127.0.0.1</code> 作为主机名参数连接 <code>mysql</code> 服务端时，<code>mysql</code> 服务器接收到的来源主机是 <code>127.0.0.1</code>, 此时是通过 <code>TCP/IP</code> 方式使用<code>IP:端口</code> 进行连接，所以未引发此错误。</p>
+<p><strong>准备工作</strong></p>
+<p>1、查看<code>mysql</code>服务是否在运行</p>
+<p>​    因为<code>socket</code> 文件是由<code>mysql</code>服务运行时创建的，当报错：ERROR 2002 (HY000): Can’t connect to local MySQL server through socket ‘***’ (2)时首先要确认<code>mysql</code> 服务是否正在运行中。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#1、查看端口是否打开</span></span><br><span class="line"><span class="string">$</span> <span class="string">lsof</span> <span class="attr">-i:3306</span></span><br><span class="line"><span class="string">COMMAND</span>     <span class="string">PID</span>  <span class="string">USER</span>   <span class="string">FD</span>   <span class="string">TYPE</span>   <span class="string">DEVICE</span> <span class="string">SIZE/OFF</span> <span class="string">NODE</span> <span class="string">NAME</span></span><br><span class="line"><span class="string">mysqld</span>     <span class="number">2446</span> <span class="string">mysql</span>   <span class="number">24</span><span class="string">u</span>  <span class="string">IPv6</span>    <span class="number">22257</span>      <span class="number">0</span><span class="string">t0</span>  <span class="string">TCP</span> <span class="string">*:mysql</span> <span class="string">(LISTEN)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#2、mysqld服务是否正在运行</span></span><br><span class="line"><span class="string">$</span> <span class="string">service</span> <span class="string">mysqld</span> <span class="string">status</span></span><br><span class="line"> <span class="string">SUCCESS!</span> <span class="string">MySQL</span> <span class="string">running</span> <span class="string">(2446)</span></span><br><span class="line"><span class="comment"># 查看mysql进程是否存在</span></span><br><span class="line"><span class="string">$</span> <span class="string">ps</span> <span class="bullet">-ef|grep</span> <span class="string">mysqld</span></span><br></pre></td></tr></table></figure>
+
+<p>2、确定<code>socket</code> 文件的正确位置</p>
+<p>　如果<code>mysql</code>服务正常运行，则产生此错误的原因只剩下<code>socket</code>文件路径不正确了，我们可以查看 <code>mysql</code> 服务进程或使用<code>find</code>命令来确定<code>socket</code>文件的正确路径</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看mysql进程中是否显示有mysql的socket文件地址</span></span><br><span class="line"><span class="string">$</span> <span class="string">ps</span> <span class="bullet">-ef|grep</span> <span class="string">mysqld</span></span><br><span class="line"><span class="string">root</span>      <span class="number">20688</span>      <span class="number">1</span>  <span class="number">0</span> <span class="number">14</span><span class="string">:27</span> <span class="string">?</span>        <span class="number">00</span><span class="string">:00:00</span> <span class="string">/bin/sh</span> <span class="string">/usr/local/mysql/bin/mysqld_safe</span> <span class="bullet">--datadir=/data/mysql3306/</span> <span class="bullet">--pid-file=/data/mysql3306//cosmoim-d-jt01.pid</span></span><br><span class="line"><span class="string">mysql</span>     <span class="number">21290</span>  <span class="number">20688</span> <span class="number">22</span> <span class="number">14</span><span class="string">:27</span> <span class="string">?</span>        <span class="number">00</span><span class="string">:01:51</span> <span class="string">/usr/local/mysql/bin/mysqld</span> <span class="bullet">--basedir=/usr/local/mysql</span> <span class="bullet">--datadir=/data/mysql3306</span> <span class="bullet">--plugin-dir=/usr/local/mysql/lib/plugin</span> <span class="bullet">--user=mysql</span> <span class="bullet">--log-error=/data/mysql3306/error.log</span> <span class="bullet">--pid-file=/data/mysql3306//cosmoim-d-jt01.pid</span> <span class="bullet">--socket=/data/mysql3306/mysql.sock</span> <span class="bullet">--port=3306</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#使用find命令查看socket文件地址</span></span><br><span class="line"><span class="string">$</span> <span class="string">find</span> <span class="string">/</span> <span class="bullet">-name</span> <span class="string">'*.sock'</span></span><br><span class="line"><span class="string">/data/mysql3306/mysql.sock</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a>解决方法</h3><h4 id="方案一"><a href="#方案一" class="headerlink" title="方案一"></a>方案一</h4><p>　修改<code>MySQL</code>的配置文件，在配置文件中添加 <code>[client]</code> 选项和 <code>[mysqld]</code> 选项，并使这两个选项下的<code>socket</code>参数值所指向的<code>socket</code>文件路径完全一致。如下： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">port                      = 3306</span><br><span class="line">socket                    = /data/mysql-tdds/mysql.sock</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">port                      = 3306</span><br><span class="line">socket                    = /data/mysql-tdds/mysql.sock</span><br></pre></td></tr></table></figure>
+
+<p>修改完成后重启<code>mysql</code>服务,启动时使用<code>mysqld_safe</code> 启动，并指定参数文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$  /usr/local/mysql-tdds/bin/mysqld_safe --defaults-file=/etc/my-tdds.cnf --user=mysql &amp;</span><br></pre></td></tr></table></figure>
+
+<h4 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h4><p>通过查看<code>mysql</code> 进程或<code>find</code> 命令查找到连接数据库时使用 -S 指定socket文件地址进行连接。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@mysql-s init.d]# find / -name &apos;*.sock&apos;</span><br><span class="line">/tmp/mysql.sock</span><br><span class="line">[root@mysql-s init.d]# mysql -u root -pHaier@123 -S/tmp/mysql.sock</span><br></pre></td></tr></table></figure>
+
+<h4 id="方案三"><a href="#方案三" class="headerlink" title="方案三"></a>方案三</h4><p>建立一个软连接将正确的<code>socket</code>文件，链接到提示错误的<code>socket</code>文件路径位置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@mysql-s mysql-tdds]# ls  /data/mysql-tdds/mysql.sock</span><br><span class="line">ls: 无法访问/data/mysql-tdds/mysql.sock: 没有那个文件或目录</span><br><span class="line">[root@mysql-s mysql-tdds]# ln -s /tmp/mysql.sock /data/mysql-tdds/mysql.sock</span><br><span class="line">[root@mysql-s mysql-tdds]# ls  /data/mysql-tdds/mysql.sock</span><br><span class="line">/data/mysql-tdds/mysql.sock</span><br></pre></td></tr></table></figure>
+
 
           
         
@@ -1226,7 +1382,7 @@
       
         
           
-            <h3 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h3><p>1、查看<code>MySQL</code>数据库进程</p>
+            <h3 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h3><p>1、查看<code>MySQL</code>数据库进程</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ps -ef|grep mysql</span><br></pre></td></tr></table></figure>
 
 <p>记录下<code>socket</code>地址</p>
@@ -1242,6 +1398,12 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ ./rename_db.sh -o users -n user-original -u root -p Haier@123 -s /data/mysql3100/mysql.sock</span><br><span class="line"># -o    修改前数据库名称</span><br><span class="line"># -n    修改后数据库名称</span><br><span class="line"># -u    连接MySQL数据库用户名</span><br><span class="line"># -p    连接MySQL数据库密码</span><br><span class="line"># -s    MySQL数据库socket地址</span><br><span class="line"># 注：选项参数的格式必须是-d val，而不能是中间没有空格的-dval。</span><br><span class="line"># 新的数据库中只有表，视图仍是原数据库名，需要重建试图。</span><br></pre></td></tr></table></figure>
 
 <p>4、根据需要删除原数据库</p>
+<h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><p>1.创建需要改成新名的数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$</span><br></pre></td></tr></table></figure>
+
+<p>2.mysqldum导出要改名的数据库</p>
+<p>3.删除原来的旧库</p>
+<p>这种方法是安全的，但是如果数据量大，会很耗时</p>
 
           
         
@@ -1564,125 +1726,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/18/mysql-install/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/09/18/mysql-install/" itemprop="url">mysql install</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-18T16:23:59+08:00">
-                2019-09-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1733,7 +1776,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="pt-slave-restart简介应用场景pt-slave-restart是一个可以在MySQL主从复制出错后，可以监控跳过特定错误并自动重启主从复制的工具。 工作原理pt-slave-restart监控一个或者多个MySQL主从复制的slave，并试图跳过引起错误的语句。它以指数变化的休眠时间智能地检查 slave。你可以指定要跳过的错误然后运行slave一直到一个确定的binlog位置。 p">
+<meta name="description" content="pt-slave-restart简介应用场景pt-slave-restart是一个在MySQL主从复制出错后，可以监控跳过特定错误并自动重启主从复制的工具。 工作原理pt-slave-restart监控一个或者多个MySQL主从复制的slave，并试图跳过引起错误的语句。它以指数变化的休眠时间智能地检查 slave。你可以指定要跳过的错误，然后运行slave一直到一个确定的binlog位置。 pt">
 <meta property="og:type" content="article">
 <meta property="og:title" content="pt-slave-restart">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2019/09/26/pt-slave-restart/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="pt-slave-restart简介应用场景pt-slave-restart是一个可以在MySQL主从复制出错后，可以监控跳过特定错误并自动重启主从复制的工具。 工作原理pt-slave-restart监控一个或者多个MySQL主从复制的slave，并试图跳过引起错误的语句。它以指数变化的休眠时间智能地检查 slave。你可以指定要跳过的错误然后运行slave一直到一个确定的binlog位置。 p">
+<meta property="og:description" content="pt-slave-restart简介应用场景pt-slave-restart是一个在MySQL主从复制出错后，可以监控跳过特定错误并自动重启主从复制的工具。 工作原理pt-slave-restart监控一个或者多个MySQL主从复制的slave，并试图跳过引起错误的语句。它以指数变化的休眠时间智能地检查 slave。你可以指定要跳过的错误，然后运行slave一直到一个确定的binlog位置。 pt">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-26T13:43:26.895Z">
+<meta property="og:updated_time" content="2019-09-30T00:58:17.164Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="pt-slave-restart">
-<meta name="twitter:description" content="pt-slave-restart简介应用场景pt-slave-restart是一个可以在MySQL主从复制出错后，可以监控跳过特定错误并自动重启主从复制的工具。 工作原理pt-slave-restart监控一个或者多个MySQL主从复制的slave，并试图跳过引起错误的语句。它以指数变化的休眠时间智能地检查 slave。你可以指定要跳过的错误然后运行slave一直到一个确定的binlog位置。 p">
+<meta name="twitter:description" content="pt-slave-restart简介应用场景pt-slave-restart是一个在MySQL主从复制出错后，可以监控跳过特定错误并自动重启主从复制的工具。 工作原理pt-slave-restart监控一个或者多个MySQL主从复制的slave，并试图跳过引起错误的语句。它以指数变化的休眠时间智能地检查 slave。你可以指定要跳过的错误，然后运行slave一直到一个确定的binlog位置。 pt">
 
 
 
@@ -319,11 +319,11 @@
       
 
       
-        <h2 id="pt-slave-restart简介"><a href="#pt-slave-restart简介" class="headerlink" title="pt-slave-restart简介"></a>pt-slave-restart简介</h2><h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p><code>pt-slave-restart</code>是一个可以在MySQL主从复制出错后，可以监控跳过特定错误并自动重启主从复制的工具。</p>
-<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p><code>pt-slave-restart</code>监控一个或者多个MySQL主从复制的slave，并试图跳过引起错误的语句。它以指数变化的休眠时间智能地检查 slave。你可以指定要跳过的错误然后运行slave一直到一个确定的binlog位置。</p>
-<p><code>pt-slave-restart</code>一旦检测到slave有错误就会打印一行信息。默认情况下该信息包括：timestamp,、connection information、relay_log_file、relay_log_pos、last_errno。可以使用<code>--verbose</code>选项添加更多信息，也可以使用<code>--quiet</code>选项阻止所有输出。</p>
-<p>sleep</p>
-<p><code>pt-slave-restart</code> 在检测slave的过程中智能的进行休眠，所以当前的休眠时间是会改变的。</p>
+        <h2 id="pt-slave-restart简介"><a href="#pt-slave-restart简介" class="headerlink" title="pt-slave-restart简介"></a>pt-slave-restart简介</h2><h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p><code>pt-slave-restart</code>是一个在MySQL主从复制出错后，可以监控跳过特定错误并自动重启主从复制的工具。</p>
+<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p><code>pt-slave-restart</code>监控一个或者多个MySQL主从复制的slave，并试图跳过引起错误的语句。它以指数变化的休眠时间智能地检查 slave。你可以指定要跳过的错误，然后运行slave一直到一个确定的binlog位置。</p>
+<p><code>pt-slave-restart</code>一旦检测到slave有错误就会打印一行信息。默认情况下该信息包括：timestamp、connection information、relay_log_file、relay_log_pos、last_errno。可以使用<code>--verbose</code>选项添加更多信息，也可以使用<code>--quiet</code>选项阻止所有输出。</p>
+<p><strong>sleep</strong></p>
+<p><code>pt-slave-restart</code> 在检测slave的过程中智能的进行休眠，所以当前的休眠时间是会改变的，设定策略：</p>
 <ul>
 <li>初始的sleep 时间通过<code>--sleep</code>给出。</li>
 <li>若检测发现错误，将sleep时间改成之前的一半。</li>
@@ -331,7 +331,7 @@
 <li>通过<code>--min-sleep</code>和<code>--max-sleep</code>参数限定sleep时间的下界和上界。</li>
 <li>一旦检测到错误，<code>pt-slave-restart</code>假定接下来很可能发生另一个错误,因此它将比较当前的sleep时间和初始的sleep时间，选取更小的值作为新的sleep时间。</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">从Percona Toolkit 2.2.8版本起，pt-slave-restart开始支持由MySQL 5.6.5版本引入的GTID复制。</span><br><span class="line">注意：</span><br><span class="line">当采用多线程复制（slave_parallel_workers &gt; 0）时，pt-slave-restart不能跳过事务。pt-slave-restart不能确定GTID事件是哪个特定slave线程执行失败的事务。</span><br><span class="line">默认行为是跳过来自master的下一个事务。由于每个服务器都有它自己的UUID，因此写可以来自不同的服务器。</span><br><span class="line">参考–master-uuid。</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">从Percona Toolkit 2.2.8版本起，pt-slave-restart开始支持由MySQL 5.6.5版本引入的GTID复制（保证了每个在主库上提交的事务在集群中有一个唯一的ID）。</span><br><span class="line">注意：</span><br><span class="line">当采用多线程复制（slave_parallel_workers &gt; 0）时，pt-slave-restart不能跳过事务。pt-slave-restart不能确定GTID事件是哪个特定slave线程执行失败的事务。</span><br><span class="line">默认行为是跳过来自master的下一个事务。由于每个服务器都有它自己的UUID，因此写可以来自不同的服务器。</span><br><span class="line">参考–master-uuid。</span><br></pre></td></tr></table></figure>
 
 <h3 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span><span class="bullet">-host=xxx</span> <span class="bullet">--user=xxx</span> <span class="bullet">--password=xxx</span>   <span class="comment">#连接实例信息，缩写-h xxx -u xxx -p xxx</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-port</span>               <span class="comment">#连接的端口号，缩写 -P</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-help</span>               <span class="comment">#显示帮助并退出</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-always</span>             <span class="comment">#永不停止slave线程，启用后pt-slave-restart将不允许手动停止从服务器</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-ask-pass</span>           <span class="comment">#替换`-p`命令，不显示密码输入</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-error-numbers</span>      <span class="comment">#指定要跳过哪些错误，可用`,`进行分隔</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-error-text</span>         <span class="comment">#根据错误信息进行匹配跳过</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-log`</span>               <span class="comment">#输出到文件</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-recurse</span>            <span class="comment">#在主端执行，监控从端</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-runtime</span>  <span class="string">`</span>         <span class="comment">#工具执行多长时间后退出：默认秒， m=minute,h=hours,d=days</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-slave-user</span>         <span class="comment">#从库账号，在主库运行时使用</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-slave-password`</span>    <span class="comment">#从库密码，在主库运行时使用</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-skip-count</span>         <span class="comment">#一次跳过错误的个数，默认为1</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-master-uuid</span>        <span class="comment">#级联复制的时候，指定跳过上级或者上上级事务的错误</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-until-master</span>       <span class="comment">#到达指定的master_log_pos,file位置后停止，格式：”file:pos“</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-until-relay</span>        <span class="comment">#和上面一样，但根据relay_log的位置来停止</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-sleep</span>              <span class="comment">#检查slave间隔的初始sleep秒数，默认为1</span></span><br></pre></td></tr></table></figure>
 
@@ -451,7 +451,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
