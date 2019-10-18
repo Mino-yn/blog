@@ -79,18 +79,22 @@
 
 
 
-<meta name="description" content="简介页 是 InnoDB 管理存储空间的基本单位，一个页的大小一般是 16KB，InnoDB为了不同的目的而设计了不同类型的列，其中用于存放记录的页叫做 数据页，官方称这种存放记录的页为索引（index）页。 数据页的划分一个 InnoDB 数据页大致被分为7个部分： ![](https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB Data">
+<meta name="description" content="简介页 是 InnoDB 管理存储空间的基本单位，一个页的大小一般是 16KB，InnoDB为了不同的目的而设计了不同类型的列，其中用于存放记录的页叫做 数据页，官方称这种存放记录的页为索引（index）页。 数据页的划分一个 InnoDB 数据页大致被分为7个部分：     名称 中文名 占用空间大小 简单描述    File Header 文件头部 38字节 页的一些通用信息   Page H">
 <meta name="keywords" content="MySQL是怎样运行的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="InnoDB数据页结构">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2019/10/16/InnoDB-Date-Page-Structure/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="简介页 是 InnoDB 管理存储空间的基本单位，一个页的大小一般是 16KB，InnoDB为了不同的目的而设计了不同类型的列，其中用于存放记录的页叫做 数据页，官方称这种存放记录的页为索引（index）页。 数据页的划分一个 InnoDB 数据页大致被分为7个部分： ![](https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB Data">
+<meta property="og:description" content="简介页 是 InnoDB 管理存储空间的基本单位，一个页的大小一般是 16KB，InnoDB为了不同的目的而设计了不同类型的列，其中用于存放记录的页叫做 数据页，官方称这种存放记录的页为索引（index）页。 数据页的划分一个 InnoDB 数据页大致被分为7个部分：     名称 中文名 占用空间大小 简单描述    File Header 文件头部 38字节 页的一些通用信息   Page H">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-17T03:25:13.380Z">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB_page_data1.png">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB_page_data1.png">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB_page_data2.png">
+<meta property="og:updated_time" content="2019-10-18T02:47:14.198Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="InnoDB数据页结构">
-<meta name="twitter:description" content="简介页 是 InnoDB 管理存储空间的基本单位，一个页的大小一般是 16KB，InnoDB为了不同的目的而设计了不同类型的列，其中用于存放记录的页叫做 数据页，官方称这种存放记录的页为索引（index）页。 数据页的划分一个 InnoDB 数据页大致被分为7个部分： ![](https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB Data">
+<meta name="twitter:description" content="简介页 是 InnoDB 管理存储空间的基本单位，一个页的大小一般是 16KB，InnoDB为了不同的目的而设计了不同类型的列，其中用于存放记录的页叫做 数据页，官方称这种存放记录的页为索引（index）页。 数据页的划分一个 InnoDB 数据页大致被分为7个部分：     名称 中文名 占用空间大小 简单描述    File Header 文件头部 38字节 页的一些通用信息   Page H">
+<meta name="twitter:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB_page_data1.png">
 
 
 
@@ -322,7 +326,7 @@
       
         <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>页</code> 是 <code>InnoDB</code> 管理存储空间的基本单位，一个页的大小一般是 <code>16KB</code>，InnoDB为了不同的目的而设计了不同类型的列，其中用于存放记录的页叫做 <code>数据页</code>，官方称这种存放记录的页为索引（<code>index</code>）页。</p>
 <h2 id="数据页的划分"><a href="#数据页的划分" class="headerlink" title="数据页的划分"></a>数据页的划分</h2><p>一个 <code>InnoDB</code> 数据页大致被分为7个部分：</p>
-<p>![](<a href="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB" target="_blank" rel="noopener">https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB</a> Data Page.png)</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB_page_data1.png" alt></p>
 <table>
 <thead>
 <tr>
@@ -382,9 +386,9 @@
 <li><code>next_record</code>:  表示按照主键值从小到大的顺序，从当前记录到下一条真实记录的<strong>地址偏移量</strong>。并且规定 <code>infimum</code> 记录（即<strong>最小记录</strong>）的下一条记录是本页中主键值最小的用户记录，主键值最大的用户记录的下一条记录是<code>Superemum</code> 记录。</li>
 </ul>
 <p>指定<code>c1</code>列为主键，行格式为<code>compact</code> 的表中记录行格式示意图：</p>
-<p>![记录行格式示意图](<a href="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB" target="_blank" rel="noopener">https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB</a> page data1.png)</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB_page_data1.png" alt></p>
 <p>以箭头代表 <code>next_record</code> 中的地址偏移量，记录的存储示意图:</p>
-<p>![](<a href="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB" target="_blank" rel="noopener">https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB</a> page data2.png)</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB_page_data2.png" alt></p>
 <h3 id="Page-Directory页目录"><a href="#Page-Directory页目录" class="headerlink" title="Page Directory页目录"></a>Page Directory页目录</h3><p>为了方便记录的查找，<code>InnoDB</code>设计了页目录<code>Page Directory</code>。</p>
 <p><strong>页目录的制作过程：</strong></p>
 <ul>
