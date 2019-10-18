@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/blog/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/blog/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="查看磁盘使用情况df 命令用于查看 Linux 服务器的文件系统的磁盘占用情况，默认单位KB。 12#查询磁盘使用情况df -h   执行结果各列含义： 123456Filesystem         磁盘分区Size			   磁盘分区的大小Used        	   已使用空间Avail          	   可使用空间Use%               已使用空间占百分比Moun">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux查看磁盘容量、文件大小">
+<meta property="og:url" content="https://mino-yn.github.io/blog/2019/10/18/Linux-view-space/index.html">
+<meta property="og:site_name" content="Mino&#39;s blog">
+<meta property="og:description" content="查看磁盘使用情况df 命令用于查看 Linux 服务器的文件系统的磁盘占用情况，默认单位KB。 12#查询磁盘使用情况df -h   执行结果各列含义： 123456Filesystem         磁盘分区Size			   磁盘分区的大小Used        	   已使用空间Avail          	   可使用空间Use%               已使用空间占百分比Moun">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space0.png">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space0.png">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space1.png">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space2.png">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space3.png">
+<meta property="og:updated_time" content="2019-10-18T08:49:19.245Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux查看磁盘容量、文件大小">
+<meta name="twitter:description" content="查看磁盘使用情况df 命令用于查看 Linux 服务器的文件系统的磁盘占用情况，默认单位KB。 12#查询磁盘使用情况df -h   执行结果各列含义： 123456Filesystem         磁盘分区Size			   磁盘分区的大小Used        	   已使用空间Avail          	   可使用空间Use%               已使用空间占百分比Moun">
+<meta name="twitter:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space0.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://mino-yn.github.io/blog/2019/10/18/Linux-view-space/">
+
+
+
+
+
+  <title>Linux查看磁盘容量、文件大小 | Mino's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Mino's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/10/18/Linux-view-space/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Linux查看磁盘容量、文件大小</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-18T11:05:26+08:00">
+                2019-10-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="查看磁盘使用情况"><a href="#查看磁盘使用情况" class="headerlink" title="查看磁盘使用情况"></a>查看磁盘使用情况</h2><p><code>df</code> 命令用于查看 <code>Linux</code> 服务器的文件系统的磁盘占用情况，默认单位KB。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查询磁盘使用情况</span></span><br><span class="line"><span class="string">df</span> <span class="bullet">-h</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space0.png" alt></p>
+<p>执行结果各列含义：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">Filesystem</span>         <span class="string">磁盘分区</span></span><br><span class="line"><span class="string">Size</span>			   <span class="string">磁盘分区的大小</span></span><br><span class="line"><span class="string">Used</span>        	   <span class="string">已使用空间</span></span><br><span class="line"><span class="string">Avail</span>          	   <span class="string">可使用空间</span></span><br><span class="line"><span class="string">Use%</span>               <span class="string">已使用空间占百分比</span></span><br><span class="line"><span class="string">Mounted</span> <span class="string">on</span>         <span class="string">挂载点</span></span><br></pre></td></tr></table></figure>
+
+<p><code>df</code> 命令的参数使用说明：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span><span class="string">a或--all</span>                      <span class="string">包含全部的文件系统；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">h或--human-readable</span>           <span class="string">以可读性较高的方式来显示信息；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">H或--si</span>                       <span class="string">与-h参数相同，但在计算时是以1000</span> <span class="string">Bytes为换算单位而非1024</span> <span class="string">Bytes；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">i或--inodes</span>                   <span class="string">显示inode的信息；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">k或--kilobytes</span>                <span class="string">指定区块大小为1024字节；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">l或--local</span>                    <span class="string">仅显示本地端的文件系统；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">m或--megabytes</span>                <span class="string">指定区块大小为1048576字节；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">P或--portability</span>              <span class="string">使用POSIX的输出格式；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">T或--print-type</span>               <span class="string">显示文件系统的类型；</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-no-sync</span>                      <span class="string">在取得磁盘使用信息前，不要执行sync指令，此为预设值；</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-sync</span>                         <span class="string">在取得磁盘使用信息前，先执行sync指令；</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-help</span>                         <span class="string">显示帮助；</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-version</span>                      <span class="string">显示版本信息。</span></span><br><span class="line"><span class="bullet">-</span><span class="string">t&lt;文件系统类型&gt;</span>                 <span class="string">仅显示指定文件系统类型的磁盘信息；</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-type=&lt;文件系统类型&gt;</span>         </span><br><span class="line"><span class="bullet">-</span><span class="string">x&lt;文件系统类型&gt;</span>                 <span class="string">不要显示指定文件系统类型的磁盘信息；</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-block-size=&lt;区块大小&gt;</span>          <span class="string">以指定的区块大小来显示区块数目；</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-exclude-type=&lt;文件系统类型&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="查看文件和目录大小"><a href="#查看文件和目录大小" class="headerlink" title="查看文件和目录大小"></a>查看文件和目录大小</h2><p><code>du</code> 命令用于查看文件和目录大小</p>
+<p>查看目录总大小，</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看/data目录的总大小</span></span><br><span class="line"><span class="comment">#直接执行</span></span><br><span class="line"><span class="string">du</span> <span class="bullet">-sh</span> <span class="string">/data</span></span><br><span class="line"><span class="comment">#先进入/data目录下，再进行查看</span></span><br><span class="line"><span class="string">cd</span> <span class="string">/data</span></span><br><span class="line"><span class="string">du</span> <span class="bullet">-sh</span></span><br></pre></td></tr></table></figure>
+
+<p>查看 <code>/data</code> 目录下各个子目录的大小，包括子目录的子目录，但不包含 <code>/data</code> 下文件</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">du</span> <span class="bullet">-h</span></span><br></pre></td></tr></table></figure>
+
+<p>如果要看 <code>/data</code> 目录下各个子目录的大小，包括子目录的子目录，且包含/data下文件，可以用以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">du -h *</span><br></pre></td></tr></table></figure>
+
+<p>查看 <code>/data</code> 目录下各个子目录的大小，不包括子目录的子目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">du -sh *</span><br></pre></td></tr></table></figure>
+
+<p>如果要看/data目录下各个子目录及子目录下文件的大小，需要使用-a参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">du -ah</span><br></pre></td></tr></table></figure>
+
+<p><code>du</code> 命令参数使用说明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">-a或-all                       输出所有文件的磁盘用量，不仅仅是目录</span><br><span class="line">-b或-bytes                     显示目录或文件大小时，以byte为单位。</span><br><span class="line">-c或--total                    除了显示个别目录或文件的大小外，同时也显示所有目录或文件的总和。</span><br><span class="line">-k或--kilobytes                以KB(1024bytes)为单位输出。</span><br><span class="line">-m或--megabytes                以MB为单位输出。</span><br><span class="line">-s或--summarize                仅显示总计，只列出最后加总的值。</span><br><span class="line">-h或--human-readable           以K，M，G为单位，提高信息的可读性。</span><br><span class="line">-x或--one-file-xystem          以一开始处理时的文件系统为准，若遇上其它不同的文件系统目录则略过。</span><br><span class="line">-L&lt;符号链接&gt;或                  显示选项中所指定符号链接的源文件大小。</span><br><span class="line">--dereference&lt;符号链接&gt; </span><br><span class="line">-S或--separate-dirs            显示个别目录的大小时，并不含其子目录的大小。</span><br><span class="line">-X&lt;文件&gt;或                      在&lt;文件&gt;指定目录或文件。</span><br><span class="line">--exclude-from=&lt;文件&gt; </span><br><span class="line">--exclude=&lt;目录或文件&gt; 略过指定的目录或文件。</span><br><span class="line">-D或--dereference-args 显示指定符号链接的源文件大小。</span><br><span class="line">-H或--si 与-h参数相同，但是K，M，G是以1000为换算单位。</span><br><span class="line">-l或--count-links 重复计算硬件链接的文件。</span><br></pre></td></tr></table></figure>
+
+<p>排序命令</p>
+<p><code>sort</code> 可以用于将文件内容排序并输出，也可将某些查询命令的执行结果排序后输出</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#将文件夹中的所有文件按文件从大到小进行排序</span></span><br><span class="line"><span class="string">du</span> <span class="bullet">-a|sort</span> <span class="bullet">-rn</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#du -a   列出所在目录下所有的文件的磁盘用量</span></span><br><span class="line"><span class="comment">#-r      反向排序，sort默认从小到大排序，-r命令从大到小排序</span></span><br><span class="line"><span class="comment">#-n      按照数字进行排序，只认数字不认单位</span></span><br></pre></td></tr></table></figure>
+
+<p><code>head</code> 可以用于显示文件前几行，也可用于显示某些查询命令结果的前几行。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#比如要将文件夹中的文件按大小排序，只输出最大的5个</span></span><br><span class="line"><span class="string">du</span> <span class="bullet">-a|sort</span> <span class="bullet">-nr|head</span> <span class="bullet">-5</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>问题现象</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">告警信息:Filesystem % Filesystem Space Used &gt; 90%  for 5 min.,当前值:90.06</span><br><span class="line">告警对象:data</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong></p>
+<p>告警显示 <code>/data</code> 下文件系统空间使用率大于90%持续5分钟，我们首先需要查找出是否有哪些大文件占用了过多的磁盘空间。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#查询磁盘使用情况</span><br><span class="line">df -h</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space0.png" alt></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#进入 /data 目录查看其子目录大小</span><br><span class="line">cd /data</span><br><span class="line">du -h</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space1.png" alt></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#查找cosmo_im_1004 文件夹中占用磁盘空间较大的文件</span><br><span class="line">cd cosmo_im_1004</span><br><span class="line">du -a|sort -nr|head -5</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space2.png" alt></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#将指定文件用K.M.G为单位输出</span><br><span class="line">du -h ./bns_pm_pokayoke.ibd</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space3.png" alt></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/10/16/InnoDB-Date-Page-Structure/" rel="next" title="InnoDB数据页结构">
+                <i class="fa fa-chevron-left"></i> InnoDB数据页结构
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">mino-yn</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/blog/archives/">
+              
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/blog/tags/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看磁盘使用情况"><span class="nav-number">1.</span> <span class="nav-text">查看磁盘使用情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看文件和目录大小"><span class="nav-number">2.</span> <span class="nav-text">查看文件和目录大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践"><span class="nav-number">3.</span> <span class="nav-text">实践</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mino-yn</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/blog/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
