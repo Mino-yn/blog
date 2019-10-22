@@ -92,7 +92,7 @@
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/0.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup_5.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup_6.png">
-<meta property="og:updated_time" content="2019-09-26T03:45:17.007Z">
+<meta property="og:updated_time" content="2019-10-22T08:13:40.295Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Percona XtraBackup安装实践">
 <meta name="twitter:description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备，备份过程中">
@@ -333,8 +333,8 @@
 <p>3、流压缩到传输到其它服务器。</p>
 <p>4、能比较容易地创建主从同步。</p>
 <p>5、备份MySQL时不会增大服务器负载。</p>
-<h2 id="安装实践"><a href="#安装实践" class="headerlink" title="安装实践"></a>安装实践</h2><h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><p>1）下载 Percona-XtraBackup，采用从本地上传的方式</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget http://10.190.177.9:8085/Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar    #本地上传</span><br><span class="line">tar xvf Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line">- percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br><span class="line">- percona-xtrabackup-24-debuginfo-2.4.12-1.el7.x86_64.rpm</span><br><span class="line">- percona-xtrabackup-test-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+<h2 id="安装实践"><a href="#安装实践" class="headerlink" title="安装实践"></a>安装实践</h2><h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><p>1）下载 Percona-XtraBackup，采用从阿里云oss下载的方式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar    #本地上传</span><br><span class="line">tar xvf Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line">- percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br><span class="line">- percona-xtrabackup-24-debuginfo-2.4.12-1.el7.x86_64.rpm</span><br><span class="line">- percona-xtrabackup-test-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
 
 <p>2）rpm 方式安装</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
