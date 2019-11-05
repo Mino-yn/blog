@@ -88,10 +88,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space0.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space0.png">
-<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space1.png">
-<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space2.png">
-<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space3.png">
-<meta property="og:updated_time" content="2019-10-18T08:49:19.245Z">
+<meta property="og:updated_time" content="2019-10-28T02:18:38.875Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux查看磁盘容量、文件大小">
 <meta name="twitter:description" content="查看磁盘使用情况df 命令用于查看 Linux 服务器的文件系统的磁盘占用情况，默认单位KB。 12#查询磁盘使用情况df -h   执行结果各列含义： 123456Filesystem         磁盘分区Size			   磁盘分区的大小Used        	   已使用空间Avail          	   可使用空间Use%               已使用空间占百分比Moun">
@@ -356,10 +353,7 @@
 
 <p>排序命令</p>
 <p><code>sort</code> 可以用于将文件内容排序并输出，也可将某些查询命令的执行结果排序后输出</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#将文件夹中的所有文件按文件从大到小进行排序</span></span><br><span class="line"><span class="string">du</span> <span class="bullet">-a|sort</span> <span class="bullet">-rn</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#du -a   列出所在目录下所有的文件的磁盘用量</span></span><br><span class="line"><span class="comment">#-r      反向排序，sort默认从小到大排序，-r命令从大到小排序</span></span><br><span class="line"><span class="comment">#-n      按照数字进行排序，只认数字不认单位</span></span><br></pre></td></tr></table></figure>
-
-<p><code>head</code> 可以用于显示文件前几行，也可用于显示某些查询命令结果的前几行。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#比如要将文件夹中的文件按大小排序，只输出最大的5个</span></span><br><span class="line"><span class="string">du</span> <span class="bullet">-a|sort</span> <span class="bullet">-nr|head</span> <span class="bullet">-5</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">du</span> <span class="bullet">-sxh</span> <span class="string">/dir/*</span> <span class="string">| sort -rh | head -5</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">du</span></span><br><span class="line"><span class="string">-s：仅显示总计</span></span><br><span class="line"><span class="string">-x：以一开始的文件系统为准，忽略其他不同文件系统的目录</span></span><br><span class="line"><span class="string">-h：以可读形式显示文件大小</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">sort</span></span><br><span class="line"><span class="string">-r：倒序排序</span></span><br><span class="line"><span class="string">-h：以可读数字进行比较</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">head</span></span><br><span class="line"><span class="string">-n：打印文本的前n行</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>问题现象</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">告警信息:Filesystem % Filesystem Space Used &gt; 90%  for 5 min.,当前值:90.06</span><br><span class="line">告警对象:data</span><br></pre></td></tr></table></figure>
@@ -369,15 +363,10 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#查询磁盘使用情况</span><br><span class="line">df -h</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space0.png" alt></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#进入 /data 目录查看其子目录大小</span><br><span class="line">cd /data</span><br><span class="line">du -h</span><br></pre></td></tr></table></figure>
+<p>多次执行查找最大文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ du -sxh /data/* | sort -rh | head -5</span><br><span class="line">339G	/data/mysql</span><br><span class="line">243G	/data/backup</span><br><span class="line">4.0K	/data/backup.sh</span><br><span class="line"></span><br><span class="line">$ du -sxh /data/mysql/* | sort -rh | head -5</span><br><span class="line">267G	/data/mysql/cosmo_im_1004</span><br><span class="line">1.1G	/data/mysql/mysql-binlog.000944</span><br><span class="line">1.1G	/data/mysql/mysql-binlog.000943</span><br><span class="line">1.1G	/data/mysql/mysql-binlog.000942</span><br><span class="line">1.1G	/data/mysql/mysql-binlog.000941</span><br><span class="line"></span><br><span class="line">$ du -sxh /data/mysql/cosmo_im_1004/* | sort -rh | head -5</span><br><span class="line">231G	/data/mysql/cosmo_im_1004/bns_pm_pokayoke.ibd</span><br><span class="line">3.8G	/data/mysql/cosmo_im_1004/bns_pm_scanscehistory.ibd</span><br><span class="line">3.5G	/data/mysql/cosmo_im_1004/bns_pm_scanhistory_month.ibd</span><br><span class="line">3.4G	/data/mysql/cosmo_im_1004/bns_io_pm_pokayoke.ibd</span><br><span class="line">3.0G	/data/mysql/cosmo_im_1004/bns_pm_operation.ibd</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space1.png" alt></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#查找cosmo_im_1004 文件夹中占用磁盘空间较大的文件</span><br><span class="line">cd cosmo_im_1004</span><br><span class="line">du -a|sort -nr|head -5</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space2.png" alt></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#将指定文件用K.M.G为单位输出</span><br><span class="line">du -h ./bns_pm_pokayoke.ibd</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space3.png" alt></p>
+<p>最终，确定最大文件是 <code>/data/mysql/cosmo_im_1004/bns_pm_pokayoke.ibd</code></p>
 
       
     </div>
@@ -504,7 +493,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/blog/tags/index.html">
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="XtraBackup,">
 
 
 
@@ -79,24 +79,28 @@
 
 
 
-<meta name="description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备，备份过程中">
+<meta name="description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 物理备份 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备，">
+<meta name="keywords" content="XtraBackup">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Percona XtraBackup安装实践">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2019/09/11/Xtrabackup/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备，备份过程中">
+<meta property="og:description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 物理备份 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备，">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Xtrabackup4.png">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/Xtrabackup5.png">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Xtrabackup6.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup1.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup2.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup3.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/0.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup_5.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup_6.png">
-<meta property="og:updated_time" content="2019-10-22T08:13:40.295Z">
+<meta property="og:updated_time" content="2019-10-29T06:37:11.480Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Percona XtraBackup安装实践">
-<meta name="twitter:description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备，备份过程中">
-<meta name="twitter:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup1.png">
+<meta name="twitter:description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 物理备份 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备，">
+<meta name="twitter:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Xtrabackup4.png">
 
 
 
@@ -327,12 +331,24 @@
 
       
         <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。</p>
+<p><strong>物理备份</strong></p>
 <p><strong>XtraBackup优势 ：</strong></p>
 <p>1、无需停止数据库进行 InnoDB 热备，备份过程中不会锁表，不影响现有业务。</p>
 <p>2、增量备份 MySQL。</p>
 <p>3、流压缩到传输到其它服务器。</p>
 <p>4、能比较容易地创建主从同步。</p>
 <p>5、备份MySQL时不会增大服务器负载。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p><code>Xtrabackup</code> 包括两个工具: <code>xtrabackup</code>、<code>innobackupex</code>  ，其主要区别如下:</p>
+<ul>
+<li>xtrabackup: 只能备份innodb和xtradb两种引擎的表，不能备份myisam引擎的表</li>
+<li>innobackupex: 是一个封装了xtrabackup的Perl脚本，支持同时备份innodb和myisam，但在对myisam备份时需要加一个全局的读锁。还有就是myisam不支持增量备份。</li>
+</ul>
+<h3 id="全库备份过程"><a href="#全库备份过程" class="headerlink" title="全库备份过程"></a>全库备份过程</h3><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Xtrabackup4.png" alt></p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/Xtrabackup5.png" alt></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">1 首先会启动一个xtrabackup_log后台检测的进程，实时检测mysql redo的变化，一旦发现redo有新的日志写入，立刻将日志写入到日志文件xtrabackup_log中</span><br><span class="line"></span><br><span class="line">2 复制innodb的数据文件和系统表空间文件idbdata1到对应的以默认时间戳为备份目录的地方</span><br><span class="line"></span><br><span class="line">3 复制结束后，执行flush table with read lock操作</span><br><span class="line"></span><br><span class="line">4 复制.frm .myd .myi文件</span><br><span class="line"></span><br><span class="line">5 并且在这一时刻获得binary log 的位置</span><br><span class="line"></span><br><span class="line">6 将表进行解锁unlock tables</span><br><span class="line"></span><br><span class="line">7 停止xtrabackup_log进程</span><br></pre></td></tr></table></figure>
+
+<h3 id="全库恢复的过程"><a href="#全库恢复的过程" class="headerlink" title="全库恢复的过程"></a>全库恢复的过程</h3><p>这一阶段会启动xtrabackup内嵌的innodb实例，将xtrabackup日志xtrabackup_Log进行回放，将提交的事务信息变更应用到innodb数据或表空间，同时回滚未提交的事务。</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Xtrabackup6.png" alt></p>
 <h2 id="安装实践"><a href="#安装实践" class="headerlink" title="安装实践"></a>安装实践</h2><h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><p>1）下载 Percona-XtraBackup，采用从阿里云oss下载的方式</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar    #本地上传</span><br><span class="line">tar xvf Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line">- percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br><span class="line">- percona-xtrabackup-24-debuginfo-2.4.12-1.el7.x86_64.rpm</span><br><span class="line">- percona-xtrabackup-test-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
 
@@ -384,6 +400,12 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/XtraBackup/" rel="tag"># XtraBackup</a>
+          
+        </div>
       
 
       
@@ -496,7 +518,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/blog/tags/index.html">
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -529,7 +551,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装实践"><span class="nav-number">2.</span> <span class="nav-text">安装实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#操作步骤"><span class="nav-number">2.1.</span> <span class="nav-text">操作步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装脚本"><span class="nav-number">2.2.</span> <span class="nav-text">安装脚本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他问题"><span class="nav-number">3.</span> <span class="nav-text">其他问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题一"><span class="nav-number">3.1.</span> <span class="nav-text">问题一</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#问题现象"><span class="nav-number">3.1.1.</span> <span class="nav-text">问题现象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方法"><span class="nav-number">3.1.2.</span> <span class="nav-text">解决方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题二"><span class="nav-number">3.2.</span> <span class="nav-text">问题二</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#问题现象-1"><span class="nav-number">3.2.1.</span> <span class="nav-text">问题现象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决办法"><span class="nav-number">3.2.2.</span> <span class="nav-text">解决办法</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">2.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#全库备份过程"><span class="nav-number">2.1.</span> <span class="nav-text">全库备份过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全库恢复的过程"><span class="nav-number">2.2.</span> <span class="nav-text">全库恢复的过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装实践"><span class="nav-number">3.</span> <span class="nav-text">安装实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#操作步骤"><span class="nav-number">3.1.</span> <span class="nav-text">操作步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装脚本"><span class="nav-number">3.2.</span> <span class="nav-text">安装脚本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他问题"><span class="nav-number">4.</span> <span class="nav-text">其他问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题一"><span class="nav-number">4.1.</span> <span class="nav-text">问题一</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#问题现象"><span class="nav-number">4.1.1.</span> <span class="nav-text">问题现象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方法"><span class="nav-number">4.1.2.</span> <span class="nav-text">解决方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题二"><span class="nav-number">4.2.</span> <span class="nav-text">问题二</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#问题现象-1"><span class="nav-number">4.2.1.</span> <span class="nav-text">问题现象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决办法"><span class="nav-number">4.2.2.</span> <span class="nav-text">解决办法</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
