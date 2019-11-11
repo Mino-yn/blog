@@ -249,6 +249,273 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/11/Script-Download/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/11/11/Script-Download/" itemprop="url">脚本下载汇总</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-11T09:55:42+08:00">
+                2019-11-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://mino-yn.github.io/blog/2019/09/11/Xtrabackup/"><strong>XtraBackup 安装</strong></a></p>
+<p><code>install_xtrabackup.sh</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/install_xtrabackup.sh</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://mino-yn.github.io/blog/2019/09/06/Percona%20Toolkit/"><strong>Percona Toolkit 安装</strong></a></p>
+<p><code>install_pt.sh</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/install_pt.sh</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://mino-yn.github.io/blog/2019/08/23/ssh%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88%E5%8D%95%E5%90%91%EF%BC%89/"><strong>初始化+SSH免密</strong></a></p>
+<p><code>sshFreeLogin.sh</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/sshFreeLogin.sh</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://mino-yn.github.io/blog/2019/09/24/mysql-DatabaseName/"><strong>修改数据库名</strong></a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/09/Statistics-database-size/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/11/09/Statistics-database-size/" itemprop="url">定时统计数据库大小</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-09T15:16:54+08:00">
+                2019-11-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>背景</strong></p>
+<p>常有工单要求提供项目数据库的周增量及月增量，但HDM监控只能看到近一周数据库大小变化。为解决这一问题，需编写脚本自动查询数据库数据总量到指定表中。</p>
+<p><strong>系统</strong>：供应链、HMQM、</p>
+<p><strong>数据库实例</strong>：<code>10.200.62.4:3307</code></p>
+<p>库名 : <code>reportdb</code></p>
+<p>表名：<code>total_data</code></p>
+<p><strong>执行时间</strong>：周日、每月第一天</p>
+<p><code>totaldata.sh</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/totaldata.sh</span><br></pre></td></tr></table></figure>
+
+<p><code>totaldata.def</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#依次填写项目简称、IP、端口号</span><br><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/totaldata.def</span><br></pre></td></tr></table></figure>
+
+<p>定时任务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># crontab -e</span><br><span class="line">0      0     *       *       0      sh /tmp/test/totaldata.sh full</span><br><span class="line">0      0     1       *       *      sh /tmp/test/totaldata.sh full</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/08/HeidiSQL-import-DATA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1442,565 +1709,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/10/16/InnoDB-Date-Page-Structure/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/10/16/InnoDB-Date-Page-Structure/" itemprop="url">InnoDB数据页结构</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-16T15:50:51+08:00">
-                2019-10-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>页</code> 是 <code>InnoDB</code> 管理存储空间的基本单位，一个页的大小一般是 <code>16KB</code>，InnoDB为了不同的目的而设计了不同类型的列，其中用于存放记录的页叫做 <code>数据页</code>，官方称这种存放记录的页为索引（<code>index</code>）页。</p>
-<h2 id="数据页的划分"><a href="#数据页的划分" class="headerlink" title="数据页的划分"></a>数据页的划分</h2><p>一个 <code>InnoDB</code> 数据页大致被分为7个部分：</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB_page_data1.png" alt></p>
-<table>
-<thead>
-<tr>
-<th align="center">名称</th>
-<th align="center">中文名</th>
-<th align="center">占用空间大小</th>
-<th align="center">简单描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"><code>File Header</code></td>
-<td align="center">文件头部</td>
-<td align="center"><code>38</code>字节</td>
-<td align="center">页的一些通用信息</td>
-</tr>
-<tr>
-<td align="center"><code>Page Header</code></td>
-<td align="center">页面头部</td>
-<td align="center"><code>56</code>字节</td>
-<td align="center">数据页专有的一些信息</td>
-</tr>
-<tr>
-<td align="center"><code>Infimum + Supremum</code></td>
-<td align="center">最小记录和最大记录</td>
-<td align="center"><code>26</code>字节</td>
-<td align="center">两个虚拟的行记录</td>
-</tr>
-<tr>
-<td align="center"><code>User Records</code></td>
-<td align="center">用户记录</td>
-<td align="center">不确定</td>
-<td align="center">实际存储的行记录内容</td>
-</tr>
-<tr>
-<td align="center"><code>Free Space</code></td>
-<td align="center">空闲空间</td>
-<td align="center">不确定</td>
-<td align="center">页中尚未使用的空间</td>
-</tr>
-<tr>
-<td align="center"><code>Page Directory</code></td>
-<td align="center">页面目录</td>
-<td align="center">不确定</td>
-<td align="center">页中的某些记录的相对位置</td>
-</tr>
-<tr>
-<td align="center"><code>File Trailer</code></td>
-<td align="center">文件尾部</td>
-<td align="center"><code>8</code>字节</td>
-<td align="center">校验页是否完整</td>
-</tr>
-</tbody></table>
-<h3 id="User-Record"><a href="#User-Record" class="headerlink" title="User Record"></a>User Record</h3><p><code>记录</code> 按照指定的<code>行格式</code>存储到 <code>User Records</code> 的部分，但最初生成页时没有 <code>User Records</code> 部分，每插入一条记录，会从<code>Free Space</code> 中申请一个记录大小的空间划分至 <code>User Records</code>  部分。</p>
-<p><strong>记录在页中的储存</strong></p>
-<p>每个记录的头信息中都有一个<code>next_record</code>属性，从而使页中的所有记录串联成一个<code>单链表</code>。链表的头为<code>infimum</code> 记录（<strong>最小记录</strong>），尾为 <code>Supermum</code> 记录（<strong>最大记录</strong>）。</p>
-<ul>
-<li><code>next_record</code>:  表示按照主键值从小到大的顺序，从当前记录到下一条真实记录的<strong>地址偏移量</strong>。并且规定 <code>infimum</code> 记录（即<strong>最小记录</strong>）的下一条记录是本页中主键值最小的用户记录，主键值最大的用户记录的下一条记录是<code>Superemum</code> 记录。</li>
-</ul>
-<p>指定<code>c1</code>列为主键，行格式为<code>compact</code> 的表中记录行格式示意图：</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB_page_data1.png" alt></p>
-<p>以箭头代表 <code>next_record</code> 中的地址偏移量，记录的存储示意图:</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB_page_data2.png" alt></p>
-<h3 id="Page-Directory页目录"><a href="#Page-Directory页目录" class="headerlink" title="Page Directory页目录"></a>Page Directory页目录</h3><p>为了方便记录的查找，<code>InnoDB</code>设计了页目录<code>Page Directory</code>。</p>
-<p><strong>页目录的制作过程：</strong></p>
-<ul>
-<li><p><code>InnoDB</code> 将页中所有正常的记录划分为若干个组。</p>
-</li>
-<li><p>每个组的最后一条记录的头信息中的 <code>n_owned</code> 表示该记录拥有的记录数，即该组内共拥有多少条记录。</p>
-</li>
-<li><p>每个组的最后一个记录的地址偏移量作为一个 <code>槽</code>，存储在靠近页尾部的地方，存放在<code>Page Directory</code> 中</p>
-</li>
-</ul>
-<p><strong>每个分组记录条数的规定：</strong></p>
-<ul>
-<li>最小记录所在分组记录条数范围：1条</li>
-<li>最大记录所在分组记录条数范围：1-8条</li>
-<li>其余分组记录条数范围：4-8条</li>
-</ul>
-<p><strong>页中根据主键查找记录步骤：</strong></p>
-<ul>
-<li>通过二分法确定记录所在的槽</li>
-<li>通过记录的 <code>next_record</code> 属性遍历该槽所在组中的所有的记录。</li>
-</ul>
-<h3 id="Page-Header页面头部"><a href="#Page-Header页面头部" class="headerlink" title="Page Header页面头部"></a>Page Header页面头部</h3><p><code>Page Header</code> 是<code>页</code> 结构的第二个部分，占固定的 <code>56</code> 个字节，专门存储各种状态信息。</p>
-<table>
-<thead>
-<tr>
-<th align="center">名称</th>
-<th align="center">占用空间大小</th>
-<th align="center">描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"><code>PAGE_N_DIR_SLOTS</code></td>
-<td align="center"><code>2</code>字节</td>
-<td align="center">在页目录中的槽数量</td>
-</tr>
-<tr>
-<td align="center"><code>PAGE_HEAP_TOP</code></td>
-<td align="center"><code>2</code>字节</td>
-<td align="center">还未使用的空间最小地址，也就是说从该地址之后就是<code>Free Space</code></td>
-</tr>
-<tr>
-<td align="center"><code>PAGE_N_HEAP</code></td>
-<td align="center"><code>2</code>字节</td>
-<td align="center">本页中的记录的数量（包括最小和最大记录以及标记为删除的记录）</td>
-</tr>
-<tr>
-<td align="center"><code>PAGE_FREE</code></td>
-<td align="center"><code>2</code>字节</td>
-<td align="center">第一个已经标记为删除的记录地址（各个已删除的记录通过<code>next_record</code>也会组成一个单链表，这个单链表中的记录可以被重新利用）</td>
-</tr>
-<tr>
-<td align="center"><code>PAGE_GARBAGE</code></td>
-<td align="center"><code>2</code>字节</td>
-<td align="center">已删除记录占用的字节数</td>
-</tr>
-<tr>
-<td align="center"><code>PAGE_LAST_INSERT</code></td>
-<td align="center"><code>2</code>字节</td>
-<td align="center">最后插入记录的位置</td>
-</tr>
-<tr>
-<td align="center"><code>PAGE_DIRECTION</code></td>
-<td align="center"><code>2</code>字节</td>
-<td align="center">记录插入的方向</td>
-</tr>
-<tr>
-<td align="center"><code>PAGE_N_DIRECTION</code></td>
-<td align="center"><code>2</code>字节</td>
-<td align="center">一个方向连续插入的记录数量</td>
-</tr>
-<tr>
-<td align="center"><code>PAGE_N_RECS</code></td>
-<td align="center"><code>2</code>字节</td>
-<td align="center">该页中记录的数量（不包括最小和最大记录以及被标记为删除的记录）</td>
-</tr>
-<tr>
-<td align="center"><code>PAGE_MAX_TRX_ID</code></td>
-<td align="center"><code>8</code>字节</td>
-<td align="center">修改当前页的最大事务ID，该值仅在二级索引中定义</td>
-</tr>
-<tr>
-<td align="center"><code>PAGE_LEVEL</code></td>
-<td align="center"><code>2</code>字节</td>
-<td align="center">当前页在B+树中所处的层级</td>
-</tr>
-<tr>
-<td align="center"><code>PAGE_INDEX_ID</code></td>
-<td align="center"><code>8</code>字节</td>
-<td align="center">索引ID，表示当前页属于哪个索引</td>
-</tr>
-<tr>
-<td align="center"><code>PAGE_BTR_SEG_LEAF</code></td>
-<td align="center"><code>10</code>字节</td>
-<td align="center">B+树叶子段的头部信息，仅在B+树的Root页定义</td>
-</tr>
-<tr>
-<td align="center"><code>PAGE_BTR_SEG_TOP</code></td>
-<td align="center"><code>10</code>字节</td>
-<td align="center">B+树非叶子段的头部信息，仅在B+树的Root页定义</td>
-</tr>
-</tbody></table>
-<h3 id="File-Header文件头部"><a href="#File-Header文件头部" class="headerlink" title="File Header文件头部"></a>File Header文件头部</h3><p><code>Page Header</code>是专门针对<code>数据页</code>记录的各种状态信息。<code>File Header</code>针对各种类型的页都通用，描述了一些针对各种页都通用的信息，占固定的 <code>38</code> 个字节。</p>
-<table>
-<thead>
-<tr>
-<th align="center">名称</th>
-<th align="center">占用空间大小</th>
-<th align="center">描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"><code>FIL_PAGE_SPACE_OR_CHKSUM</code></td>
-<td align="center"><code>4</code>字节</td>
-<td align="center">页的校验和（checksum值）</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_OFFSET</code></td>
-<td align="center"><code>4</code>字节</td>
-<td align="center">页号</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_PREV</code></td>
-<td align="center"><code>4</code>字节</td>
-<td align="center">上一个页的页号</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_NEXT</code></td>
-<td align="center"><code>4</code>字节</td>
-<td align="center">下一个页的页号</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_LSN</code></td>
-<td align="center"><code>8</code>字节</td>
-<td align="center">页面被最后修改时对应的日志序列位置（英文名是：Log Sequence Number）</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_TYPE</code></td>
-<td align="center"><code>2</code>字节</td>
-<td align="center">该页的类型</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_FILE_FLUSH_LSN</code></td>
-<td align="center"><code>8</code>字节</td>
-<td align="center">仅在系统表空间的一个页中定义，代表文件至少被刷新到了对应的<code>LSN</code>值</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_ARCH_LOG_NO_OR_SPACE_ID</code></td>
-<td align="center"><code>4</code>字节</td>
-<td align="center">页属于哪个表空间</td>
-</tr>
-</tbody></table>
-<ul>
-<li><code>FIL_PAGE_TYPE</code></li>
-</ul>
-<p><code>FIL_PAGE_TYPE</code> 表示当前 <code>页</code>  的类型，我们说的存储数据的数据页的页类型为<code>FIL_PAGE_INDEX</code>。</p>
-<table>
-<thead>
-<tr>
-<th align="center">类型名称</th>
-<th align="center">十六进制</th>
-<th align="center">描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center"><code>FIL_PAGE_TYPE_ALLOCATED</code></td>
-<td align="center">0x0000</td>
-<td align="center">最新分配，还没使用</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_UNDO_LOG</code></td>
-<td align="center">0x0002</td>
-<td align="center">Undo日志页</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_INODE</code></td>
-<td align="center">0x0003</td>
-<td align="center">段信息节点</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_IBUF_FREE_LIST</code></td>
-<td align="center">0x0004</td>
-<td align="center">Insert Buffer空闲列表</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_IBUF_BITMAP</code></td>
-<td align="center">0x0005</td>
-<td align="center">Insert Buffer位图</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_TYPE_SYS</code></td>
-<td align="center">0x0006</td>
-<td align="center">系统页</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_TYPE_TRX_SYS</code></td>
-<td align="center">0x0007</td>
-<td align="center">事务系统数据</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_TYPE_FSP_HDR</code></td>
-<td align="center">0x0008</td>
-<td align="center">表空间头部信息</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_TYPE_XDES</code></td>
-<td align="center">0x0009</td>
-<td align="center">扩展描述页</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_TYPE_BLOB</code></td>
-<td align="center">0x000A</td>
-<td align="center">BLOB页</td>
-</tr>
-<tr>
-<td align="center"><code>FIL_PAGE_INDEX</code></td>
-<td align="center">0x45BF</td>
-<td align="center">索引页，也就是我们所说的<code>数据页</code></td>
-</tr>
-</tbody></table>
-<ul>
-<li><code>FIL_PAGE_PREV</code>和<code>FIL_PAGE_NEXT</code></li>
-</ul>
-<p><code>FIL_PAGE_PREV</code>和<code>FIL_PAGE_NEXT</code>分别代表本页的上一个和下一个页的页号,这样通过建立一个双向链表将许多页串联起来，无需这些页在物理上真正连续。并不是所有页都有这两个属性，但数据页是有这两个属性的，所以所有数据页会组成一个双向链表。</p>
-<h3 id="File-Trailer文件尾部"><a href="#File-Trailer文件尾部" class="headerlink" title="File Trailer文件尾部"></a>File Trailer文件尾部</h3><p>通用于所有类型的页，用于检测一个页是否完整（即将数据同步至磁盘或内存时有没有发生只同步一半的情况）。<code>File Trailer</code> 部分由 <code>8</code> 个字节组成，可分为两个部分：</p>
-<ul>
-<li><p>前4个字节：页的校验和</p>
-<p>这个部分与<code>File Header</code>中的校验和相应，两者不同代表同步中间出现问题。</p>
-</li>
-<li><p>后4个字节：页面被最后修改时对应的日志序列位置（LSN）</p>
-<p>这个部分也是为了校验页的完整性的，首部和尾部的<code>LSN</code>值校验不成功，说明同步的过程中出现了问题。</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/10/11/MySQL-character-set/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/10/11/MySQL-character-set/" itemprop="url">MySQL字符集</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-11T21:12:52+08:00">
-                2019-10-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>简介</p>
-<p>字符集：计算机底层是以二进制数进行计算和存储的，而我们要在数据库存储的数据则多是字符串的形式。为了将字符串存储至计算机中就需要建立字符与二进制数据的映射关系。将字符映射成一个二进制数据的过程称为<strong>编码</strong>，将二进制数据映射成字符的过程称为<strong>解码</strong>。<strong>字符集</strong>就是为了描述某个字符范围的<strong>编码规则</strong>而抽象出的概念。</p>
-<p>比较规则：为了比较两个字符的大小而制定的规则，同一种字符集可以有许多种不同的比较规则。</p>
-<p>常用字符集：</p>
-<ul>
-<li><p><code>ASCII</code>字符集</p>
-<p>共收录128个字符，包括空格、标点符号、数字、大小写字母和一些不可见字符，可用一个字节进行编码。</p>
-</li>
-<li><p><code>ISO 8859-1</code>字符集</p>
-<p>别名 <code>latin1</code> ,共收录256个字符，在<code>ASCII</code>字符集的基础上又扩充了128个西欧常用字符(包括德法两国的字母)，</p>
-</li>
-<li><p><code>utf8</code>字符集</p>
-<p>收录地球上能想到的所有字符，而且还在不断扩充。该字符集兼容<code>ASCII</code>字符集，采用<code>变长编码</code>方式，编码一个字符需要使用1～4个字节，</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&apos;L&apos; -&gt;  01001100（十六进制：0x4C）</span><br><span class="line">&apos;啊&apos; -&gt;  111001011001010110001010（十六进制：0xE5958A）</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>小贴士： 其实准确的说，utf8只是Unicode字符集的一种编码方案，Unicode字符集可以采用utf8、utf16、utf32这几种编码方案，utf8使用1～4个字节编码一个字符，utf16使用2个或4个字节编码一个字符，utf32使用4个字节编码一个字符。更详细的Unicode和其编码方案的知识不是本书的重点，大家上网查查哈～ MySQL中并不区分字符集和编码方案的概念，所以后边唠叨的时候把utf8、utf16、utf32都当作一种字符集对待。</p>
-</blockquote>
-</li>
-</ul>
-<p>对于同一个字符，不同字符集也可能有不同的编码方式。比如对于汉字<code>&#39;我&#39;</code>来说，<code>ASCII</code>字符集中根本没有收录这个字符，<code>utf8</code>和<code>gb2312</code>字符集对汉字<code>我</code>的编码方式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">utf8编码：111001101000100010010001 (3个字节，十六进制表示是：0xE68891)</span><br><span class="line">gb2312编码：1100111011010010 (2个字节，十六进制表示是：0xCED2)</span><br></pre></td></tr></table></figure>
-
-<p>收录地球上能想到的所有字符，而且还在不断扩充。这种字符集兼容 <code>ASCII</code> 字符集，采用变长编码方式，编码一个字符需要使用 <code>1～4</code> 个字节，比方说这样：</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2051,7 +1759,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-count">49</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
