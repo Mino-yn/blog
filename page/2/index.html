@@ -281,6 +281,191 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/10/24/B-tree-indexe/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/10/24/B-tree-indexe/" itemprop="url">B+树索引</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-24T09:30:37+08:00">
+                2019-10-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="InnoDB索引"><a href="#InnoDB索引" class="headerlink" title="InnoDB索引"></a>InnoDB索引</h2><h3 id="InnoDB记录存储方式"><a href="#InnoDB记录存储方式" class="headerlink" title="InnoDB记录存储方式"></a>InnoDB记录存储方式</h3><p>在 <code>InnoDB</code> 存储引擎中，数据页间通过 <code>双向链表</code> 进行连接，无需在物理结构上相连。数据页中的记录按主键值从小到大的顺序通过 <code>单向链表</code> 进行连接。每个数据页中的记录划分为几个组，每组 <code>最后</code> 一条记录的 <code>地址偏移量</code> 单独提取出来存储在靠近 <code>页</code> 的尾部，这些地址偏移量称为 <code>槽</code> ，这些 <code>槽</code> 组成了该数据页的 <code>页目录</code>。</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/B%2Btree0.png" alt></p>
+<h3 id="没有索引的查找"><a href="#没有索引的查找" class="headerlink" title="没有索引的查找"></a>没有索引的查找</h3><p>这里只讨论条件为对某列进行 <code>精准匹配</code> 的情况</p>
+<p><strong>在同一页中查找</strong></p>
+<ul>
+<li>以主键为搜索条件查找</li>
+</ul>
+<p>在 <code>页目录</code> 中通过二分法快速定位至对应的 <code>槽</code> ,对 <code>槽</code> 所对应的分组的记录进行遍历。</p>
+<ul>
+<li>以其他列为搜索条件查找</li>
+</ul>
+<p>从 <code>最小记录</code> 开始遍历单列表链表中的每条记录，与搜索条件进行比对。</p>
+<p><strong>在多个页中查找</strong></p>
+<ul>
+<li><p>定位到记录所在页：没有索引的情况下，无法快速定位到记录所在的页，只能从第一个列沿双向链表遍历所有的数据页。</p>
+</li>
+<li><p>在每个页中按照上述方式进行查找。</p>
+</li>
+</ul>
+<h3 id="InnoDB索引方案"><a href="#InnoDB索引方案" class="headerlink" title="InnoDB索引方案"></a>InnoDB索引方案</h3><p>大部分情况下我们需要在很多数据页中查找记录，可以通过给数据页建立<code>目录项</code>（即 <code>索引</code>）的方式快速定位至记录所在的页，从而加快查询速度。</p>
+<p><strong>以对 <code>主键</code> 建立索引为例</strong></p>
+<p><strong>目录项的建立：</strong></p>
+<p>通过建立目录项的形式快速定位到记录所在页需要：</p>
+<ul>
+<li>下一数据页中用户记录的主键值需大于上一数据页中用户记录的主键值。</li>
+</ul>
+<p>在对页记录进行增删改操作时，如向已满的数据页中插入记录，需通过 <code>页分裂</code> （将当前页面分裂成两个，将本页中的一些记录移动至新创建的页中）等操作确保上述状态一直成立。</p>
+<ul>
+<li>给所有的页建立一个目录项</li>
+</ul>
+<p>每个目录项包括两个部分：1.页的用户记录中 <code>最小</code> 的主键值      2.页号</p>
+<p><strong>目录项的存储:</strong></p>
+<p><code>InnoDB</code> 存储引擎复用存储用户记录的数据页来存储目录项，通过记录头信息的 <code>record_type</code> 属性将 <code>目录项记录</code> 与 <code>用户记录</code> 区分开。</p>
+<p><code>record_type</code> 属性各取值含义：</p>
+<ul>
+<li><code>0</code> ：普通用户记录</li>
+<li><code>1</code> ：目录项记录</li>
+<li><code>2</code> ：最小记录</li>
+<li><code>3</code> ：最大记录</li>
+</ul>
+<p>为数据页建立目录项，并将目录项放入数据页中的样子：</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/B%2Btree3.png" alt></p>
+<p>页 <code>33</code>  存储更高级的目录项，页 <code>30</code> 、<code>32</code> 存储普通的<code>目录项</code> ,其余的数据页存储普通的用户记录，随着表中记录的增加目录的层级会逐渐增加。当根据主键值查找用户记录时，从上而下主要分为三步：</p>
+<ul>
+<li>确定<code>目录项记录</code>页</li>
+<li>通过<code>目录项记录</code>页确定用户记录真实所在的页。</li>
+<li>在真实存储用户记录的页中定位到具体的记录。</li>
+</ul>
+<p><code>目录项记录</code>与普通 <code>用户记录</code> 都使用同样的数据页存储，页的组成结构相同，都会为主键值生成 <code>页目录</code> ，从而在使用主键值查找时可使用二分法加快查询速度。 </p>
+<p><code>目录项记录</code> 与普通 <code>用户记录</code> 的区别</p>
+<ul>
+<li>目录项记录 <code>record_type</code> 值为 <code>1</code>，普通用户记录 <code>record_type</code> 值为<code>0</code></li>
+<li>目录项记录只有<code>主键值</code>、<code>页号</code>、如果是二级索引，还包括该索引所对应的列，用户记录由用户自定义，还包含<code>InnoDB</code> 添加的隐藏列。</li>
+<li>存储<code>目录项记录</code>的页中的主键值最小的<code>目录项记录</code>的<code>min_rec_mask</code>值为<code>1</code>，其余别的记录的<code>min_rec_mask</code>值都是<code>0</code>。</li>
+</ul>
+<h2 id="MyISAM索引"><a href="#MyISAM索引" class="headerlink" title="MyISAM索引"></a>MyISAM索引</h2><p><code>InnoDB</code> 存储引擎中，索引即数据，<code>聚簇索引</code>那棵B+树的叶子节点中包含了所有完整的用户记录。而 <code>MyISAM</code> 索引方案虽仍使用树形结构，但是将索引和数据分开进行存储。</p>
+<ul>
+<li><p>表中的记录按照记录的插入顺序单独存储在<code>数据文件</code> 中。该文件并不划分为若干个数据页，所有的数据都在存储在该文件中，可以通过行号而快速访问到一条记录。同时 <code>MyISAM</code> 也需要记录头信息存储额外的数据。</p>
+<p>记录使用<code>MyISAM</code>作为存储引擎在存储空间中的表示：</p>
+</li>
+</ul>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/B%2Btree2.png" alt></p>
+<ul>
+<li><code>索引</code> 信息另外存储到<code>索引文件</code>中。<code>MyISAM</code>会单独为表的主键创建一个索引，只不过在索引的叶子节点中存储的不是完整的用户记录，而是<code>主键值 + 行号</code>的组合。查找时需先通过 <code>索引</code> 找到相应的行号，再通过行号进行<code>回表</code> 操作找到相应的记录。<code>MyISAM</code> 中建立的所有索引都是二级索引。</li>
+<li>如果有需要的话，我们也可以对其它的列分别建立索引或者建立联合索引，原理和<code>InnoDB</code>中的索引差不多，不过在叶子节点处存储的是<code>相应的列 + 行号</code>。</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/10/18/Linux-view-space/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1934,150 +2119,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/24/mysql-DatabaseName/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/09/24/mysql-DatabaseName/" itemprop="url">修改数据库名</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-24T16:49:55+08:00">
-                2019-09-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h3><p>1、查看<code>MySQL</code>数据库进程</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ps -ef|grep mysql</span><br></pre></td></tr></table></figure>
-
-<p>记录下<code>socket</code>地址</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/20190924223130.png" alt></p>
-<p>2、下载脚本<code>rename_db.sh</code> 至<code>tmp</code>目录下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd /tmp</span><br><span class="line">$ wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/rename_db.sh</span><br></pre></td></tr></table></figure>
-
-<p>给脚本赋权</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ chmod +x /tmp/rename_db.sh</span><br></pre></td></tr></table></figure>
-
-<p>3、执行脚本，修改数据库名</p>
-<p>将<code>user</code>数据库改名为<code>user-original</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ ./rename_db.sh -o users -n user-original -u root -p Haier@123 -s /data/mysql3100/mysql.sock</span><br><span class="line"># -o    修改前数据库名称</span><br><span class="line"># -n    修改后数据库名称</span><br><span class="line"># -u    连接MySQL数据库用户名</span><br><span class="line"># -p    连接MySQL数据库密码</span><br><span class="line"># -s    MySQL数据库socket地址</span><br><span class="line"># 注：选项参数的格式必须是-d val，而不能是中间没有空格的-dval。</span><br><span class="line"># 新的数据库中只有表，视图仍是原数据库名，需要重建试图。</span><br></pre></td></tr></table></figure>
-
-<p>4、根据需要删除原数据库</p>
-<h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><p>1、创建需要改成新名的数据库。</p>
-<p>2、mysqldump导出要改名的数据库。</p>
-<p>3、删除原来的旧库。</p>
-<p>这种方法是安全的，但是如果数据量大，会很耗时</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><span class="page-number current">2</span><a class="page-number" href="/blog/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/5/">5</a><a class="extend next" rel="next" href="/blog/page/3/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><span class="page-number current">2</span><a class="page-number" href="/blog/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/6/">6</a><a class="extend next" rel="next" href="/blog/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2123,7 +2169,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-count">51</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
