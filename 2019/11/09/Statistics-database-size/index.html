@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="背景 常有工单要求提供项目数据库的周增量及月增量，但HDM监控只能看到近一周数据库大小变化。为解决这一问题，需编写脚本自动查询数据库数据总量到指定表中。 系统：供应链、HMQM、 数据库实例：10.200.62.4:3307 库名 : reportdb 表名：total_data 执行时间：周日、每月第一天 totaldata.sh 1wget https://mino-yn.oss-cn-qin">
+<meta name="description" content="背景 常有工单要求提供项目数据库的周增量及月增量，但HDM监控只能看到近一周数据库大小变化。为解决这一问题，需编写脚本自动查询数据库数据总量到指定表中。 系统：供应链、HMQM、 数据库实例：10.200.62.4:3307 库名 : reportdb 表名：total_data 执行时间：周日、每月第一天 totaldata.sh 12345678910111213141516171819202">
 <meta name="keywords" content="脚本">
 <meta property="og:type" content="article">
 <meta property="og:title" content="定时统计数据库大小">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2019/11/09/Statistics-database-size/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="背景 常有工单要求提供项目数据库的周增量及月增量，但HDM监控只能看到近一周数据库大小变化。为解决这一问题，需编写脚本自动查询数据库数据总量到指定表中。 系统：供应链、HMQM、 数据库实例：10.200.62.4:3307 库名 : reportdb 表名：total_data 执行时间：周日、每月第一天 totaldata.sh 1wget https://mino-yn.oss-cn-qin">
+<meta property="og:description" content="背景 常有工单要求提供项目数据库的周增量及月增量，但HDM监控只能看到近一周数据库大小变化。为解决这一问题，需编写脚本自动查询数据库数据总量到指定表中。 系统：供应链、HMQM、 数据库实例：10.200.62.4:3307 库名 : reportdb 表名：total_data 执行时间：周日、每月第一天 totaldata.sh 12345678910111213141516171819202">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-11T02:27:31.016Z">
+<meta property="og:updated_time" content="2019-11-14T06:38:36.923Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="定时统计数据库大小">
-<meta name="twitter:description" content="背景 常有工单要求提供项目数据库的周增量及月增量，但HDM监控只能看到近一周数据库大小变化。为解决这一问题，需编写脚本自动查询数据库数据总量到指定表中。 系统：供应链、HMQM、 数据库实例：10.200.62.4:3307 库名 : reportdb 表名：total_data 执行时间：周日、每月第一天 totaldata.sh 1wget https://mino-yn.oss-cn-qin">
+<meta name="twitter:description" content="背景 常有工单要求提供项目数据库的周增量及月增量，但HDM监控只能看到近一周数据库大小变化。为解决这一问题，需编写脚本自动查询数据库数据总量到指定表中。 系统：供应链、HMQM、 数据库实例：10.200.62.4:3307 库名 : reportdb 表名：total_data 执行时间：周日、每月第一天 totaldata.sh 12345678910111213141516171819202">
 
 
 
@@ -360,12 +360,16 @@
 <p>表名：<code>total_data</code></p>
 <p><strong>执行时间</strong>：周日、每月第一天</p>
 <p><code>totaldata.sh</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/totaldata.sh</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> /bin/bash</span><br><span class="line"><span class="meta">#</span> 定时统计数据库大小</span><br><span class="line">EXEC_DATE=`date +%Y-%m-%d`</span><br><span class="line">FILE_DIR=`dirname $0`</span><br><span class="line">FILE_NAME=`basename $0 .sh`</span><br><span class="line">USER="sre"</span><br><span class="line">PASSWORD='sre@@p$i'</span><br><span class="line"></span><br><span class="line">sed '/^#.*\|^$/d' $&#123;FILE_DIR&#125;/$&#123;FILE_NAME&#125;.def &gt;$&#123;FILE_DIR&#125;/$&#123;FILE_NAME&#125;.tmp</span><br><span class="line">for i in `cat $&#123;FILE_DIR&#125;/$&#123;FILE_NAME&#125;.tmp`</span><br><span class="line">do</span><br><span class="line">DEF_DATA_TMP="`echo $&#123;i&#125; |sed s/\ //g`" #去空格,得到一行数据</span><br><span class="line"><span class="meta">#</span>得到数据库的项目名、ip、端口</span><br><span class="line">PROJECT=`echo $&#123;i&#125; | cut -d "," -f1 | tr "[A-Z]" "[a-z]"`</span><br><span class="line">IP=`echo $&#123;i&#125; | cut -d "," -f2 | tr "[A-Z]" "[a-z]"`</span><br><span class="line">PORT=`echo $&#123;i&#125; | cut -d "," -f3 | tr "[A-Z]" "[a-z]"`</span><br><span class="line">echo "$&#123;IP&#125;:$&#123;PORT&#125;   $&#123;PROJECT&#125;"</span><br><span class="line"></span><br><span class="line">total=`mysql -u $&#123;USER&#125; -p"$&#123;PASSWORD&#125;" -h $&#123;IP&#125; -P$&#123;PORT&#125;   -e "select concat(round(sum((data_length + index_length)/1024/1024/1024),2),'GB') as data from information_schema.tables;"`&gt;&gt; myout.file 2&gt;&amp;1</span><br><span class="line">totaldata="`echo $&#123;total##*a&#125; |sed s/\ //g`"</span><br><span class="line">mysql -u $&#123;USER&#125; -p"$&#123;PASSWORD&#125;"  -S/data/mysql3307/mysql.sock -e "INSERT INTO reportdb.total_data (project,ip,date,total_data) VALUES('$&#123;PROJECT&#125;','$&#123;IP&#125;:$&#123;PORT&#125;','$&#123;EXEC_DATE&#125;','$&#123;totaldata&#125;')" &gt;&gt; myout.file 2&gt;&amp;1</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#下载地址</span><br><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/totaldata.sh</span><br></pre></td></tr></table></figure>
 
 <p><code>totaldata.def</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#依次填写项目简称、IP、端口号</span><br><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/totaldata.def</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">#依次填写项目简称、IP、端口号</span><br><span class="line">HMQM-M,10.138.22.217,3100</span><br><span class="line">HMQM-S,10.138.22.218,3100</span><br><span class="line">HMQM-T,10.138.22.192,3306</span><br><span class="line">HDY-M,10.135.22.70,3306</span><br><span class="line">HDY-S,10.135.22.71,3306</span><br><span class="line">HDY-M,10.138.41.225,3306</span><br><span class="line">HDY-S,10.138.41.226,3306</span><br><span class="line">DZSP-M,10.138.22.10,3306</span><br><span class="line">DZSP-S,10.138.22.11,3306</span><br><span class="line">GMDC-M,10.138.228.127,3306</span><br><span class="line">GMDC-S,10.138.228.128,3306</span><br><span class="line">HLMP-M,10.138.86.40,3306</span><br><span class="line">HLMP-S,10.138.93.34,3306</span><br><span class="line">HDYBC-M,10.138.23.212,3100</span><br><span class="line">HDYBC-S,10.138.23.169,3100</span><br><span class="line">DBS-M,10.133.7.18,3306</span><br><span class="line">DBS-S,10.133.7.19,3306</span><br><span class="line">CPLM-M,10.138.98.218,3306</span><br><span class="line">CPLM-S,10.138.98.219,3306</span><br><span class="line">COSMOWMS-M,10.138.42.94,3306</span><br><span class="line">COSMOWMS-M,10.138.98.20,3306</span><br><span class="line">COSMOWMS-S,10.138.98.21,3306</span><br><span class="line">COSMOWMS-M,10.138.228.40,3306</span><br><span class="line">COSMOWMS-S,10.138.228.41,3306</span><br><span class="line">COSMOWMS-M,10.138.228.43,3306</span><br><span class="line">COSMOWMS-S,10.138.228.164,3306</span><br><span class="line">COSMOWMS-M,10.138.228.165,3306</span><br><span class="line">COSMOWMS-S,10.138.228.166,3306</span><br><span class="line">COSMOWMS-S,10.138.232.164,3306</span><br><span class="line">COSMOWMS-M,10.133.7.31,3306</span><br></pre></td></tr></table></figure>
 
-<p>定时任务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#下载地址</span><br><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/totaldata.def</span><br></pre></td></tr></table></figure>
+
+<p><strong>定时任务</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># crontab -e</span><br><span class="line">0      0     *       *       0      sh /tmp/test/totaldata.sh full</span><br><span class="line">0      0     1       *       *      sh /tmp/test/totaldata.sh full</span><br></pre></td></tr></table></figure>
 
 
@@ -478,7 +482,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

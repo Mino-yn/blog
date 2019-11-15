@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="简介CentOS 升级到7后，内置防火墙从 iptables 变为 firewalled 不同操作系统设置的方式不同。  查看系统版本  1lsb_release -a  CentOS 6 打开/关闭/重启防火墙  123456chkconfig iptables on       # 开启防火墙chkconfig iptables off      # 关闭防火墙service iptables">
+<meta name="description" content="简介CentOS 升级到7后，内置防火墙从 iptables 变为 firewalled 不同操作系统设置的方式不同。  查看系统版本  123lsb_release -a             #可列出所有版本信息cat /etc/redhat-release    #只适合Redhat系的Linuxcat /etc/issue             #适用于所有的Linux发行版  Cen">
 <meta name="keywords" content="Linux">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CentOS 6与 CentOS 7防火墙设置与端口打开">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2019/11/14/linux-firewall/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="简介CentOS 升级到7后，内置防火墙从 iptables 变为 firewalled 不同操作系统设置的方式不同。  查看系统版本  1lsb_release -a  CentOS 6 打开/关闭/重启防火墙  123456chkconfig iptables on       # 开启防火墙chkconfig iptables off      # 关闭防火墙service iptables">
+<meta property="og:description" content="简介CentOS 升级到7后，内置防火墙从 iptables 变为 firewalled 不同操作系统设置的方式不同。  查看系统版本  123lsb_release -a             #可列出所有版本信息cat /etc/redhat-release    #只适合Redhat系的Linuxcat /etc/issue             #适用于所有的Linux发行版  Cen">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-14T06:31:32.527Z">
+<meta property="og:updated_time" content="2019-11-15T05:59:27.853Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CentOS 6与 CentOS 7防火墙设置与端口打开">
-<meta name="twitter:description" content="简介CentOS 升级到7后，内置防火墙从 iptables 变为 firewalled 不同操作系统设置的方式不同。  查看系统版本  1lsb_release -a  CentOS 6 打开/关闭/重启防火墙  123456chkconfig iptables on       # 开启防火墙chkconfig iptables off      # 关闭防火墙service iptables">
+<meta name="twitter:description" content="简介CentOS 升级到7后，内置防火墙从 iptables 变为 firewalled 不同操作系统设置的方式不同。  查看系统版本  123lsb_release -a             #可列出所有版本信息cat /etc/redhat-release    #只适合Redhat系的Linuxcat /etc/issue             #适用于所有的Linux发行版  Cen">
 
 
 
@@ -356,7 +356,7 @@
 <ul>
 <li>查看系统版本</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsb_release -a</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lsb_release -a             #可列出所有版本信息</span><br><span class="line">cat /etc/redhat-release    #只适合Redhat系的Linux</span><br><span class="line">cat /etc/issue             #适用于所有的Linux发行版</span><br></pre></td></tr></table></figure>
 
 <h3 id="CentOS-6"><a href="#CentOS-6" class="headerlink" title="CentOS 6"></a>CentOS 6</h3><ul>
 <li>打开/关闭/重启防火墙</li>
@@ -425,6 +425,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2019/11/14/Case5-replication/" rel="prev" title="案例5 · 主从复制中断">
+                案例5 · 主从复制中断 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -501,7 +505,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

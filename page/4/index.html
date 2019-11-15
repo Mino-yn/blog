@@ -281,6 +281,637 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/11/Xtrabackup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/11/Xtrabackup/" itemprop="url">Percona XtraBackup安装实践</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-11T17:25:50+08:00">
+                2019-09-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。</p>
+<p><strong>物理备份</strong></p>
+<p><strong>XtraBackup优势 ：</strong></p>
+<p>1、无需停止数据库进行 InnoDB 热备，备份过程中不会锁表，不影响现有业务。</p>
+<p>2、增量备份 MySQL。</p>
+<p>3、流压缩到传输到其它服务器。</p>
+<p>4、能比较容易地创建主从同步。</p>
+<p>5、备份MySQL时不会增大服务器负载。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p><code>Xtrabackup</code> 包括两个工具: <code>xtrabackup</code>、<code>innobackupex</code>  ，其主要区别如下:</p>
+<ul>
+<li>xtrabackup: 只能备份innodb和xtradb两种引擎的表，不能备份myisam引擎的表</li>
+<li>innobackupex: 是一个封装了xtrabackup的Perl脚本，支持同时备份innodb和myisam，但在对myisam备份时需要加一个全局的读锁。还有就是myisam不支持增量备份。</li>
+</ul>
+<h3 id="全库备份过程"><a href="#全库备份过程" class="headerlink" title="全库备份过程"></a>全库备份过程</h3><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Xtrabackup4.png" alt></p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/Xtrabackup5.png" alt></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">1 首先会启动一个xtrabackup_log后台检测的进程，实时检测mysql redo的变化，一旦发现redo有新的日志写入，立刻将日志写入到日志文件xtrabackup_log中</span><br><span class="line"></span><br><span class="line">2 复制innodb的数据文件和系统表空间文件idbdata1到对应的以默认时间戳为备份目录的地方</span><br><span class="line"></span><br><span class="line">3 复制结束后，执行flush table with read lock操作</span><br><span class="line"></span><br><span class="line">4 复制.frm .myd .myi文件</span><br><span class="line"></span><br><span class="line">5 并且在这一时刻获得binary log 的位置</span><br><span class="line"></span><br><span class="line">6 将表进行解锁unlock tables</span><br><span class="line"></span><br><span class="line">7 停止xtrabackup_log进程</span><br></pre></td></tr></table></figure>
+
+<h3 id="全库恢复的过程"><a href="#全库恢复的过程" class="headerlink" title="全库恢复的过程"></a>全库恢复的过程</h3><p>这一阶段会启动xtrabackup内嵌的innodb实例，将xtrabackup日志xtrabackup_Log进行回放，将提交的事务信息变更应用到innodb数据或表空间，同时回滚未提交的事务。</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Xtrabackup6.png" alt></p>
+<h2 id="安装实践"><a href="#安装实践" class="headerlink" title="安装实践"></a>安装实践</h2><h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><p>1）下载 Percona-XtraBackup，采用从阿里云oss下载的方式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar    #本地上传</span><br><span class="line">tar xvf Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line">- percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br><span class="line">- percona-xtrabackup-24-debuginfo-2.4.12-1.el7.x86_64.rpm</span><br><span class="line">- percona-xtrabackup-test-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<p>2）rpm 方式安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<p>报错信息：提示缺少依赖</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">warning: percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">	libev.so.4()(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br><span class="line">	perl(DBD::mysql) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br><span class="line">	perl(Digest::MD5) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br></pre></td></tr></table></figure>
+
+<p>解决方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">wget http://10.190.177.9:8085/libev-4.15-1.el6.x86_64.rpm</span><br><span class="line">yum -y install perl-DBD-MySQL</span><br><span class="line">yum -y install perl-Digest-MD5</span><br><span class="line">rpm -ivh libev-4.15-1.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装脚本"><a href="#安装脚本" class="headerlink" title="安装脚本"></a>安装脚本</h3><p>通过建立执行脚本<code>install_xtrabackup.sh</code> 进行安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line"># Install XtraBackup</span><br><span class="line">cd /usr/local/src</span><br><span class="line">wget http://10.190.177.9:8085/Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line">tar xvf Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line"></span><br><span class="line">wget http://10.190.177.9:8085/libev-4.15-1.el6.x86_64.rpm</span><br><span class="line">yum -y install perl-DBD-MySQL</span><br><span class="line">yum -y install perl-Digest-MD5</span><br><span class="line">rpm -ivh libev-4.15-1.el6.x86_64.rpm</span><br><span class="line">rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line">xtrabackup --version</span><br></pre></td></tr></table></figure>
+
+<h2 id="其他问题"><a href="#其他问题" class="headerlink" title="其他问题"></a>其他问题</h2><h3 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h3><h4 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h4><p>使用<code>yum</code> 命令安装依赖包<code>percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</code>时报错</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">yum</span> <span class="bullet">-y</span> <span class="string">install</span> <span class="string">percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup1.png" alt></p>
+<p>报错提示<code>mariadb-libs</code> 与之前安装的 MySQL 发生冲突，查看 MySQL 安装包目录</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup2.png" alt></p>
+<p>检查后发现报错是由MySQL组件未安装完全导致的，之前安装MySQL时是通过 RPM 包的方式，为了省事只安装了部分组件便直接使用，未安装 MySQL 的<code>shared</code> 和<code>embedded</code> 组件。</p>
+<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a><strong>解决方法</strong></h4><p>为了方便，将未安装的 MySQL 组件安装上</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup3.png" alt></p>
+<p>将报错的<code>yum</code>命令重新执行，查看xtrabackup版本</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/0.png" alt></p>
+<p>安装成功</p>
+<h3 id="问题二"><a href="#问题二" class="headerlink" title="问题二"></a>问题二</h3><h4 id="问题现象-1"><a href="#问题现象-1" class="headerlink" title="问题现象"></a>问题现象</h4><p>执行<code>rpm</code> 命令安装xtrabackup时报错冲突。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup_5.png" alt></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#搜索指定rpm包是否安装</span><br><span class="line">rpm -qa |grep xtrabackup</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup_6.png" alt></p>
+<h4 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h4><p>服务器上安装过<code>Percona XtraBackup2.2</code>, 但从mysql5.7开始，必须使用xtrabackup2.4以上版本才能完成备份,老的版本执行会报错，已不适用。将老版本卸载后重新安装.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -e 要删除的软件包</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/11/case-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/11/case-2/" itemprop="url">案例2 · CPU利用率过高</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-11T09:25:13+08:00">
+                2019-09-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p>CPU异常告警：CPU 利用率连续 15 分钟超过了 90%，达到 96.75885416666917%，请求协助排查原因。</p>
+<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><p>1）连接上服务器，使用 <code>top</code> 命令动态，查看 CPU 状态发现 CPU 使用率长时间处于异常过高的状态。</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/case2-1.png" alt></p>
+<p>2）使用 <code>show processlist</code> 查看数据库线程，未发现有锁占用和大量线程阻塞的情况。</p>
+<p>3）查看数据库日志未发现明显异常。</p>
+<p>4）重新查看数据库线程，发现有许多查询都处于 <code>creating sort index</code> 的状态，通过客户端抽取其 SQL 语句，都是如下类似的查询结构：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">SELECT</span></span><br><span class="line"> <span class="string">material</span> <span class="string">AS</span> <span class="string">material_code,</span></span><br><span class="line"> <span class="string">material_t2</span> <span class="string">AS</span> <span class="string">module_code,</span></span><br><span class="line"> <span class="string">material_name_t2</span> <span class="string">AS</span> <span class="string">description,</span></span><br><span class="line"> <span class="string">quantity_t2</span> <span class="string">AS</span> <span class="string">consumption_unit,</span></span><br><span class="line"> <span class="string">unitofmeasure_t2</span> <span class="string">AS</span> <span class="string">component_unit</span></span><br><span class="line"><span class="string">FROM</span> <span class="string">pc_tf_bom_dtl</span></span><br><span class="line"><span class="string">WHERE</span> <span class="string">material='0060122449'</span> <span class="string">AND</span> <span class="string">plant='null'</span></span><br><span class="line"><span class="string">ORDER</span> <span class="string">BY</span> <span class="string">bom_level</span></span><br></pre></td></tr></table></figure>
+
+<p>除了material编号发生变化，其余部分相同。</p>
+<p>查看pc_tf_bom_dtl 表的结构：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `pc_tf_bom_dtl` (</span><br><span class="line">	`id` BIGINT(10) UNSIGNED NOT NULL AUTO_INCREMENT,</span><br><span class="line">	`material` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;物料号&apos;,</span><br><span class="line">	`material_name` VARCHAR(256) NULL DEFAULT NULL COMMENT &apos;物料描述&apos;,</span><br><span class="line">	`plant` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;工厂编码&apos;,</span><br><span class="line">	`plant_name` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;工厂名称	&apos;,</span><br><span class="line">	`material_t2` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;子件号&apos;,</span><br><span class="line">	`material_name_t2` VARCHAR(256) NULL DEFAULT NULL COMMENT &apos;子件物料描述&apos;,</span><br><span class="line">	`quantity_t2` DECIMAL(32,10) NULL DEFAULT NULL COMMENT &apos;耗用数量&apos;,</span><br><span class="line">	`unitofmeasure_t2` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;bom单位&apos;,</span><br><span class="line">	`bom_level` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;编码&apos;,</span><br><span class="line">	`lv` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;层级&apos;,</span><br><span class="line">	`partnumber` VARCHAR(40) NULL DEFAULT NULL COMMENT &apos;二三级物料的父项物料&apos;,</span><br><span class="line">	`src_etl_date` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;数据源取数时间&apos;,</span><br><span class="line">	`trg_etl_date` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;落数时间&apos;,</span><br><span class="line">	`dl_etl_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT &apos;dl层数据落地时间&apos;,</span><br><span class="line">	`etl_dbs_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT &apos;创建日期&apos;,</span><br><span class="line">	PRIMARY KEY (`id`)</span><br><span class="line">)</span><br><span class="line">COLLATE=&apos;utf8_general_ci&apos;</span><br><span class="line">ENGINE=InnoDB</span><br><span class="line">AUTO_INCREMENT=27303502</span><br></pre></td></tr></table></figure>
+
+<p>分析上述SQL查询语句的执行逻辑：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WHERE material=&apos;0060122449&apos; AND plant=&apos;null&apos;</span><br></pre></td></tr></table></figure>
+
+<p>因为数据量很大，虽然这条语句的目的是只查询物料编号为：0060122449的相关信息，但实际却需要查询大量的数据，而且最后还需进行排序，所以是非常低效的。</p>
+<h3 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h3><p><strong>增添</strong>一个对material字段的<strong>索引</strong></p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/case2-2.png" alt></p>
+<p>重新查看CPU利用率，发现MySQL CPU利用率很快的下降恢复正常。</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/case2-3.png" alt></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/09/HDM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/09/HDM/" itemprop="url">MySQL实例接入阿里云HDM</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T16:32:44+08:00">
+                2019-09-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>由于内网限制，需要通过搭建代理服务器 <a href="http://www.squid-cache.org/" target="_blank" rel="noopener"><strong>Squid</strong></a> 进行访问。</p>
+<p>公司一般出于安全考虑， 在同一局域网中只有一台机器可以访问外网，运维进行了整体的限制， 但是在后面的工作中，需要在机器上安装一些软件，及命令，所以其他的机器需要访问外网来简化工作， 但又不能打乱原有运维的设置，所以需要在能访问外网的机器上做个代理。</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><h3 id="接入HDM"><a href="#接入HDM" class="headerlink" title="接入HDM"></a>接入HDM</h3><p><strong>服务器可以访问外网</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#在opt目录下操作</span><br><span class="line">cd /opt</span><br><span class="line">           </span><br><span class="line">#执行部署命令，下载install-dbgateway</span><br><span class="line">sudo wget -O install-dbgateway http://hdm-dbgateway-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com/DBGateway/install-dbgateway &amp;&amp; sudo /bin/bash install-dbgateway --id idc_zqSS2oMpeyKubndD --token 3E24C01713C83B7328F9A2F4C411078DC820E63FAFBC058F6635FAC5B0B4B7F2 --endpoint master-hdm-cn-hangzhou.aliyuncs.com --region default --native</span><br></pre></td></tr></table></figure>
+
+<p><strong>服务器不可访问外网</strong></p>
+<p>若直接执行部署命令失败，说明该服务器不可以访问外网，需要通过搭建代理服务器 <a href="http://www.squid-cache.org/" target="_blank" rel="noopener"><strong>Squid</strong></a> 进行访问。</p>
+<p>代理服务器：10.133.0.53:3128已搭建完成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">#在opt目录下操作</span><br><span class="line">cd /opt</span><br><span class="line"></span><br><span class="line">#查看dbgateway进程是否存在</span><br><span class="line">ps -ef|grep dbgateway  </span><br><span class="line"></span><br><span class="line"># 增加代理</span><br><span class="line">echo  &quot;</span><br><span class="line">http_proxy=10.133.0.53:3128</span><br><span class="line">https_proxy=10.133.0.53:3128</span><br><span class="line">ssl_proxy=10.133.0.53:3128</span><br><span class="line">tls_proxy=10.133.0.53:3128</span><br><span class="line">ftp_proxy=10.133.0.53:3128</span><br><span class="line">tcp_proxy=10.133.0.53:3128</span><br><span class="line">export http_proxy</span><br><span class="line">export https_proxy</span><br><span class="line">export ssl_proxy</span><br><span class="line">export ftp_proxy</span><br><span class="line">export tcp_proxy</span><br><span class="line">export tls_proxy&quot; &gt;&gt; /etc/profile ;  source /etc/profile</span><br><span class="line"></span><br><span class="line"># 修改wget代理配置文件</span><br><span class="line">echo &quot;</span><br><span class="line">https_proxy=http://10.133.0.53:3128/</span><br><span class="line">http_proxy=http://10.133.0.53:3128/</span><br><span class="line">ftp_proxy=http://10.133.0.53:3128/&quot; &gt;&gt; /etc/wgetrc ;  source /etc/wgetrc</span><br><span class="line"></span><br><span class="line"># 下载install-dbgateway</span><br><span class="line">sudo wget -O install-dbgateway http://hdm-dbgateway-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com/DBGateway/install-dbgateway &amp;&amp; sudo /bin/bash install-dbgateway --id idc_zqSS2oMpeyKubndD --token 3E24C01713C83B7328F9A2F4C411078DC820E63FAFBC058F6635FAC5B0B4B7F2 --endpoint master-hdm-cn-hangzhou.aliyuncs.com --region default --native</span><br><span class="line"></span><br><span class="line"># 修改install-dbgateway</span><br><span class="line">注释以下代码</span><br><span class="line">curl -v --connect-timeout 3 --silent $&#123;endpoint&#125;:80 --output -</span><br><span class="line">if [ $? != 0 -a $? != 52 ]; then</span><br><span class="line">       echo &quot;Error! Can not connect to $&#123;endpoint&#125;:80, please check your network environment.&quot;</span><br><span class="line">       exit 1</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"># 完成接入</span><br><span class="line">sudo /bin/bash install-dbgateway --id idc_zqSS2oMpeyKubndD --token 3E24C01713C83B7328F9A2F4C411078DC820E63FAFBC058F6635FAC5B0B4B7F2 --endpoint master-hdm-cn-hangzhou.aliyuncs.com --region default --native</span><br></pre></td></tr></table></figure>
+
+<p>查看dbgateway进程是否启动，若出现如下进程说明接入成功</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep dbgateway</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HDM1.png" alt></p>
+<p>安装成功后，HDM会每隔10秒自动发现部署在主机上的数据库网关（DBGateway）“的主机，并自动进行数据库实例发现。</p>
+<p><strong>查看部署的数据库网关</strong></p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HDM3.png" alt></p>
+<h3 id="授权验证"><a href="#授权验证" class="headerlink" title="授权验证"></a>授权验证</h3><p>该步骤主要是输入数据库账号和密码，帮助集中式DBGateway通过数据库账号和密码以只读的方式获取数据库监控数据。</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HDM2.png" alt></p>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><h3 id="判断-DBGateway-进程是否存活"><a href="#判断-DBGateway-进程是否存活" class="headerlink" title="判断 DBGateway 进程是否存活"></a>判断 DBGateway 进程是否存活</h3><p>只用于判断 DBGateway 进程是否存活，无法判断其是否正常工作。</p>
+<p><strong>方法一</strong>：在HDM产品页面，DBGateway管理子界面上当前状态显示为“正常”即表示 DBGateway 进程存活。</p>
+<p><strong>方法二</strong>：在DBGateway所在服务器上执行以下命令判断。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/opt/dbgateway/bin/dbgateway-manager -d status</span><br></pre></td></tr></table></figure>
+
+<p>进程存活输出样例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DBGateway is running.</span><br></pre></td></tr></table></figure>
+
+<p>进程不存在输出样例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DBGateway is dead.</span><br></pre></td></tr></table></figure>
+
+<h3 id="重启-DBGateway"><a href="#重启-DBGateway" class="headerlink" title="重启 DBGateway"></a>重启 DBGateway</h3><p>重启方式一：在HDM产品页面DBGateway管理功能中，选择对应的DBGateway，“管理” -&gt; “重启”</p>
+<p>条件：DBGateway 进程存在</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/restart-dbgateway.png" alt></p>
+<p>重启方式二：手工直接在DBGateway所在的服务器上执行以下命令。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/opt/dbgateway/bin/dbgateway-manager -d restart</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/09/database-monitoring/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/09/database-monitoring/" itemprop="url">数据库监控入门</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T11:37:33+08:00">
+                2019-09-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Prometheus-Grafana"><a href="#Prometheus-Grafana" class="headerlink" title="Prometheus+Grafana"></a>Prometheus+Grafana</h2><h3 id="Prometheus"><a href="#Prometheus" class="headerlink" title="Prometheus"></a>Prometheus</h3><p>是由SoundCloud开发的开源监控报警系统和时序列数据库(TSDB)，prometheus是一个监控采集与数据存储框架（监控server端），具体采集什么数据依赖于具体的exporter。</p>
+<h3 id="Grafana"><a href="#Grafana" class="headerlink" title="Grafana:"></a>Grafana:</h3><p>一个高颜值的监控绘图程序，也是一个可视化面板（Dashboard），grafana的厉害之处除了高颜值，还支持多种数据源（支持Graphite、zabbix、InfluxDB、Prometheus和OpenTSDB作为数据源）、支持灵活丰富的dashboard配置选项。</p>
+<p>通过Grafana可以将Prometheus中存储的数据进行可视化，很优美的进行展示。</p>
+<h2 id="Prometheus介绍"><a href="#Prometheus介绍" class="headerlink" title="Prometheus介绍"></a>Prometheus介绍</h2><h3 id="什么是Prometheus"><a href="#什么是Prometheus" class="headerlink" title="什么是Prometheus"></a>什么是Prometheus</h3><p>Prometheus是一个开源监控系统，其前身是SoundCloud的警告工具包。</p>
+<p>若想实现对于服务器或数据库的监控，首先我们需要获取到想要进行监控的相关数据。这里需要先了解一个小工具：node_exporter</p>
+<p>举个例子，如果你有一台服务器，你想要获取它运行时的参数，比如当前的CPU负载、系统负载、内存消耗、硬盘使用量、网络IO等，那么你就可以在服务器上运行一个<code>node_exporter</code>，它能帮你收集好这些参数，并且暴露出一个HTTP接口，以便你访问查询。</p>
+<p>通过使用node_exporter我们可以获取到该服务器的许多系统参数，如果我们为您只想监控这一台服务器，或只需要某个特定的参数我们可以自行编写代码访问这个接口，匹配出想要的指标和值即可。但是，如果有很多台服务器，而且想要综合多台进行对比分析，更有甚者，希望将指标绘制成图表，或者说保留历史数据，以便查询过去某个时间点的服务器的运行状态，那么这将会变得很麻烦。<code>Prometheus</code>就是用来解决这个问题的。</p>
+<p>我们想要获取所有服务器上的node_exporter暴露出来的数据，就必须有个程序去定时访问这些接口。如果想要增加或者修改这些接口，那么就需要有个配置文件来记录这些服务器的地址。如果想要访问历史的某个时间点的数据，那么就必须按照<strong>时间顺序</strong>存储获取到的<strong>指标和值</strong>。如果想要将值绘制成图，也需要有代码去查询、计算和渲染。最后，你可能还希望：当服务器的某个指标超过一定的阈值时，向指定的接口发出告警信息。这一切都可以使用Prometheus来解决</p>
+<h3 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h3><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Prometheus.png" alt="Prometheus 架构图"></p>
+<h4 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h4><p>Prometheus的基本原理是通过HTTP协议周期性抓取被监控组件的状态，任意组件只要提供对应的HTTP接口就可以接入监控。不需要任何SDK或者其他的集成过程。这样做非常适合做虚拟化环境监控系统，比如VM、Docker、Kubernetes等。输出被监控组件信息的HTTP接口被叫做exporter 。</p>
+<h4 id="三大套件"><a href="#三大套件" class="headerlink" title="三大套件"></a>三大套件</h4><ul>
+<li>Prometheus Server 主程序，负责数据采集和存储，抓取、聚合、查询方面提供PromQL查询语言的支持。</li>
+<li>Alertmanager 警告管理器，主要用来实现报警功能。</li>
+<li>Push Gateway 主要是实现接收由Client push过来的指标数据，在指定的时间间隔，由主程序来抓取。</li>
+</ul>
+<h3 id="服务过程："><a href="#服务过程：" class="headerlink" title="服务过程："></a>服务过程：</h3><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/p.png" alt></p>
+<ul>
+<li>Prometheus Daemon负责定时去目标上抓取metrics(指标)数据，每个抓取目标需要暴露一个http服务的接口给它定时抓取。Prometheus支持通过配置文件、文本文件、Zookeeper、Consul、DNS SRV Lookup等方式指定抓取目标。Prometheus采用PULL的方式进行监控，即服务器可以直接通过目标PULL数据或者间接地通过中间网关来Push数据。</li>
+<li>Prometheus在本地存储抓取的所有数据，并通过一定规则进行清理和整理数据，并把得到的结果存储到新的时间序列中。</li>
+<li>Prometheus通过PromQL和其他API可视化地展示收集的数据。Prometheus支持很多方式的图表可视化，例如Grafana、自带的Promdash以及自身提供的模版引擎等等。Prometheus还提供HTTP API的查询方式，自定义所需要的输出。</li>
+<li>PushGateway支持Client主动推送metrics到PushGateway，而Prometheus只是定时去Gateway上抓取数据。</li>
+<li>Alertmanager是独立于Prometheus的一个组件，可以支持Prometheus的查询语句，提供十分灵活的报警方式。</li>
+</ul>
+<h2 id="Grafana-1"><a href="#Grafana-1" class="headerlink" title="Grafana"></a>Grafana</h2><h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>prometheus官方的dashboard不怎么给力，为了将采集的数据更好的可视化，目前将Grafana集成了进去。Grafana可以自定义数据源，并且保存多个dashboard，针对不同的系统可以使用不同的dashboard来进行监控。</p>
+<p>Grafana是一个跨平台的开源的度量分析和可视化工具，可以通过将采集的数据查询然后可视化的展示，并及时通知。它主要有以下六大特点：</p>
+<ul>
+<li>展示方式：快速灵活的客户端图表，面板插件有许多不同方式的可视化指标和日志，官方库中具有丰富的仪表盘插件，比如热图、折线图、图表等多种展示方式；</li>
+</ul>
+<ul>
+<li>数据源：Graphite，InfluxDB，OpenTSDB，Prometheus，Elasticsearch，CloudWatch和KairosDB等；</li>
+</ul>
+<ul>
+<li>通知提醒：以可视方式定义最重要指标的警报规则，Grafana将不断计算并发送通知，在数据达到阈值时通过Slack、PagerDuty等获得通知；</li>
+</ul>
+<ul>
+<li>混合展示：在同一图表中混合使用不同的数据源，可以基于每个查询指定数据源，甚至自定义数据源；</li>
+</ul>
+<ul>
+<li>注释：使用来自不同数据源的丰富事件注释图表，将鼠标悬停在事件上会显示完整的事件元数据和标记；</li>
+</ul>
+<ul>
+<li>过滤器：Ad-hoc过滤器允许动态创建新的键/值过滤器，这些过滤器会自动应用于使用该数据源的所有查询</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/09/MySQL connection failed/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1197,7 +1828,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/blog/2019/08/28/技能树/" itemprop="url">Training plan</a></h1>
+                <a class="post-title-link" href="/blog/2019/08/28/技能树/" itemprop="url">技能树</a></h1>
         
 
         <div class="post-meta">
@@ -1320,723 +1951,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/27/MySQL权限管理/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/08/27/MySQL权限管理/" itemprop="url">MySQL权限管理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-27T18:03:53+08:00">
-                2019-08-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="权限表的存取"><a href="#权限表的存取" class="headerlink" title="权限表的存取"></a>权限表的存取</h2><h3 id="权限表"><a href="#权限表" class="headerlink" title="权限表"></a>权限表</h3><p>MySQL中权限的设置存储在数据库的权限表中：</p>
-<ul>
-<li>mysql.user：用户表、user表中的列分为：用户列、权限列、安全列和资源控制列。</li>
-<li>mysql.db：数据库权限设置</li>
-<li>mysql.table_priv：表权限设置</li>
-<li>mysql.column_priv：列权限设置</li>
-</ul>
-<h3 id="权限组成结构："><a href="#权限组成结构：" class="headerlink" title="权限组成结构："></a>权限组成结构：</h3><ul>
-<li>用户：有自己的用户名和密码，并且拥有能够操作的权限。</li>
-<li>操作权限：限制一个用户能够做什么，可以配置到<strong>全局/数据库/表/列</strong></li>
-</ul>
-<h3 id="权限存取过程"><a href="#权限存取过程" class="headerlink" title="权限存取过程"></a>权限存取过程</h3><p>用户进行连接时，权限表的存取重要分为两个过程</p>
-<ul>
-<li>通过user表中的host、user、password三个字段与连接的IP、用户名、密码进行对比实现用户身份的验证。</li>
-<li>若通过身份验证，则按权限表权限范围依次递减（ user -&gt; db -&gt; tables_priv -&gt; columns_priv） 的顺序得到数据库权限。</li>
-</ul>
-<h2 id="权限的相关命令"><a href="#权限的相关命令" class="headerlink" title="权限的相关命令"></a>权限的相关命令</h2><h3 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h3><p>语法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">grant 权限</span><br><span class="line">on 数据库对象</span><br><span class="line">to 用户 identified by 密码</span><br><span class="line">with grant option(给别人权限)</span><br></pre></td></tr></table></figure>
-
-<p>示例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 创建用户 </span><br><span class="line">create user &apos;用户名&apos;@&apos;访问限制&apos; identified by &apos;密码&apos;;</span><br><span class="line"></span><br><span class="line"># 赋予useradmin用户select、insert权限  *.*代表所有数据库对象 </span><br><span class="line">grant select,insert on *.* to &apos;useradmin&apos;@&apos;%&apos;;  </span><br><span class="line"></span><br><span class="line"># 创建useradmin用户并且赋予权限 </span><br><span class="line">grant select,insert on *.* to &apos;useradmin&apos;@&apos;%&apos; identified by &apos;密码&apos;;</span><br><span class="line"></span><br><span class="line">#加上with grant option(给别人权限)权限</span><br><span class="line">grant select,insert on *.* to &apos;useradmin&apos;@&apos;%&apos; identified by &apos;密码&apos; with grant option;</span><br></pre></td></tr></table></figure>
-
-<h3 id="刷新权限"><a href="#刷新权限" class="headerlink" title="刷新权限"></a>刷新权限</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
-
-<h3 id="查看权限"><a href="#查看权限" class="headerlink" title="查看权限"></a>查看权限</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#查看当前用户权限</span><br><span class="line">show grants;</span><br><span class="line"></span><br><span class="line">#查看特定用户权限</span><br><span class="line">show grants for 用户@访问限制;</span><br></pre></td></tr></table></figure>
-
-<h3 id="回收权限"><a href="#回收权限" class="headerlink" title="回收权限"></a>回收权限</h3><p>使用revoke撤销全部权限，<strong>操作者必须拥有全局的create user或update权限</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#语法</span><br><span class="line">revoke 权限 on 数据库对象 from 用户;</span><br><span class="line"></span><br><span class="line">#示例：</span><br><span class="line">revoke all on *.* form useradmin;</span><br></pre></td></tr></table></figure>
-
-<h3 id="删除用户"><a href="#删除用户" class="headerlink" title="删除用户"></a>删除用户</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#语法</span><br><span class="line">drop user 用户@限制访问;</span><br><span class="line">#实例</span><br><span class="line">drop user &apos;useradmin&apos;@&apos;%&apos;;</span><br></pre></td></tr></table></figure>
-
-<h2 id="MySQL主要权限"><a href="#MySQL主要权限" class="headerlink" title="MySQL主要权限"></a>MySQL主要权限</h2><table>
-<thead>
-<tr>
-<th>权限</th>
-<th>权限说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>all privileges</td>
-<td>除grant外的所有权限</td>
-</tr>
-<tr>
-<td>select</td>
-<td>通过SELECT命令选择数据</td>
-</tr>
-<tr>
-<td>insert</td>
-<td>通过INSERT命令插入数据</td>
-</tr>
-<tr>
-<td>update</td>
-<td>通过UPDATE命令修改现有数据</td>
-</tr>
-<tr>
-<td>delete</td>
-<td>通过DELETE命令删除现有数据</td>
-</tr>
-<tr>
-<td>create</td>
-<td>创建新的数据库和表</td>
-</tr>
-<tr>
-<td>drop</td>
-<td>删除现有数据库和表</td>
-</tr>
-<tr>
-<td>alter</td>
-<td>使用alter table 重命名和修改表结构</td>
-</tr>
-<tr>
-<td>reload</td>
-<td>使用flush刷新和重新加载MySQL所用各种内部缓存</td>
-</tr>
-<tr>
-<td>shutdown</td>
-<td>使用mysqladmin shutdown(关闭MySQL)</td>
-</tr>
-<tr>
-<td>process</td>
-<td>使用show full processlist查看其他用户进程，服务器管理</td>
-</tr>
-<tr>
-<td>file</td>
-<td>使用select into outfile 和load data infile命令；加载服务器上的文件</td>
-</tr>
-<tr>
-<td>grant option</td>
-<td>使用grant和revoke</td>
-</tr>
-<tr>
-<td>index</td>
-<td>使用index创建和删除表索引，用索引查询表</td>
-</tr>
-<tr>
-<td>show_db</td>
-<td>使用show databases</td>
-</tr>
-<tr>
-<td>super</td>
-<td>使用change master、kill、logs、purge、master和set global,允许mysqladmin调试登录</td>
-</tr>
-<tr>
-<td>create_tmp</td>
-<td>使用create temporary tables 创建临时表</td>
-</tr>
-<tr>
-<td>lock_tables</td>
-<td>使用LOCK TABLES命令阻止对表的访问/修改</td>
-</tr>
-<tr>
-<td>execute</td>
-<td>使用call和存储过程</td>
-</tr>
-<tr>
-<td>repl_slave</td>
-<td>读取用于维护复制数据库环境的二进制日志文件，主服务器管理</td>
-</tr>
-<tr>
-<td>repl_client</td>
-<td>可确定复制从服务器和主服务器的位置，从服务器管理</td>
-</tr>
-<tr>
-<td>create_view</td>
-<td>使用create view创建视图</td>
-</tr>
-<tr>
-<td>show_view</td>
-<td>使用show view查看视图</td>
-</tr>
-<tr>
-<td>create_routine</td>
-<td>使用create procedure,可更改或放弃存储过程和函数</td>
-</tr>
-<tr>
-<td>alter_routine</td>
-<td>使用alter procedure和drop procedure更改或放弃存储过程或函数</td>
-</tr>
-<tr>
-<td>create_user</td>
-<td>使用create user、drop user、rename user、revoke all privileges</td>
-</tr>
-<tr>
-<td>event</td>
-<td>创建、修改和删除事件</td>
-</tr>
-<tr>
-<td>trigger</td>
-<td>创建和删除触发器</td>
-</tr>
-<tr>
-<td>create_tablespace</td>
-<td>创建表空间</td>
-</tr>
-</tbody></table>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/26/数据库文件/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/08/26/数据库文件/" itemprop="url">数据库文件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-26T16:18:33+08:00">
-                2019-08-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="数据库文件"><a href="#数据库文件" class="headerlink" title="数据库文件"></a>数据库文件</h1><ul>
-<li><a href="https://mino-yn.github.io/blog/2019/08/29/my-cnf/">配置文件</a>（my.cnf）</li>
-<li>错误日志文件（error log）</li>
-<li><a href="#二进制日志文件">二进制日志文件</a>（binary log）</li>
-<li>慢查询日志（slow log）</li>
-<li>全量日志（general log）</li>
-<li>审计日志（audit log）</li>
-<li>中继日志（relay log）</li>
-<li>Pid文件</li>
-<li>Socket 文件</li>
-<li>表结构文件</li>
-<li>InnoBD 存储引擎文件</li>
-</ul>
-<h2 id="二进制日志文件"><a href="#二进制日志文件" class="headerlink" title="二进制日志文件"></a><a name="二进制日志文件">二进制日志文件</a></h2><p>记录对MySQL数据库真正<strong>执行更改</strong>的所有操作（DML语句：以INSERT、UPDATE、SELETE三种指令为核心），不包含没有修改任何数据的语句。</p>
-<h3 id="主要作用"><a href="#主要作用" class="headerlink" title="主要作用"></a>主要作用</h3><ul>
-<li><strong>完成主从复制功能</strong>，在主服务器中把所有修改数据的操作记录到binlog中，通过网路发送给从服务器，实现主从同步。</li>
-<li><strong>进行恢复操作</strong>，数据通过binlog日志，使用mysqlbinlog命令，实现基于时间点和位置的恢复操作。</li>
-</ul>
-<p>查看二进制日志文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">show binary logs              #列出当前binlog文件及值的大小</span><br><span class="line">show master status            #查看MySQL当前的日志及状态</span><br></pre></td></tr></table></figure>
-
-<h3 id="格式"><a href="#格式" class="headerlink" title="格式"></a>格式</h3><p><strong>binlog_format</strong> 代表二进制日志的格式，有 <strong>statement、row、mixed</strong> 三种。</p>
-<ul>
-<li><strong>statement</strong>：<strong>基于操作的SQL语句</strong>记录到 binlog 中。在 statement 格式下，在将日志转化格式后，日志文件中记录的是完整的SQL语句。简称SBR，不建议在生产环境中使用。</li>
-<li><strong>row</strong>：基于<strong>行的变更</strong>情况记录，记录行变更前的样子及变更后的内容，简称RBR，<strong>生产环境中推荐</strong>使用row格式。</li>
-<li><strong>mixed</strong>：混合使用 row 和 statement 格式，不建议使用。</li>
-</ul>
-<p>查看二进制文件时，需要通过 mysqlbinlog 命令来查看二进制日志，在日志转化格式后，输出至 bin.log 文件中。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#-v:可以看到具体的执行消息</span><br><span class="line">#-base64-output:把二进制日志文件转化格式</span><br><span class="line">/usr/local/mysql/bin/mysqlbinlog --no-defaults -v -v --base64-output=decode-rows /data/mysql/mysql-bin.000017&gt;bin.log</span><br></pre></td></tr></table></figure>
-
-<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><p>部分涉及binlog的相关参数介绍</p>
-<ul>
-<li>max_binlog_size：单个binlog的最大值，超过该值自动生成新的binlog文件（重启MySQL实例也会生成新的binlog文件），MySQL5.0后默认值为1G。</li>
-<li>binlog_cache_size: 为每个session分配内存，在事务过程中用来存储二进制日志的缓存，提高记录bin-log的效率。</li>
-<li>binlog_format ：代表二进制格式。</li>
-<li>expire_logs_days：二进制文件过期时间，单位：天。</li>
-<li>sync_binlog：影响binlog的刷新。</li>
-<li>log_slave_updates：搭建m-&gt;s1-&gt;s2主从框架时，设置log_slave_updates=1，实现 s1到 s2 的同步。</li>
-<li>binlog_row_image:  参数有full、minimal、noblob三个值：full：全记录；minimal：只记录要修改列的记录；noblob：记录除blog、text的所有字段，默认为full。</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/23/ssh免密登录（单向）/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/08/23/ssh免密登录（单向）/" itemprop="url">ssh免密登录</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-23T09:17:03+08:00">
-                2019-08-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="ssh登录与文件传输"><a href="#ssh登录与文件传输" class="headerlink" title="ssh登录与文件传输"></a>ssh登录与文件传输</h2><p>使用一台服务器登录另一台服务器，可直接使用SSH协议进行<strong>登录</strong>。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">格式：ssh [-l login_name] [-p port] [user@]hostname</span><br><span class="line"></span><br><span class="line">ssh 192.168.0.11                       #不指定用户，默认使用当前宿主用户名登录</span><br><span class="line">ssh root@192.168.0.11                  # 指定用户登录</span><br><span class="line">ssh -l root 192.168.0.11</span><br><span class="line">ssh root@192.168.0.11 -p 2222          # 指定端口，默认端口22</span><br><span class="line">ssh root@192.168.0.11 &quot;ls /usr/local&quot;  # 远程登录后执行某命令</span><br></pre></td></tr></table></figure>
-
-<p>可以利用scp<strong>远程传输文件</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">格式：scp [file|folder] [user@host]:[remote_folder] [-P port]</span><br><span class="line"></span><br><span class="line">scp username@servername:/path/filename                   #从服务器上下载文件</span><br><span class="line">scp -r username@servername:remote_dir/local_dir          #从服务器上下载整个目录</span><br><span class="line">scp /path/local_filename username@servername:/path       #上传本地文件至服务器</span><br><span class="line">scp  -r /tmp/local_dir username@servername:remote_dir    #上传目录至服务器</span><br></pre></td></tr></table></figure>
-
-<h2 id="设置免密登录"><a href="#设置免密登录" class="headerlink" title="设置免密登录"></a>设置免密登录</h2><p>但以上操作每次都需要输入目标服务器的密码，操作起来比较麻烦，且不适合集群服务器的批量操作。我们可以通过配置rsa私钥和公钥的方式实现免密ssh登录。</p>
-<p>这里介绍免密登录的单向配置，如果想实现双向的互信免密登录，再反向配置一遍即可。</p>
-<p>若想实现从A到B的免密登录，则A为源服务器，B为目标服务器。</p>
-<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><p>1、获取源服务器的<strong>公钥</strong>     ~/.ssh/id_rsa.pub</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># cat ~/.ssh/id_rsa.pub</span><br><span class="line">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCp7KnYj1baMhQn4FPfV6YiMogWw5cu57kfGoZYMdp8KNyJ5zmqz7UZUfmURYeoiMQB7v8oY3zVq13X8Gmmw/rzROS/vR/mqSbbnSruHh+x42oVtjZz67/UtFLTO1DT/+YmT+XkrkuI2Cx6CxWFQgThLXMNStYif3Rl0+aKC7Gb0hlPwoNT+UPHMLAW7Y2x+R7I8Tdvt75jSI4TANq8QzG+/Iy9tZiG80VC2KbgGdTkDLDZrIoftfVWihm4Ec29uJocpbxMRNpMTb7yn12ySWbY7mJ2fpqGAh+s1toF94ASPfg4Hlv6Y6lx2QumePKKIGQh1bWEOirxKljUbVfqD6NF root@hlhtapp29</span><br></pre></td></tr></table></figure>
-
-<p>2、将源服务器生成的公钥添加到目标服务器中的authorized_keys列表中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># vi ~/.ssh/authorized_keys</span><br><span class="line">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCp7KnYj1baMhQn4FPfV6YiMogWw5cu57kfGoZYMdp8KNyJ5zmqz7UZUfmURYeoiMQB7v8oY3zVq13X8Gmmw/rzROS/vR/mqSbbnSruHh+x42oVtjZz67/UtFLTO1DT/+YmT+XkrkuI2Cx6CxWFQgThLXMNStYif3Rl0+aKC7Gb0hlPwoNT+UPHMLAW7Y2x+R7I8Tdvt75jSI4TANq8QzG+/Iy9tZiG80VC2KbgGdTkDLDZrIoftfVWihm4Ec29uJocpbxMRNpMTb7yn12ySWbY7mJ2fpqGAh+s1toF94ASPfg4Hlv6Y6lx2QumePKKIGQh1bWEOirxKljUbVfqD6NF root@hlhtapp29</span><br></pre></td></tr></table></figure>
-
-<p>3、如果源服务器没有公钥，或目标服务器中没有authorized_keys文件，可通过执行ssh-keygen生成新的密钥。</p>
-<p><strong>注意</strong>：若服务器中原本存在公钥和私钥，执行ssh-keygen命令会生成新的公钥和私钥对原有的密钥进行覆盖，可能导致之前配置的互信不可用。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"># ssh-keygen</span><br><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file in which to save the key (/root/.ssh/id_rsa): </span><br><span class="line">/root/.ssh/id_rsa already exists.</span><br><span class="line">Overwrite (y/n)? y</span><br><span class="line">Enter passphrase (empty for no passphrase): </span><br><span class="line">Enter same passphrase again: </span><br><span class="line">Your identification has been saved in /root/.ssh/id_rsa.    ##id_rsa:私钥  </span><br><span class="line">Your public key has been saved in /root/.ssh/id_rsa.pub.    ##id_rsa.pub:公钥</span><br><span class="line">The key fingerprint is:</span><br><span class="line">SHA256:4qHMkrfb8bchDuoYV1DjGFy3JYzegeCidBa5yRvmBAU root@CSB-service-2</span><br><span class="line">The key&apos;s randomart image is:</span><br><span class="line">+---[RSA 2048]----+</span><br><span class="line">| Eo++o++o .      |</span><br><span class="line">| . oo=ooo+       |</span><br><span class="line">| .+o*.....       |</span><br><span class="line">|..oO .. .        |</span><br><span class="line">|. + o + S        |</span><br><span class="line">|   * + o         |</span><br><span class="line">|  + * + . .      |</span><br><span class="line">|   * + = ...     |</span><br><span class="line">|  ..=.. o...     |</span><br><span class="line">+----[SHA256]-----+</span><br></pre></td></tr></table></figure>
-
-<p><strong>服务器初始化</strong></p>
-<p>若目标服务器未初始化，首先进行服务器初始化，提升权限，开启22端口。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"># /bin/bash</span><br><span class="line"></span><br><span class="line">if [ $(id -u) != &quot;0&quot; ]; then</span><br><span class="line">errorLog &quot;错误：请用root账户运行此脚本&quot;</span><br><span class="line">exit 1</span><br><span class="line">fi</span><br><span class="line">echo &quot;提升权限...&quot;</span><br><span class="line">if [[ ! `cat /etc/sudoers | grep -v grep | grep haieradmin` ]] ; then</span><br><span class="line">    echo &quot;需要提升权限。。。&quot;</span><br><span class="line">    sed -i &apos;/## Allow root to run any commands anywhere / a\haieradmin ALL=(ALL) NOPASSWD:ALL&apos; /etc/sudoers</span><br><span class="line">    if [[ ! `cat /etc/sudoers | grep -v grep | grep haieradmin` ]] ; then</span><br><span class="line">        echo &quot;权限提升失败...&quot;</span><br><span class="line">    else</span><br><span class="line">        echo &quot;权限提升成功...&quot;</span><br><span class="line">    fi</span><br><span class="line">else</span><br><span class="line">    echo &quot;haieradmin已经是sudoers&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">echo &quot;开启22端口访问...&quot;</span><br><span class="line">firewall-cmd --permanent --zone=public --add-port=22/tcp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line"></span><br><span class="line">echo &quot;删除hosts.deny...&quot;</span><br><span class="line">sed -i &apos;s/sshd:all/ /g&apos; /etc/hosts.deny</span><br><span class="line"></span><br><span class="line">echo &quot;追加hosts.allow...&quot;</span><br><span class="line">if [[ `cat /etc/hosts.allow | grep -v 10.138.*.*` ]]; then</span><br><span class="line">    echo &quot;追加10.138.*.*&quot;</span><br><span class="line">    echo &quot;sshd:10.138.*.*&quot; &gt;&gt; /etc/hosts.allow</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
-
-<p><strong>配置免密脚本下载</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/sshFreeLogin.sh</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/23/Common-SQL/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/08/23/Common-SQL/" itemprop="url">Linux下MySQL常用命令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-23T09:16:24+08:00">
-                2019-08-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="开启与关闭"><a href="#开启与关闭" class="headerlink" title="开启与关闭"></a>开启与关闭</h2><h3 id="开启"><a href="#开启" class="headerlink" title="开启"></a>开启</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service mysql start               #使用service启动</span><br><span class="line">/etc/init.d/mysqld start          #使用mysqld脚本启动服务</span><br></pre></td></tr></table></figure>
-
-<h3 id="关闭"><a href="#关闭" class="headerlink" title="关闭"></a>关闭</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service mysql stop                #使用service启动</span><br><span class="line">/etc/init.d/mysqld stop           #使用mysqld脚本关闭服务</span><br></pre></td></tr></table></figure>
-
-<h3 id="重启"><a href="#重启" class="headerlink" title="重启"></a>重启</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service mysql restart             #使用service启动</span><br><span class="line">/etc/inint.d/mysql restart        #使用mysqld脚本重启服务</span><br></pre></td></tr></table></figure>
-
-<h3 id="查看"><a href="#查看" class="headerlink" title="查看"></a>查看</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep mysqld              #查看MySQL启动进程，验证是否启动成功</span><br></pre></td></tr></table></figure>
-
-<h2 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql -u 用户名 -p 密码            #密码明文</span><br><span class="line">mysql -u 用户名 -p                #密码密文</span><br></pre></td></tr></table></figure>
-
-<h2 id="修改密码"><a href="#修改密码" class="headerlink" title="修改密码"></a>修改密码</h2><h3 id="SET-PASSWORD命令（需登录）"><a href="#SET-PASSWORD命令（需登录）" class="headerlink" title="SET PASSWORD命令（需登录）"></a>SET PASSWORD命令（需登录）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">语法：mysql&gt; set password for 用户名@localhost = password(&apos;新密码&apos;);</span><br><span class="line">举例：mysql&gt;set password for root@localhost = password(&apos;123456&apos;);</span><br></pre></td></tr></table></figure>
-
-<h3 id="使用sql语句更新-mysql-库中的-user-表（需登录）"><a href="#使用sql语句更新-mysql-库中的-user-表（需登录）" class="headerlink" title="使用sql语句更新 mysql 库中的 user 表（需登录）"></a>使用sql语句更新 mysql 库中的 user 表（需登录）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; use mysql; </span><br><span class="line">mysql&gt; update user set password=password(&apos;123&apos;) where user=&apos;root&apos; and host=&apos;localhost&apos;; </span><br><span class="line">mysql&gt; flush privileges;</span><br></pre></td></tr></table></figure>
-
-<h3 id="mysqladmin命令，明文（不需登录）"><a href="#mysqladmin命令，明文（不需登录）" class="headerlink" title="mysqladmin命令，明文（不需登录）"></a>mysqladmin命令，明文（不需登录）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">语法：mysqladmin -u用户名 -p旧密码 password 新密码</span><br><span class="line">举例：mysqladmin -uroot -p123 password 123456</span><br></pre></td></tr></table></figure>
-
-<h3 id="mysqladmin命令，密文（不需登录）"><a href="#mysqladmin命令，密文（不需登录）" class="headerlink" title="mysqladmin命令，密文（不需登录）"></a>mysqladmin命令，密文（不需登录）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">语法：mysqladmin -u用户名 -p旧密码 password+回车，然后输入两次新密码</span><br><span class="line">举例：mysqladmin -uroot -p123 password</span><br></pre></td></tr></table></figure>
-
-<h2 id="常用操作"><a href="#常用操作" class="headerlink" title="常用操作"></a>常用操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">SHOW DATABASES;                             #返回可用数据库列表</span><br><span class="line">USE db_name;                                #选择数据库</span><br><span class="line">SHOW STATUS;                                #用于显示广泛的服务器状态信息</span><br><span class="line">Show variables like &apos;%参数名%&apos;;              #查看MySQL数据库中的参数</span><br><span class="line">select version() from dual;                 #查看数据库版本信息</span><br><span class="line">SHOW COLUMNS FROM tbl_name;                 #返回tbl_name表中每个字段的信息</span><br><span class="line">show processlist;                           #显示用户正在运行的线程</span><br><span class="line">show binary logs;                           #列出当前binlog文件及值的大小</span><br><span class="line">show master status                          #查看MySQL当前的日志及状态</span><br><span class="line">show slave status \G                        #查看从属服务器线程的参数关键信息</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2087,7 +2001,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
