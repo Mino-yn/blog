@@ -79,22 +79,22 @@
 
 
 
-<meta name="description" content="有时需要将本地服务器数据库中的数据迁移至云数据库RDS，可以借助 HeidiSQL 工具进行，达到事半功倍的效果。 操作步骤准备工作1、HeidiSQL 对数据的导入导出功能是借助 mysqldump 实现的，所以在整个迁移过程过程中数据库需停库。 2、 为要进行迁移的 RDS 数据库创建高权限账号 rds 用于导入数据。 导出数据1、选择要导出的数据库或数据表，单击鼠标右键，选择导出数据脚本。">
+<meta name="description" content="使用 HeidiSQL 工具有时需要将本地服务器数据库中的数据迁移至云数据库RDS，可以借助 HeidiSQL 工具进行，达到事半功倍的效果。 操作步骤准备工作1、HeidiSQL 对数据的导入导出功能是借助 mysqldump 实现的，所以在整个迁移过程过程中数据库需停库。 2、 为要进行迁移的 RDS 数据库创建高权限账号 rds 用于导入数据。 导出数据1、选择要导出的数据库或数据表，单击鼠">
 <meta name="keywords" content="工具,数据迁移">
 <meta property="og:type" content="article">
 <meta property="og:title" content="本地数据库迁移至RDS">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2019/11/08/HeidiSQL-import-DATA/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="有时需要将本地服务器数据库中的数据迁移至云数据库RDS，可以借助 HeidiSQL 工具进行，达到事半功倍的效果。 操作步骤准备工作1、HeidiSQL 对数据的导入导出功能是借助 mysqldump 实现的，所以在整个迁移过程过程中数据库需停库。 2、 为要进行迁移的 RDS 数据库创建高权限账号 rds 用于导入数据。 导出数据1、选择要导出的数据库或数据表，单击鼠标右键，选择导出数据脚本。">
+<meta property="og:description" content="使用 HeidiSQL 工具有时需要将本地服务器数据库中的数据迁移至云数据库RDS，可以借助 HeidiSQL 工具进行，达到事半功倍的效果。 操作步骤准备工作1、HeidiSQL 对数据的导入导出功能是借助 mysqldump 实现的，所以在整个迁移过程过程中数据库需停库。 2、 为要进行迁移的 RDS 数据库创建高权限账号 rds 用于导入数据。 导出数据1、选择要导出的数据库或数据表，单击鼠">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data3.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data4.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data5.png">
-<meta property="og:updated_time" content="2019-11-21T05:57:52.987Z">
+<meta property="og:updated_time" content="2019-11-22T08:34:31.616Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="本地数据库迁移至RDS">
-<meta name="twitter:description" content="有时需要将本地服务器数据库中的数据迁移至云数据库RDS，可以借助 HeidiSQL 工具进行，达到事半功倍的效果。 操作步骤准备工作1、HeidiSQL 对数据的导入导出功能是借助 mysqldump 实现的，所以在整个迁移过程过程中数据库需停库。 2、 为要进行迁移的 RDS 数据库创建高权限账号 rds 用于导入数据。 导出数据1、选择要导出的数据库或数据表，单击鼠标右键，选择导出数据脚本。">
+<meta name="twitter:description" content="使用 HeidiSQL 工具有时需要将本地服务器数据库中的数据迁移至云数据库RDS，可以借助 HeidiSQL 工具进行，达到事半功倍的效果。 操作步骤准备工作1、HeidiSQL 对数据的导入导出功能是借助 mysqldump 实现的，所以在整个迁移过程过程中数据库需停库。 2、 为要进行迁移的 RDS 数据库创建高权限账号 rds 用于导入数据。 导出数据1、选择要导出的数据库或数据表，单击鼠">
 <meta name="twitter:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data.png">
 
 
@@ -357,7 +357,7 @@
       
 
       
-        <p>有时需要将本地服务器数据库中的数据迁移至云数据库RDS，可以借助 <code>HeidiSQL</code> 工具进行，达到事半功倍的效果。</p>
+        <h2 id="使用-HeidiSQL-工具"><a href="#使用-HeidiSQL-工具" class="headerlink" title="使用 HeidiSQL 工具"></a>使用 <code>HeidiSQL</code> 工具</h2><p>有时需要将本地服务器数据库中的数据迁移至云数据库RDS，可以借助 <code>HeidiSQL</code> 工具进行，达到事半功倍的效果。</p>
 <h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><h4 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h4><p>1、<code>HeidiSQL</code> 对数据的导入导出功能是借助 <code>mysqldump</code> 实现的，所以在整个迁移过程过程中数据库需<strong>停库</strong>。</p>
 <p>2、 为要进行迁移的 RDS 数据库创建高权限账号 <code>rds</code> 用于导入数据。</p>
 <h4 id="导出数据"><a href="#导出数据" class="headerlink" title="导出数据"></a>导出数据</h4><p>1、选择要导出的数据库或数据表，单击鼠标右键，选择导出数据脚本。</p>
@@ -411,6 +411,46 @@
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data4.png" alt></p>
 <p>2、选择要执行的 sql 脚本，点击打开，数据导入成功。</p>
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data5.png" alt></p>
+<h2 id="使用-mysqldump-在服务器操作"><a href="#使用-mysqldump-在服务器操作" class="headerlink" title="使用 mysqldump 在服务器操作"></a>使用 <code>mysqldump</code> 在服务器操作</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>使用 <code>HeidiSQL</code> 工具进行导入时，有时会提示需要 <code>Super</code> 权限。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Access denied; you need (at least one of) the SUPER privilege(s) for this operation</span><br></pre></td></tr></table></figure>
+
+<p>此时可借助 <code>mysqldump</code> 工具进行操作</p>
+<p><strong>错误出现场景</strong></p>
+<ul>
+<li>在创建 存储过程、函数、触发器、事件、视图的时候出现这个错误。</li>
+<li>从本地数据库导出 <code>SQL</code>，在 <code>RDS</code> 上应用该 <code>SQL</code> 的时候出现该错误。</li>
+<li>从 <code>RDS</code>  数据库实例中进行逻辑备份，导入到 <code>RDS</code> 或本地数据库中。</li>
+</ul>
+<p><strong>错误出现原因</strong></p>
+<ul>
+<li>导入<code>RDS MySQL</code> 实例：<code>SQL</code>  语句中含有需要 <code>Supper</code> 权限才可以执行的语句，而 <code>RDS MySQL</code>不提供 <code>Super</code>  权限，因此需要去除这类语句。</li>
+<li>本地 <code>MySQL</code> 实例没有启用 <code>GTID</code>。</li>
+</ul>
+<h3 id="操作步骤-1"><a href="#操作步骤-1" class="headerlink" title="操作步骤"></a>操作步骤</h3><ul>
+<li>使用 <code>mysqldump</code> 只导出本地数据库中的数据和表结构到<code>RDS</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">导出数据</span><br><span class="line">/usr/local/mysql/bin/mysqldump  --single-transaction -S/data/mysql/mysql@3307/mysql.sock -usre  -p&apos;sre@@p$i&apos; shin_survey &gt;shin_survey.sql</span><br><span class="line"></span><br><span class="line">如果本地数据库所在服务器无法连接至RDS，可将备份文件传输至10.133.0.53</span><br><span class="line">scp shin_survey.sql root@10.133.0.53:/tmp</span><br><span class="line"></span><br><span class="line">还原数据库</span><br><span class="line">mysql -h rm-m5eh7vm829l4n623o.mysql.rds.aliyuncs.com -P3306 -u rds -p&apos;Changeme_123&apos; shin_survey &lt; shin_survey.sql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>mysqldump</code> 单独导出存储过程、函数</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">只导出存储过程和函数(不导出结构和数据)</span><br><span class="line">/usr/local/mysql/bin/mysqldump -R -ndt  -S/data/mysql/mysql@3307/mysql.sock -usre  -p&apos;sre@@p$i&apos; shin_survey &gt;shin_survey1.sql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查导出的 <code>SQL</code> 去除类似如下子句</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DEFINER=`root`@`%`</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>修改完毕后，通过下面的语句检查是否合乎要求。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">egrep -in &quot;definer|set @@&quot; shin_survey1.sql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>还原存储过程和函数至数据库</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">如果本地数据库所在服务器无法连接至RDS，可将备份文件传输至10.133.0.53</span><br><span class="line">scp shin_survey1.sql root@10.133.0.53:/tmp</span><br><span class="line"></span><br><span class="line">还原存储过程和函数至数据库</span><br><span class="line">mysql -h rm-m5eh7vm829l4n623o.mysql.rds.aliyuncs.com -P3306 -u rds -p&apos;Changeme_123&apos; shin_survey &lt; shin_survey1.sql</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -578,7 +618,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#操作步骤"><span class="nav-number">1.</span> <span class="nav-text">操作步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#准备工作"><span class="nav-number">1.1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#导出数据"><span class="nav-number">1.2.</span> <span class="nav-text">导出数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#导入数据"><span class="nav-number">1.3.</span> <span class="nav-text">导入数据</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-HeidiSQL-工具"><span class="nav-number">1.</span> <span class="nav-text">使用 HeidiSQL 工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#操作步骤"><span class="nav-number">1.1.</span> <span class="nav-text">操作步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#准备工作"><span class="nav-number">1.1.1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#导出数据"><span class="nav-number">1.1.2.</span> <span class="nav-text">导出数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#导入数据"><span class="nav-number">1.1.3.</span> <span class="nav-text">导入数据</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-mysqldump-在服务器操作"><span class="nav-number">2.</span> <span class="nav-text">使用 mysqldump 在服务器操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">2.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作步骤-1"><span class="nav-number">2.2.</span> <span class="nav-text">操作步骤</span></a></li></ol></li></ol></div>
             
 
           </div>
