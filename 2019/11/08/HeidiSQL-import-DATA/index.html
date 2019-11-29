@@ -91,7 +91,7 @@
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data3.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data4.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data5.png">
-<meta property="og:updated_time" content="2019-11-22T08:34:31.616Z">
+<meta property="og:updated_time" content="2019-11-22T08:39:48.338Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="本地数据库迁移至RDS">
 <meta name="twitter:description" content="使用 HeidiSQL 工具有时需要将本地服务器数据库中的数据迁移至云数据库RDS，可以借助 HeidiSQL 工具进行，达到事半功倍的效果。 操作步骤准备工作1、HeidiSQL 对数据的导入导出功能是借助 mysqldump 实现的，所以在整个迁移过程过程中数据库需停库。 2、 为要进行迁移的 RDS 数据库创建高权限账号 rds 用于导入数据。 导出数据1、选择要导出的数据库或数据表，单击鼠">
@@ -429,7 +429,7 @@
 <h3 id="操作步骤-1"><a href="#操作步骤-1" class="headerlink" title="操作步骤"></a>操作步骤</h3><ul>
 <li>使用 <code>mysqldump</code> 只导出本地数据库中的数据和表结构到<code>RDS</code></li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">导出数据</span><br><span class="line">/usr/local/mysql/bin/mysqldump  --single-transaction -S/data/mysql/mysql@3307/mysql.sock -usre  -p&apos;sre@@p$i&apos; shin_survey &gt;shin_survey.sql</span><br><span class="line"></span><br><span class="line">如果本地数据库所在服务器无法连接至RDS，可将备份文件传输至10.133.0.53</span><br><span class="line">scp shin_survey.sql root@10.133.0.53:/tmp</span><br><span class="line"></span><br><span class="line">还原数据库</span><br><span class="line">mysql -h rm-m5eh7vm829l4n623o.mysql.rds.aliyuncs.com -P3306 -u rds -p&apos;Changeme_123&apos; shin_survey &lt; shin_survey.sql</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">导出数据</span><br><span class="line">/usr/local/mysql/bin/mysqldump  --single-transaction -S/data/mysql/mysql@3307/mysql.sock -usre  -p&apos;sre@@p$i&apos; shin_survey &gt;shin_survey.sql</span><br><span class="line"></span><br><span class="line">如果本地数据库所在服务器无法连接至RDS，可将备份文件传输至10.133.0.53</span><br><span class="line">scp shin_survey.sql root@10.133.0.53:/tmp</span><br><span class="line"></span><br><span class="line">还原数据至RDS</span><br><span class="line">mysql -h rm-m5eh7vm829l4n623o.mysql.rds.aliyuncs.com -P3306 -u rds -p&apos;Changeme_123&apos; shin_survey &lt; shin_survey.sql</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>使用 <code>mysqldump</code> 单独导出存储过程、函数</li>
@@ -572,7 +572,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-count">56</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
