@@ -1,6 +1,290 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Linux · 升级GLIBCXX</title>
+    <url>/blog/2019/12/10/Linux-GLIBCXX/</url>
+    <content><![CDATA[<h3 id="报错信息"><a href="#报错信息" class="headerlink" title="报错信息"></a>报错信息</h3><p>安装软件时有时会遇到以下报错：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/usr/lib64/libstdc++.so.6: version `GLIBCXX_3.4.15&apos; not found</span><br></pre></td></tr></table></figure>
+
+<p>出现该错误的原因是当前的 <code>GCC</code> 版本中，没有 <code>GLIBCXX_3.4.15</code> ，须要安装更高版本。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">strings /usr/lib64/libstdc++.so.6 | grep GLIBC</span><br><span class="line">GLIBCXX_3.4</span><br><span class="line">GLIBCXX_3.4.1</span><br><span class="line">GLIBCXX_3.4.2</span><br><span class="line">GLIBCXX_3.4.3</span><br><span class="line">GLIBCXX_3.4.4</span><br><span class="line">GLIBCXX_3.4.5</span><br><span class="line">GLIBCXX_3.4.6</span><br><span class="line">GLIBCXX_3.4.7</span><br><span class="line">GLIBCXX_3.4.8</span><br><span class="line">GLIBCXX_3.4.9</span><br><span class="line">GLIBCXX_3.4.10</span><br><span class="line">GLIBCXX_3.4.11</span><br><span class="line">GLIBCXX_3.4.12</span><br><span class="line">GLIBCXX_3.4.13</span><br><span class="line">GLIBC_2.2.5</span><br><span class="line">GLIBC_2.3</span><br><span class="line">GLIBC_2.4</span><br><span class="line">GLIBC_2.3.2</span><br><span class="line">GLIBCXX_FORCE_NEW</span><br><span class="line">GLIBCXX_DEBUG_MESSAGE_LENGTH</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>从其它的机器上或者网上直接下载 <code>libstdc++.so.6.0.18</code> 版本（不限本版本，这个版本可以支持）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#直接下载至/usr/lib64目录下，注意确认没有重名文件</span><br><span class="line">cd /usr/lib64/</span><br><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/libstdc%2B%2B.so.6.0.18</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">chmod +x libstdc++.so.6.0.18</span><br><span class="line">mv libstdc++.so.6 libstdc++.so.6-old</span><br><span class="line">ln -sf libstdc++.so.6.0.18 libstdc++.so.6</span><br></pre></td></tr></table></figure>
+
+<p>重新查看当前 <code>GCC</code> 版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">strings /usr/lib64/libstdc++.so.6 | grep GLIBC</span><br><span class="line">GLIBCXX_3.4</span><br><span class="line">GLIBCXX_3.4.1</span><br><span class="line">GLIBCXX_3.4.2</span><br><span class="line">GLIBCXX_3.4.3</span><br><span class="line">GLIBCXX_3.4.4</span><br><span class="line">GLIBCXX_3.4.5</span><br><span class="line">GLIBCXX_3.4.6</span><br><span class="line">GLIBCXX_3.4.7</span><br><span class="line">GLIBCXX_3.4.8</span><br><span class="line">GLIBCXX_3.4.9</span><br><span class="line">GLIBCXX_3.4.10</span><br><span class="line">GLIBCXX_3.4.11</span><br><span class="line">GLIBCXX_3.4.12</span><br><span class="line">GLIBCXX_3.4.13</span><br><span class="line">GLIBCXX_3.4.14</span><br><span class="line">GLIBCXX_3.4.15</span><br><span class="line">GLIBCXX_3.4.16</span><br><span class="line">GLIBCXX_3.4.17</span><br><span class="line">GLIBCXX_3.4.18</span><br><span class="line">GLIBCXX_3.4.19</span><br><span class="line">GLIBC_2.3</span><br><span class="line">GLIBC_2.2.5</span><br><span class="line">GLIBC_2.3.2</span><br><span class="line">GLIBCXX_FORCE_NEW</span><br><span class="line">GLIBCXX_FORCE_NEW</span><br><span class="line">GLIBCXX_DEBUG_MESSAGE_LENGTH</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>RDS数据同步</title>
+    <url>/blog/2019/12/09/RDS-data-synchronization/</url>
+    <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>有些项目进行测试时，需要建一个开发库的测试库，要求和生产环境的数据一样，做一个数据同步。如果原生产库和所要建的测试库都在阿里云上，可以使用 <code>RDS</code> 进行数据库克隆。</p>
+<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><ul>
+<li><p>创建测试数据库</p>
+</li>
+<li><p>为测试数据库创建读写账号</p>
+</li>
+</ul>
+<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><p>1、使用高权限用户 <code>rds</code> 登录 <code>RDS</code> 数据库。</p>
+<p>2、选择 <code>数据方案</code> -&gt; <code>数据库克隆</code></p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/RDS%20Data%20Copy0.png" alt></p>
+<p>3、选择源库-&gt;选择克隆目标库-&gt;选项-&gt;进行克隆-&gt;克隆结果</p>
+<ul>
+<li><p>选项</p>
+<p>重点对象处理：跳过重点对象</p>
+<p>时间选项：立即执行</p>
+<p>迁移附加选项：视图、存储过程、函数、触发器、事件</p>
+</li>
+</ul>
+<p>克隆结束后查看克隆结果，无执行失败的情况，则克隆成功。</p>
+]]></content>
+      <tags>
+        <tag>数据迁移</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>案例5 · 数据库无法连接</title>
+    <url>/blog/2019/12/09/Database-cannot-connect/</url>
+    <content><![CDATA[<h3 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h3><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Database%20cannot%20connection1.png" alt></p>
+<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@cosmo-hce01bak etc]# /etc/init.d/mysqld start</span><br><span class="line">Starting MySQL.sed: -e expression #1, char 14: unknown option to `s&apos;</span><br></pre></td></tr></table></figure>
+
+<p>查看配置文件 <code>my.cnf</code>，发现第14行中存在不必要的分割符/</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">my.cnf</span><br><span class="line">binlog//_format = mixed</span><br></pre></td></tr></table></figure>
+
+<p>将分隔符/删掉后重新启动</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@cosmo-hce01bak etc]# /etc/init.d/mysqld start</span><br><span class="line">Starting MySQL... ERROR! The server quit without updating PID file (/home/data/mysql3306/mysql.pid).</span><br></pre></td></tr></table></figure>
+
+<p>查看错误日志</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">2019-12-09T09:01:04.701323+08:00 0 [Warning] TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_timestamp server option (see documentation for more details).</span><br><span class="line">2019-12-09T09:01:04.701428+08:00 0 [Note] --secure-file-priv is set to NULL. Operations related to importing and exporting data are disabled</span><br><span class="line">2019-12-09T09:01:04.701456+08:00 0 [Note] /usr/local/mysql3306/bin/mysqld (mysqld 5.7.23-log) starting as process 36914 ...</span><br><span class="line">2019-12-09T09:01:04.708255+08:00 0 [Note] InnoDB: PUNCH HOLE support available</span><br><span class="line">2019-12-09T09:01:04.708294+08:00 0 [Note] InnoDB: Mutexes and rw_locks use GCC atomic builtins</span><br><span class="line">2019-12-09T09:01:04.708298+08:00 0 [Note] InnoDB: Uses event mutexes</span><br><span class="line">2019-12-09T09:01:04.708309+08:00 0 [Note] InnoDB: GCC builtin __sync_synchronize() is used for memory barrier</span><br><span class="line">2019-12-09T09:01:04.708313+08:00 0 [Note] InnoDB: Compressed tables use zlib 1.2.3</span><br><span class="line">2019-12-09T09:01:04.708316+08:00 0 [Note] InnoDB: Using Linux native AIO</span><br><span class="line">2019-12-09T09:01:04.709838+08:00 0 [Note] InnoDB: Number of pools: 1</span><br><span class="line">2019-12-09T09:01:04.709926+08:00 0 [Note] InnoDB: Using CPU crc32 instructions</span><br><span class="line">2019-12-09T09:01:04.711619+08:00 0 [Note] InnoDB: Initializing buffer pool, total size = 22G, instances = 8, chunk size = 128M</span><br><span class="line">2019-12-09T09:01:06.070773+08:00 0 [Note] InnoDB: Completed initialization of buffer pool</span><br><span class="line">2019-12-09T09:01:06.359814+08:00 0 [ERROR] [FATAL] InnoDB: pthread_create returned 11</span><br><span class="line">2019-12-09 09:01:06 0x7f4b98c20780  InnoDB: Assertion failure in thread 139962662127488 in file ut0ut.cc line 942</span><br><span class="line">InnoDB: We intentionally generate a memory trap.</span><br><span class="line">InnoDB: Submit a detailed bug report to http://bugs.mysql.com.</span><br><span class="line">InnoDB: If you get repeated assertion failures or crashes, even</span><br><span class="line">InnoDB: immediately after the mysqld startup, there may be</span><br><span class="line">InnoDB: corruption in the InnoDB tablespace. Please refer to</span><br><span class="line">InnoDB: http://dev.mysql.com/doc/refman/5.7/en/forcing-innodb-recovery.html</span><br><span class="line">InnoDB: about forcing recovery.</span><br><span class="line">01:01:06 UTC - mysqld got signal 6 ;</span><br><span class="line">This could be because you hit a bug. It is also possible that this binary</span><br><span class="line">or one of the libraries it was linked against is corrupt, improperly built,</span><br><span class="line">or misconfigured. This error can also be caused by malfunctioning hardware.</span><br><span class="line">Attempting to collect some information that could help diagnose the problem.</span><br><span class="line">As this is a crash and something is definitely wrong, the information</span><br><span class="line">collection process might fail.</span><br><span class="line"></span><br><span class="line">2019-12-09T09:01:06.359861+08:00 0 [Note] InnoDB: If the mysqld execution user is authorized, page cleaner thread priority can be changed. See the man page of setpriority().</span><br><span class="line">key_buffer_size=67108864</span><br><span class="line">read_buffer_size=2097152</span><br><span class="line">max_used_connections=0</span><br><span class="line">max_threads=4000</span><br><span class="line">thread_count=0</span><br><span class="line">connection_count=0</span><br><span class="line">It is possible that mysqld could use up to</span><br><span class="line">key_buffer_size + (read_buffer_size + sort_buffer_size)*max_threads = 16503036 K  bytes of memory</span><br><span class="line">Hope that&apos;s ok; if not, decrease some variables in the equation.</span><br><span class="line"></span><br><span class="line">Thread pointer: 0x0</span><br><span class="line">Attempting backtrace. You can use the following information to find out</span><br><span class="line">where mysqld died. If you see no messages after this, something went</span><br><span class="line">terribly wrong...</span><br><span class="line">stack_bottom = 0 thread_stack 0x30000</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(my_print_stacktrace+0x35)[0xf4e5e5]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(handle_fatal_signal+0x4a4)[0x7d1b64]</span><br><span class="line">/lib64/libpthread.so.0(+0xf5d0)[0x7f4b988005d0]</span><br><span class="line">/lib64/libc.so.6(gsignal+0x37)[0x7f4b971e9207]</span><br><span class="line">/lib64/libc.so.6(abort+0x148)[0x7f4b971ea8f8]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(_Z18ut_print_timestampP8_IO_FILE+0x0)[0x7c0f4e]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(_ZN2ib5fatalD1Ev+0xb3)[0x11ab913]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(_Z21os_thread_create_funcPFPvS_ES_Pm+0x277)[0x10c1f97]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(_Z34innobase_start_or_create_for_mysqlv+0x1acc)[0x1162e8c]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld[0x1044c3a]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(_Z24ha_initialize_handlertonP13st_plugin_int+0x51)[0x81d5b1]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld[0xd3be16]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(_Z40plugin_register_builtin_and_init_core_sePiPPc+0x3e4)[0xd3cff4]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld[0x7c8047]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(_Z11mysqld_mainiPPc+0x92f)[0x7cb63f]</span><br><span class="line">/lib64/libc.so.6(__libc_start_main+0xf5)[0x7f4b971d53d5]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld[0x7c1cb9]</span><br><span class="line">The manual page at http://dev.mysql.com/doc/mysql/en/crashing.html contains</span><br><span class="line">information that should help you find out what is causing the crash.</span><br></pre></td></tr></table></figure>
+
+<p>free指令查看内存：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@cosmo-hce01bak data]# free</span><br><span class="line">              total        used        free      shared  buff/cache   available</span><br><span class="line">Mem:       32656552      747216    22193532      157684     9715804    31254364</span><br><span class="line">Swap:      10485756           0    10485756</span><br></pre></td></tr></table></figure>
+
+<p>配置文件中配置的 <code>MySQL</code> 内存大小为 <code>22GB</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">innodb_buffer_pool_size = 22528M      #23068672KB</span><br></pre></td></tr></table></figure>
+
+<p>剩余的内存空间少于22GB，将配置文件中 <code>innodb_buffer_pool_size</code> 参数改小后启动MySQL，启动成功。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@cosmo-hce01bak data]# /etc/init.d/mysqld start</span><br><span class="line">Starting MySQL...... SUCCESS!</span><br><span class="line">[root@cosmo-hce01bak data]# ps -ef|grep mysqld</span><br><span class="line">root      67122      1  0 10:20 pts/1    00:00:00 /bin/sh /usr/local/mysql3306/bin/mysqld_safe --datadir=/home/data/mysql3306/data --pid-file=/home/data/mysql3306/mysql.pid</span><br><span class="line">mysql     68120  67122 99 10:20 pts/1    00:00:23 /usr/local/mysql3306/bin/mysqld --basedir=/usr/local/mysql3306 --datadir=/home/data/mysql3306/data --plugin-dir=/usr/local/mysql3306/lib/plugin --user=mysql --log-error=err.log --open-files-limit=65536 --pid-file=/home/data/mysql3306/mysql.pid --socket=/home/data/mysql3306/mysql.sock --port=3306</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>案例</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Explain(上)</title>
+    <url>/blog/2019/12/06/MySQL-Explain1/</url>
+    <content><![CDATA[<p>简介</p>
+<p>使用 <code>EXPLAIN</code> 语句可以得到经过 <code>MySQL</code> 查询优化器优化后生成的执行计划，本章目的就是明白使用<code>EXPLAIN</code> 语句所得到的各个输出项的作用。</p>
+<p><code>EXPLAIN</code> 语句输出各列的大体作用：</p>
+<table>
+<thead>
+<tr>
+<th align="center">列名</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>id</code></td>
+<td align="left">在一个大的查询语句中每个<code>SELECT</code>关键字都对应一个唯一的<code>id</code></td>
+</tr>
+<tr>
+<td align="center"><code>select_type</code></td>
+<td align="left"><code>SELECT</code>关键字对应的那个查询的类型</td>
+</tr>
+<tr>
+<td align="center"><code>table</code></td>
+<td align="left">表名</td>
+</tr>
+<tr>
+<td align="center"><code>partitions</code></td>
+<td align="left">匹配的分区信息</td>
+</tr>
+<tr>
+<td align="center"><code>type</code></td>
+<td align="left">针对单表的访问方法</td>
+</tr>
+<tr>
+<td align="center"><code>possible_keys</code></td>
+<td align="left">可能用到的索引</td>
+</tr>
+<tr>
+<td align="center"><code>key</code></td>
+<td align="left">实际上使用的索引</td>
+</tr>
+<tr>
+<td align="center"><code>key_len</code></td>
+<td align="left">实际使用到的索引长度</td>
+</tr>
+<tr>
+<td align="center"><code>ref</code></td>
+<td align="left">当使用索引列等值查询时，与索引列进行等值匹配的对象信息</td>
+</tr>
+<tr>
+<td align="center"><code>rows</code></td>
+<td align="left">预估的需要读取的记录条数</td>
+</tr>
+<tr>
+<td align="center"><code>filtered</code></td>
+<td align="left">某个表经过搜索条件过滤后剩余记录条数的百分比</td>
+</tr>
+<tr>
+<td align="center"><code>Extra</code></td>
+<td align="left">一些额外的信息</td>
+</tr>
+</tbody></table>
+<p>各列详解</p>
+<p><strong>table</strong></p>
+<p><code>EXPLAIN</code> 语句输出的每条记录都对应着某个单表的访问方法，该条记录的 <code>table</code> 列代表该表表名。</p>
+<p><strong>id</strong></p>
+<p>当查询中包含 <code>子查询</code> 或包含 <code>UNION</code> 语句时一条查询语句可能会出现多个 <code>SELECT</code> 关键字。 查询语句中每出现一个 <code>SELECT</code> 关键字，便分配一个唯一的 <code>id</code> 值。 </p>
+<p>可以通过查看执行计划中的 <code>id</code> ，知道查询优化器是否对涉及子查询的查询语句进行重写，转换成连接查询。</p>
+<p>连接查询的执行计划中，每个表对应一条记录，这些记录的 <code>id</code> 列的值相同，出现在前面的表示驱动表，出现在后面的表示被驱动表。</p>
+<p><strong>select_type</strong></p>
+<p>一条大的查询语句中可以包含若干个 <code>SELECT</code> 关键字，每个 <code>SELECT</code> 关键字都代表一个小的查询语句有一个 <code>select_type</code> 属性。 <code>select_type</code> 属性代表了小查询在大查询中扮演的角色。 </p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SIMPLE</td>
+<td>查询语句中不包含UNION或子查询的查询</td>
+</tr>
+<tr>
+<td>PRIMARY</td>
+<td>包含UNION、UNION ALL或子查询的大查询的最左边SELECT</td>
+</tr>
+<tr>
+<td>UNION</td>
+<td>包含UNION、UNION ALL的大查询中除最左边小查询外的查询</td>
+</tr>
+<tr>
+<td>SUBQUERY</td>
+<td>子查询中第一个SELECT代表的查询（前提：1、子查询不能转为相应的semi-join形式   2、子查询是<strong>不相关子查询</strong>   3、优化器采用将子查询物化的形式执行该子查询）</td>
+</tr>
+<tr>
+<td>DEPENDENT SUBQUERY</td>
+<td>子查询中第一个SELECT代表的查询（前提：1、子查询不能转为相应的semi-join形式  2、子查询是<strong>相关子查询</strong>  ）</td>
+</tr>
+<tr>
+<td>DEPENDENT UNION</td>
+<td>包含UNION或UNION ALL的大查询中除最左边小查询外的其他小查询（前提：各小查询依赖于外部查询）</td>
+</tr>
+<tr>
+<td>DERIVED</td>
+<td>采用物化的方式执行的包含派生表的查询，该派生表对应的子查询的<code>select_type</code> 为 <code>DERIVED</code></td>
+</tr>
+<tr>
+<td>MATERIALIZED</td>
+<td>查询优化器执行包含子查询的语句时，选择将子查询物化后与外层查询进行连接查询时，该子查询对应的 <code>select_type</code> 属性为 <code>MATERIALIZED</code>.</td>
+</tr>
+</tbody></table>
+<p><strong>type</strong></p>
+<p><code>type</code> 表明了 <code>MySQL</code> 对某个表执行查询时的访问方法。</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>system</td>
+<td>表中仅有一条记录，且使用的存储引擎的统计数据是精准的，如:MyISAM、Memory</td>
+</tr>
+<tr>
+<td>const</td>
+<td>根据主键或唯一二级索引列与常数进行等值匹配时</td>
+</tr>
+<tr>
+<td>eq_ref</td>
+<td>连接查询时，被驱动表通过主键或唯一二级索引列等值匹配的方式进行访问，对该被驱动表的访问方法为<code>eq_ref</code></td>
+</tr>
+<tr>
+<td>ref</td>
+<td>通过普通二级索引列与常量进行等值匹配查询某表</td>
+</tr>
+<tr>
+<td>fulltext</td>
+<td>全文索引</td>
+</tr>
+<tr>
+<td>ref_or_null</td>
+<td>对普通二级索引进行等值匹配查询，且该索引列的值可以为NULL、对该表的访问方法<strong>可能</strong>为<code>ref_or_null</code></td>
+</tr>
+<tr>
+<td>index_merge</td>
+<td>使用<strong>索引合并</strong>的方式执行对表的查询</td>
+</tr>
+<tr>
+<td>unique_subquery</td>
+<td>包含<code>IN</code>子查询的语句，优化器将 <code>IN</code> 子查询转换为<code>EXISTS</code> 子查询。且子查询可使用主键进行等值匹配。</td>
+</tr>
+<tr>
+<td>index_subquery</td>
+<td>与<code>unique_subquery</code> 类似，但访问子查询中的表时使用的是普通索引</td>
+</tr>
+<tr>
+<td>range</td>
+<td>使用索引获取某些范围区间的记录，可能使用到 <code>range</code> 访问方法</td>
+</tr>
+<tr>
+<td>index</td>
+<td>可以使用索引覆盖，但需扫描全部索引记录</td>
+</tr>
+<tr>
+<td>ALL</td>
+<td>全表扫描</td>
+</tr>
+</tbody></table>
+<p><strong>possible_keys和key</strong></p>
+<p><code>possible_keys</code>：某个查询语句中，对某个表执行单表查询时可能用到的索引。</p>
+<p><code>key</code>：实际使用到的索引。</p>
+<p><strong>key_len</strong></p>
+<p><code>key_len</code> : 优化器决定使用某个索引执行查询时，该索引记录的最大长度。</p>
+]]></content>
+      <tags>
+        <tag>MySQL是怎么运行的</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux · glibc 升级</title>
+    <url>/blog/2019/12/04/linux-glibc/</url>
+    <content><![CDATA[<h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p>查看阿里云 <code>HDM</code> 中的数据库实例，发现很多处于异常状态，查看处于异常状态的 <code>DBgateway</code> 发现其版本信息一直显示由 <code>1.9.11</code> 正在升级至 <code>1.9.12</code>。分析可能由于依赖库版本过低导致。</p>
+<p>注意：一般情况下不要随意升级。</p>
+<h2 id="报错信息"><a href="#报错信息" class="headerlink" title="报错信息"></a>报错信息</h2><p>安装软件经常会遇到如下报错：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/lib64/libc.so.6: version `GLIBC_2.14&apos; not found</span><br></pre></td></tr></table></figure>
+
+<p>出现这种报错的原因是，使用高级的命令安装了软件，但是本机还是使用的是低级的依赖库，因此会出现报错。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ strings /lib64/libc.so.6 | grep GLIBC</span><br><span class="line">GLIBC_2.2.5</span><br><span class="line">GLIBC_2.2.6</span><br><span class="line">GLIBC_2.3</span><br><span class="line">GLIBC_2.3.2</span><br><span class="line">GLIBC_2.3.3</span><br><span class="line">GLIBC_2.3.4</span><br><span class="line">GLIBC_2.4</span><br><span class="line">GLIBC_2.5</span><br><span class="line">GLIBC_2.6</span><br><span class="line">GLIBC_2.7</span><br><span class="line">GLIBC_2.8</span><br><span class="line">GLIBC_2.9</span><br><span class="line">GLIBC_2.10</span><br><span class="line">GLIBC_2.11</span><br><span class="line">GLIBC_2.12</span><br><span class="line">GLIBC_PRIVATE</span><br></pre></td></tr></table></figure>
+
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><ul>
+<li>将 CentOS 6 升级到 <code>glibc 2.15</code> 版本</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/glibc-2.15.tar.gz</span><br><span class="line">wget https://ftp.gnu.org/gnu/glibc/glibc-2.15.tar.gz</span><br><span class="line">tar -zxvf glibc-2.15.tar.gz</span><br><span class="line">cd glibc-2.15</span><br><span class="line">mkdir build</span><br><span class="line">cd build</span><br><span class="line">../configure --prefix=/usr --disable-profile --enable-add-ons --with-headers=/usr/include --with-binutils=/usr/bin</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+
+<p>报错：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#configure: error: no acceptable C compiler found in $PATH  缺少gcc</span><br><span class="line">yum install gcc</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>验证是否升级成功</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ strings /lib64/libc.so.6 | grep GLIBC</span><br><span class="line">GLIBC_2.2.5</span><br><span class="line">GLIBC_2.2.6</span><br><span class="line">GLIBC_2.3</span><br><span class="line">GLIBC_2.3.2</span><br><span class="line">GLIBC_2.3.3</span><br><span class="line">GLIBC_2.3.4</span><br><span class="line">GLIBC_2.4</span><br><span class="line">GLIBC_2.5</span><br><span class="line">GLIBC_2.6</span><br><span class="line">GLIBC_2.7</span><br><span class="line">GLIBC_2.8</span><br><span class="line">GLIBC_2.9</span><br><span class="line">GLIBC_2.10</span><br><span class="line">GLIBC_2.11</span><br><span class="line">GLIBC_2.12</span><br><span class="line">GLIBC_2.13</span><br><span class="line">GLIBC_2.14</span><br><span class="line">GLIBC_2.15</span><br><span class="line">GLIBC_PRIVATE</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>MES数据归档</title>
     <url>/blog/2019/11/29/MES-Data-archiving/</url>
     <content><![CDATA[<h3 id="数据归档"><a href="#数据归档" class="headerlink" title="数据归档"></a>数据归档</h3><h4 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h4><table>
@@ -112,13 +396,11 @@
 </tr>
 </tbody></table>
 <h4 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h4><ul>
-<li><p><a href="https://mino-yn.github.io/blog/2019/09/06/Percona%20Toolkit/">安装 Percona Toolkit</a></p>
-</li>
-<li><p>创建归档表</p>
-</li>
+<li><a href="https://mino-yn.github.io/blog/2019/09/06/Percona%20Toolkit/">安装 Percona Toolkit</a></li>
+<li>创建归档表</li>
 </ul>
 <p>数据归档表的表结构与原表一致，删除索引只保留主键。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 归档表的表结构与原表一致，命名统一采用原表名_archive的格式</span><br><span class="line">bns_pm_operation_archive</span><br><span class="line">bns_pm_scanhistory_month_archive</span><br><span class="line">bns_qm_processtest_archive</span><br><span class="line">bns_pm_prodprocess_archive</span><br><span class="line">bns_pm_barcodecode_archive</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 归档表的表结构与原表一致，命名统一采用原表名_archive的格式</span><br><span class="line">bns_pm_operation_archive</span><br><span class="line">bns_pm_scanhistory_month_archive</span><br><span class="line">bns_qm_processtest_archive</span><br><span class="line">bns_pm_prodprocess_archive</span><br><span class="line">bns_pm_barcodecode_archive</span><br><span class="line"></span><br><span class="line">#创建归档表与原表表结构一致</span><br><span class="line">create table xx_archive like xx;</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>开始归档</li>
@@ -1741,7 +2023,7 @@
 <p><strong>服务器不可访问外网</strong></p>
 <p>若直接执行部署命令失败，说明该服务器不可以访问外网，需要通过搭建代理服务器 <a href="http://www.squid-cache.org/" target="_blank" rel="noopener"><strong>Squid</strong></a> 进行访问。</p>
 <p>代理服务器：10.133.0.53:3128已搭建完成</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#在opt目录下操作</span><br><span class="line">cd /opt</span><br><span class="line"></span><br><span class="line">#查看dbgateway进程是否存在</span><br><span class="line">ps -ef|grep dbgateway  </span><br><span class="line"></span><br><span class="line"># 增加代理</span><br><span class="line">echo  &quot;</span><br><span class="line">http_proxy=10.133.0.53:3128</span><br><span class="line">https_proxy=10.133.0.53:3128</span><br><span class="line">ssl_proxy=10.133.0.53:3128</span><br><span class="line">tls_proxy=10.133.0.53:3128</span><br><span class="line">ftp_proxy=10.133.0.53:3128</span><br><span class="line">tcp_proxy=10.133.0.53:3128</span><br><span class="line">export http_proxy</span><br><span class="line">export https_proxy</span><br><span class="line">export ssl_proxy</span><br><span class="line">export ftp_proxy</span><br><span class="line">export tcp_proxy</span><br><span class="line">export tls_proxy&quot; &gt;&gt; /etc/profile ;  source /etc/profile</span><br><span class="line"></span><br><span class="line"># 修改wget代理配置文件</span><br><span class="line">echo &quot;</span><br><span class="line">https_proxy=http://10.133.0.53:3128/</span><br><span class="line">http_proxy=http://10.133.0.53:3128/</span><br><span class="line">ftp_proxy=http://10.133.0.53:3128/&quot; &gt;&gt; /etc/wgetrc ;  source /etc/wgetrc</span><br><span class="line"></span><br><span class="line"># 下载install-dbgateway</span><br><span class="line">sudo wget -O install-dbgateway http://hdm-dbgateway-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com/DBGateway/install-dbgateway &amp;&amp; sudo /bin/bash install-dbgateway --id idc_zqSS2oMpeyKubndD --token 3E24C01713C83B7328F9A2F4C411078DC820E63FAFBC058F6635FAC5B0B4B7F2 --endpoint master-hdm-cn-hangzhou.aliyuncs.com --region default --native</span><br><span class="line"></span><br><span class="line"># 修改install-dbgateway</span><br><span class="line">注释以下代码</span><br><span class="line">curl -v --connect-timeout 3 --silent $&#123;endpoint&#125;:80 --output -</span><br><span class="line">if [ $? != 0 -a $? != 52 ]; then</span><br><span class="line">       echo &quot;Error! Can not connect to $&#123;endpoint&#125;:80, please check your network environment.&quot;</span><br><span class="line">       exit 1</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"># 完成接入</span><br><span class="line">sudo /bin/bash install-dbgateway --id idc_zqSS2oMpeyKubndD --token 3E24C01713C83B7328F9A2F4C411078DC820E63FAFBC058F6635FAC5B0B4B7F2 --endpoint master-hdm-cn-hangzhou.aliyuncs.com --region default --native</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#在opt目录下操作</span><br><span class="line">cd /opt</span><br><span class="line"></span><br><span class="line">#查看dbgateway进程是否存在</span><br><span class="line">ps -ef|grep dbgateway  </span><br><span class="line"></span><br><span class="line"># 增加代理</span><br><span class="line">echo  &quot;</span><br><span class="line">http_proxy=10.133.0.53:3128</span><br><span class="line">https_proxy=10.133.0.53:3128</span><br><span class="line">ssl_proxy=10.133.0.53:3128</span><br><span class="line">tls_proxy=10.133.0.53:3128</span><br><span class="line">ftp_proxy=10.133.0.53:3128</span><br><span class="line">tcp_proxy=10.133.0.53:3128</span><br><span class="line">export http_proxy</span><br><span class="line">export https_proxy</span><br><span class="line">export ssl_proxy</span><br><span class="line">export ftp_proxy</span><br><span class="line">export tcp_proxy</span><br><span class="line">export tls_proxy&quot; &gt;&gt; /etc/profile ;  source /etc/profile</span><br><span class="line"></span><br><span class="line"># 修改wget代理配置文件</span><br><span class="line">echo &quot;</span><br><span class="line">https_proxy=http://10.133.0.53:3128/</span><br><span class="line">http_proxy=http://10.133.0.53:3128/</span><br><span class="line">ftp_proxy=http://10.133.0.53:3128/&quot; &gt;&gt; /etc/wgetrc ;  source /etc/wgetrc</span><br><span class="line"></span><br><span class="line"># 下载install-dbgateway</span><br><span class="line">sudo wget -O install-dbgateway http://hdm-dbgateway-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com/DBGateway/install-dbgateway &amp;&amp; sudo /bin/bash install-dbgateway --id idc_zqSS2oMpeyKubndD --token 3E24C01713C83B7328F9A2F4C411078DC820E63FAFBC058F6635FAC5B0B4B7F2 --endpoint master-hdm-cn-hangzhou.aliyuncs.com --region default --native</span><br><span class="line"></span><br><span class="line"># 修改install-dbgateway</span><br><span class="line">注释以下代码</span><br><span class="line">curl -v --connect-timeout 3 --silent $&#123;endpoint&#125;:80 --output -</span><br><span class="line">if [ $? != 0 -a $? != 52 ]; then</span><br><span class="line">       echo &quot;Error! Can not connect to $&#123;endpoint&#125;:80, please check your network environment.&quot;</span><br><span class="line">       exit 1</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"># 完成接入</span><br><span class="line">sudo /bin/bash install-dbgateway --id idc_zqSS2oMpeyKubndD --token 3E24C01713C83B7328F9A2F4C411078DC820E63FAFBC058F6635FAC5B0B4B7F2 --endpoint master-hdm-cn-hangzhou.aliyuncs.com --region default --native</span><br><span class="line"></span><br><span class="line">-----------------------------------------------------------------------------------------</span><br><span class="line"></span><br><span class="line"># 配置代理</span><br><span class="line">echo  &quot;</span><br><span class="line">http_proxy=http://qd-aliyun-proxy.haier.net:3128</span><br><span class="line">https_proxy=http://qd-aliyun-proxy.haier.net:3128</span><br><span class="line">ssl_proxy=http://qd-aliyun-proxy.haier.net:3128</span><br><span class="line">tls_proxy=http://qd-aliyun-proxy.haier.net:3128</span><br><span class="line">ftp_proxy=http://qd-aliyun-proxy.haier.net:3128</span><br><span class="line">tcp_proxy=http://qd-aliyun-proxy.haier.net:3128</span><br><span class="line">export http_proxy</span><br><span class="line">export https_proxy</span><br><span class="line">export ssl_proxy</span><br><span class="line">export ftp_proxy</span><br><span class="line">export tcp_proxy</span><br><span class="line">export tls_proxy&quot; &gt;&gt; /etc/profile ;  source /etc/profile</span><br><span class="line"></span><br><span class="line"># 配置wget代理</span><br><span class="line">echo &quot;</span><br><span class="line">https_proxy=http://qd-aliyun-proxy.haier.net:3128/</span><br><span class="line">http_proxy=http://qd-aliyun-proxy.haier.net:3128/</span><br><span class="line">ftp_proxy=http://qd-aliyun-proxy.haier.net:3128/&quot; &gt;&gt; /etc/wgetrc ;  source /etc/wgetrc</span><br><span class="line"></span><br><span class="line"># 下载install-dbgateway</span><br><span class="line">sudo wget -O install-dbgateway http://hdm-dbgateway-cn-qingdao.vpc100-oss-cn-qingdao.aliyuncs.com/DBGateway/install-dbgateway &amp;&amp; sudo /bin/bash install-dbgateway --id vpc-m5e6olft3vnne1ug6rdcd --token 3359FC7C28FB5B29459803F85B808D6D37B16B64FB2D56F485E632868E3C5798 --endpoint master-hdm-inner.cn-qingdao.aliyuncs.com --region cn-qingdao --native</span><br><span class="line"></span><br><span class="line"># 修改install-dbgateway</span><br><span class="line">注释以下代码</span><br><span class="line">curl -v --connect-timeout 3 --silent $&#123;endpoint&#125;:80 --output -</span><br><span class="line">if [ $? != 0 -a $? != 52 ]; then</span><br><span class="line">       echo &quot;Error! Can not connect to $&#123;endpoint&#125;:80, please check your network environment.&quot;</span><br><span class="line">       exit 1</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"># 安装完成</span><br><span class="line">sudo /bin/bash install-dbgateway --id vpc-m5e6olft3vnne1ug6rdcd --token 3359FC7C28FB5B29459803F85B808D6D37B16B64FB2D56F485E632868E3C5798 --endpoint master-hdm-inner.cn-qingdao.aliyuncs.com --region cn-qingdao --native</span><br></pre></td></tr></table></figure>
 
 <p>查看dbgateway进程是否启动，若出现如下进程说明接入成功</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ps -ef|grep dbgateway</span><br></pre></td></tr></table></figure>
