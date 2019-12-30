@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="Mino&#39;s blog">
 <meta property="og:description" content="数据迁移操作1.主从，安装 XtraBackup 2.配置主从互信 3.主库，全备数据并传输到从服务器 12345#备份主库：innobackupex --defaults-file=/etc/my.cnf --user=root --password=Haier@123 --no-timestamp /data/backup#传输到从库：scp -r /data/backup/* root@10">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-22T10:01:43.322Z">
+<meta property="og:updated_time" content="2019-12-25T05:47:18.509Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用Xtrabackup搭建MySQL主从">
 <meta name="twitter:description" content="数据迁移操作1.主从，安装 XtraBackup 2.配置主从互信 3.主库，全备数据并传输到从服务器 12345#备份主库：innobackupex --defaults-file=/etc/my.cnf --user=root --password=Haier@123 --no-timestamp /data/backup#传输到从库：scp -r /data/backup/* root@10">
@@ -365,6 +365,8 @@
 
 <h4 id="时间预估"><a href="#时间预估" class="headerlink" title="时间预估"></a>时间预估</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">文件大小：185 GB</span><br><span class="line">备份时间：25 min</span><br><span class="line">传输时间：30 min   ---以100MB/s的传输速度为基准</span><br><span class="line">恢复时间：1h 10 min</span><br></pre></td></tr></table></figure>
 
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">10.159.39.80 -&gt; 10.199.96.192</span><br><span class="line">文件大小：227G</span><br><span class="line">备份时间：32min</span><br><span class="line">传输时间：35min</span><br><span class="line">恢复时间：26min</span><br></pre></td></tr></table></figure>
+
 <h3 id="搭建主从关系"><a href="#搭建主从关系" class="headerlink" title="搭建主从关系"></a>搭建主从关系</h3><p>从库，建立复制关系</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@GPCMS-DB-M</span> <span class="string">backup]#</span> <span class="string">cat</span> <span class="string">xtrabackup_binlog_info</span></span><br><span class="line"><span class="string">mysql-binlog.000297</span>	<span class="number">900834433</span></span><br><span class="line"></span><br><span class="line"><span class="string">CHANGE</span> <span class="string">MASTER</span> <span class="string">TO</span> <span class="string">MASTER_HOST='10.133.7.18',</span></span><br><span class="line"><span class="string">MASTER_USER='repl',</span></span><br><span class="line"><span class="string">MASTER_PASSWORD='Changeme_123',</span></span><br><span class="line"><span class="string">MASTER_PORT=3306,</span></span><br><span class="line"><span class="string">MASTER_LOG_FILE='mysql-binlog.000297',</span> <span class="string">MASTER_LOG_POS=900834433,</span></span><br><span class="line"><span class="string">MASTER_CONNECT_RETRY=10;</span></span><br><span class="line"></span><br><span class="line"><span class="string">MySQL</span> <span class="string">[(none)]&gt;</span> <span class="string">start</span> <span class="string">slave;</span></span><br><span class="line"><span class="string">Query</span> <span class="string">OK,</span> <span class="number">0</span> <span class="string">rows</span> <span class="string">affected</span> <span class="string">(0.00</span> <span class="string">sec)</span></span><br></pre></td></tr></table></figure>
       
@@ -479,7 +481,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

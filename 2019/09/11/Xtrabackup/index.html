@@ -96,7 +96,7 @@
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/0.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup_5.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup_6.png">
-<meta property="og:updated_time" content="2019-11-14T06:45:31.115Z">
+<meta property="og:updated_time" content="2019-12-25T02:06:13.314Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Percona XtraBackup安装实践">
 <meta name="twitter:description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 物理备份 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备，">
@@ -388,10 +388,10 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
 
 <p>报错信息：提示缺少依赖</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">warning: percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">	libev.so.4()(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br><span class="line">	perl(DBD::mysql) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br><span class="line">	perl(Digest::MD5) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">warning: percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">	libev.so.4()(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br><span class="line">	perl(DBD::mysql) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br><span class="line">	perl(Digest::MD5) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br><span class="line">	rsync is needed by percona-xtrabackup-24-2.4.9-1.el7.x86_64</span><br></pre></td></tr></table></figure>
 
 <p>解决方法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">wget http://10.190.177.9:8085/libev-4.15-1.el6.x86_64.rpm</span><br><span class="line">yum -y install perl-DBD-MySQL</span><br><span class="line">yum -y install perl-Digest-MD5</span><br><span class="line">rpm -ivh libev-4.15-1.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/libev-4.15-1.el6.x86_64.rpm</span><br><span class="line">yum -y install perl-DBD-MySQL</span><br><span class="line">yum -y install perl-Digest-MD5</span><br><span class="line">yum -y install rsync perl l perl-Digest-MD5</span><br><span class="line">rpm -ivh libev-4.15-1.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
 
 <h3 id="安装脚本"><a href="#安装脚本" class="headerlink" title="安装脚本"></a>安装脚本</h3><p>通过建立执行脚本<code>install_xtrabackup.sh</code> 进行安装</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line"># Install XtraBackup</span><br><span class="line">cd /usr/local/src</span><br><span class="line">wget http://10.190.177.9:8085/Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line">tar xvf Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line"></span><br><span class="line">wget http://10.190.177.9:8085/libev-4.15-1.el6.x86_64.rpm</span><br><span class="line">yum -y install perl-DBD-MySQL</span><br><span class="line">yum -y install perl-Digest-MD5</span><br><span class="line">rpm -ivh libev-4.15-1.el6.x86_64.rpm</span><br><span class="line">rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line">xtrabackup --version</span><br></pre></td></tr></table></figure>
@@ -537,7 +537,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
