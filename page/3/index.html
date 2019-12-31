@@ -281,6 +281,170 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/06/shell-quick-start/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/11/06/shell-quick-start/" itemprop="url">Shell快速入门（一）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-06T15:48:21+08:00">
+                2019-11-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="文件结构"><a href="#文件结构" class="headerlink" title="文件结构"></a>文件结构</h3><p><code>shell</code> 脚本组成结构如下：</p>
+<ul>
+<li>文件标识：<code>#!/bin/bash</code> 中的<code>#!</code> 是一个特殊标记，标识该 <code>Shell</code> 脚本将使用 <code>/bin/bash</code> 这个Shell对文件内容进行解析。</li>
+<li>文件注释：对文件业务逻辑的注释</li>
+<li>Shell代码</li>
+</ul>
+<p><code>Shell</code> 脚本文件结构范例</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 备份数据库User表</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">######################################</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 连接指定数据数据库</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 全局变量:</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   BACKUP_DIR</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   ORACLE_SID</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 参数:</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   None</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 返回值:</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   None</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">######################################</span></span></span><br><span class="line">connect()&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="打印字符串"><a href="#打印字符串" class="headerlink" title="打印字符串"></a>打印字符串</h3><p><code>echo</code> 适用于简单打印，<code>printf</code> 适用于统一缩进的复杂打印。</p>
+<h4 id="echo命令"><a href="#echo命令" class="headerlink" title="echo命令"></a><strong>echo命令</strong></h4><ul>
+<li>裸奔：无法输出 <code>;</code> </li>
+<li>单引号：无法在字符串中引用变量</li>
+<li>双引号：无法直接打印出特殊字符，需要将特殊字符进行转义。</li>
+</ul>
+<p>无任何变量和特殊字符：可裸奔；有特殊字符，无引用变量：单引号；既有特殊字符，又要引用变量：双引号。</p>
+<h4 id="printf命令"><a href="#printf命令" class="headerlink" title="printf命令"></a><strong>printf命令</strong></h4><p>可以对齐打印字符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"> </span><br><span class="line">printf &quot;%-10s %-8s %-4s\n&quot; 姓名 年龄 存款K  </span><br><span class="line">printf &quot;%-10s %-8s %-4.2f\n&quot; 郭靖 30 52.20</span><br><span class="line">printf &quot;%-10s %-8s %-4.2f\n&quot; 杨过 25 26.32</span><br><span class="line">printf &quot;%-10s %-8s %-4.2f\n&quot; 郭芙 27 15.20</span><br><span class="line"></span><br><span class="line">#%-10s:左对齐，保留10位，是字符串</span><br><span class="line">#%-4.2f:左对齐，保留4位，小数点保留两位，是浮点型数字</span><br></pre></td></tr></table></figure>
+
+<p><code>%</code> :标识符  <code>-</code> :左对齐   <code>10</code> :保留10位长度  <code>s</code> ：字符串</p>
+<p><code>printf</code> 格式替代符：</p>
+<ul>
+<li>d: Decimal 十进制整数</li>
+<li>s: String 字符串</li>
+<li>c: Char 字符</li>
+<li>f: Float 浮点</li>
+</ul>
+<h3 id="数学运算"><a href="#数学运算" class="headerlink" title="数学运算"></a>数学运算</h3><h4 id="进行数学运算"><a href="#进行数学运算" class="headerlink" title="进行数学运算"></a>进行数学运算</h4><p>计算<code>10+5</code>并输出</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#方式1</span></span><br><span class="line"><span class="string">a=`expr</span> <span class="number">10</span> <span class="string">+</span> <span class="number">5</span><span class="string">`</span></span><br><span class="line"><span class="string">echo</span> <span class="string">$a</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#方式2</span></span><br><span class="line"><span class="string">let</span> <span class="string">a=10+5</span></span><br><span class="line"><span class="string">echo</span> <span class="string">$a</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#方式3，推荐</span></span><br><span class="line"><span class="string">((</span> <span class="string">a</span> <span class="string">=</span> <span class="number">10</span> <span class="string">+</span> <span class="number">5</span> <span class="string">))</span></span><br><span class="line"><span class="string">echo</span> <span class="string">$a</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="进行数值比较"><a href="#进行数值比较" class="headerlink" title="进行数值比较"></a>进行数值比较</h4><p>将需要运算的表达式放在两对括号中，Shell会计算出一个最终结果，<code>true</code> 或者 <code>false</code> 。括号中的表达式与<code>Java</code> 等高级语言的语法非常一致，可以使用 <code>&amp;&amp;</code> 或者 <code>||</code> 符号。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">a=15</span><br><span class="line">if (( a &gt; 10 &amp;&amp; a &lt; 20 ))</span><br><span class="line">then </span><br><span class="line">	echo "10 &lt; a &lt; 20"	</span><br><span class="line">else</span><br><span class="line">	echo "a &lt;= 10 or a &gt;= 20"</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<p>输出 <code>10 &lt; a &lt; 20</code> </p>
+<h3 id="字符串比较"><a href="#字符串比较" class="headerlink" title="字符串比较"></a>字符串比较</h3><p><code>Shell</code> 有专门的6个操作符进行字符串的比较：</p>
+<ul>
+<li><code>=</code> ：检测两个字符串是否相等，相等返回 <code>true</code></li>
+<li><code>!=</code> ：检测两个字符串是否相等，不相等返回 <code>true</code></li>
+<li><code>-z</code> ：检测字符串长度是否为0，为0返回 <code>true</code></li>
+<li><code>-n</code>：检测字符串长度是否为0，不为0返回 <code>true</code></li>
+<li><code>str</code> :检测字符串长度是否为空，不为空返回 <code>true</code></li>
+</ul>
+<p><strong>操作符左右两边都要加空格，否则会报语法错误</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line">a="abc"</span><br><span class="line">b="efg"</span><br><span class="line"><span class="meta">#</span><span class="bash"> 字符串是否相等</span></span><br><span class="line">if [ $a = $b ]</span><br><span class="line">then</span><br><span class="line">   echo "$a = $b : a 等于 b"</span><br><span class="line">else</span><br><span class="line">   echo "$a = $b: a 不等于 b"</span><br><span class="line">fi</span><br><span class="line">if [ $a != $b ]</span><br><span class="line">then</span><br><span class="line">   echo "$a != $b : a 不等于 b"</span><br><span class="line">else</span><br><span class="line">   echo "$a != $b: a 等于 b"</span><br><span class="line">fi</span><br><span class="line"><span class="meta">#</span><span class="bash"> 字符串长度是否为0</span></span><br><span class="line">if [ -z $a ]</span><br><span class="line">then</span><br><span class="line">   echo "-z $a : 字符串长度为 0"</span><br><span class="line">else</span><br><span class="line">   echo "-z $a : 字符串长度不为 0"</span><br><span class="line">fi</span><br><span class="line">if [ -n "$a" ]</span><br><span class="line">then</span><br><span class="line">   echo "-n $a : 字符串长度不为 0"</span><br><span class="line">else</span><br><span class="line">   echo "-n $a : 字符串长度为 0"</span><br><span class="line">fi</span><br><span class="line"><span class="meta">#</span><span class="bash"> 字符串是否为空</span></span><br><span class="line">if [ $a ]</span><br><span class="line">then</span><br><span class="line">   echo "$a : 字符串不为空"</span><br><span class="line">else</span><br><span class="line">   echo "$a : 字符串为空"</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/10/25/B-tree-index-use/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1874,171 +2038,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/26/MySQL-SQL/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/09/26/MySQL-SQL/" itemprop="url">SQL概述</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-26T14:59:45+08:00">
-                2019-09-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="SQL发展历史"><a href="#SQL发展历史" class="headerlink" title="SQL发展历史"></a>SQL发展历史</h3><ul>
-<li>1974年—–由Boyce和Chamberlin提出，当时称SEQUEL。</li>
-<li>1979年—–ORACLE公司首先提供商用的SQL，IBM公司在DB2 和SQL/DS数据库系统中也实现了SQL。</li>
-<li>1986年—–美国国家标准化组织ANSI宣布采用SQL作为数据库工业标准（ANSI X3. 135-1986），后为国际标准化组织（ISO）采纳为国际标准。</li>
-<li>1989年—–美国ANSI采纳在ANSI X3.135-1989报告中定义的关系数据库管理系统的SQL标准语言，称为ANSI SQL 89， 该标准替代ANSI X3.135-1986版本。</li>
-<li>目前，所有主要的关系数据库管理系统支持某些形式的SQL， 大部分数据库打算遵守ANSI SQL89标准。</li>
-</ul>
-<h3 id="SQL特点"><a href="#SQL特点" class="headerlink" title="SQL特点"></a>SQL特点</h3><p><strong>优势：</strong></p>
-<ul>
-<li>SQL语言集数据查询、数据操纵、数据定义和数据控制功能于一体。</li>
-<li>面向集合的描述性非过程化语言。</li>
-<li>功能强，效率高，类似自然语言，简单易学易维护。</li>
-<li>自含式语言，又是嵌入式语言。可独立使用，也可嵌入到宿主语言中。</li>
-</ul>
-<p><strong>劣势：</strong></p>
-<p>由于<code>SQL</code>是非过程性语言，即大多数语句都是独立执行的，与上下文无关，而绝大部分应用都是一个完整的过程，所以用<code>SQL</code>完全实现这些功能是很困难的。解决方案：</p>
-<ul>
-<li>扩充<code>SQL</code>，在<code>SQL</code>中引入过程性结构；</li>
-<li>把<code>SQL</code>嵌入到高级语言中，以便一起完成一个完整的应用。</li>
-</ul>
-<h3 id="SQL语言分类"><a href="#SQL语言分类" class="headerlink" title="SQL语言分类"></a>SQL语言分类</h3><p><code>SQL</code>语言共分为四大类：数据查询语言<code>DQL</code>，数据操纵语言<code>DML</code>，数据定义语言<code>DDL</code>，数据控制语言<code>DCL</code>。</p>
-<h4 id="数据查询语言DQL-Data-Query-Language"><a href="#数据查询语言DQL-Data-Query-Language" class="headerlink" title="数据查询语言DQL(Data Query Language)"></a>数据查询语言DQL(Data Query Language)</h4><p>数据查询语言DQL基本结构是由<code>SELECT</code>子句，<code>FROM</code>子句，<code>WHERE</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#子句组成的查询块：</span><br><span class="line">SELECT &lt;字段名表&gt;</span><br><span class="line">FROM &lt;表或视图名&gt;</span><br><span class="line">WHERE &lt;查询条件&gt;</span><br></pre></td></tr></table></figure>
-
-<h4 id="数据操纵语言DML-Data-Manipulation-Language"><a href="#数据操纵语言DML-Data-Manipulation-Language" class="headerlink" title="数据操纵语言DML(Data Manipulation Language)"></a>数据操纵语言DML(Data Manipulation Language)</h4><p>数据操纵语言<code>DML</code>主要有三种形式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1) 插入：INSERT</span><br><span class="line">2) 更新：UPDATE</span><br><span class="line">3) 删除：DELETE</span><br></pre></td></tr></table></figure>
-
-<h4 id="数据定义语言DDL-Data-Definition-Language"><a href="#数据定义语言DDL-Data-Definition-Language" class="headerlink" title="数据定义语言DDL(Data Definition Language)"></a>数据定义语言DDL(Data Definition Language)</h4><p>数据定义语言<code>DDL</code>用来创建数据库中的各种对象—–表、视图、索引、同义词、聚簇等如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#创建表/视图/索引/同义词/簇</span><br><span class="line">CREATE TABLE/VIEW/INDEX/SYN/CLUSTER</span><br></pre></td></tr></table></figure>
-
-<p><strong>注：</strong><code>DDL</code>操作是隐性提交的！不能<code>rollback</code></p>
-<h4 id="数据控制语言DCL-Data-Control-Language"><a href="#数据控制语言DCL-Data-Control-Language" class="headerlink" title="数据控制语言DCL(Data Control Language)"></a>数据控制语言DCL(Data Control Language)</h4><p>数据控制语言DCL用来授予或回收访问数据库的某种特权，并控制数据库操纵事务发生的时间及效果，对数据库实行监视等。如：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#授权</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">MySQLGRANT</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#回退到某一点，</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">ROLLBACK</span> <span class="string">[WORK]</span> <span class="string">TO</span> <span class="string">[SAVEPOINT]：</span></span><br><span class="line"><span class="comment">#回滚--ROLLBACK，回滚命令使数据库状态回到上次最后提交的状态。</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">ROLLBACK;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#提交</span></span><br><span class="line"><span class="string">COMMIT</span> <span class="string">[WORK]</span></span><br></pre></td></tr></table></figure>
-
-<p>在数据库的插入、删除和修改操作时，只有当事务在提交到数据库时才算完成。在事务提交前，只有操作数据库的这个人才能有权看到所做的事情，别人只有在最后提交完成后才可以看到。</p>
-<p><strong>提交数据类型</strong></p>
-<p>提交数据有三种类型：显式提交、隐式提交及自动提交</p>
-<p>显式提交</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#用COMMIT命令直接完成的提交为显式提交。</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">COMMIT;；</span></span><br></pre></td></tr></table></figure>
-
-<p>隐式提交</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#SQL命令间接完成的提交为隐式提，命令包含：</span></span><br><span class="line"><span class="string">ALTER，AUDIT，COMMENT，CONNECT，CREATE，DISCONNECT，</span></span><br><span class="line"><span class="string">DROP，EXIT，GRANT，NOAUDIT，QUIT，REVOKE，RENAME</span></span><br></pre></td></tr></table></figure>
-
-<p>自动提交</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#当AUTOCOMMIT设置为ON时，在插入、修改、删除语句执行后，系统将自动进行提交。</span></span><br><span class="line"><span class="comment">#设置AUTOCOMMIT为ON:</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">SET</span> <span class="string">AUTOCOMMIT</span> <span class="string">ON；</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2089,7 +2088,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">64</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

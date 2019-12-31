@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Mino&#39;s blog">
 <meta property="og:description" content="ssh登录与文件传输使用一台服务器登录另一台服务器，可直接使用SSH协议进行登录。 1234567格式：ssh [-l login_name] [-p port] [user@]hostnamessh 192.168.0.11                       #不指定用户，默认使用当前宿主用户名登录ssh root@192.168.0.11                  # 指定用">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-08T08:54:29.904Z">
+<meta property="og:updated_time" content="2019-12-31T07:26:50.954Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ssh免密登录">
 <meta name="twitter:description" content="ssh登录与文件传输使用一台服务器登录另一台服务器，可直接使用SSH协议进行登录。 1234567格式：ssh [-l login_name] [-p port] [user@]hostnamessh 192.168.0.11                       #不指定用户，默认使用当前宿主用户名登录ssh root@192.168.0.11                  # 指定用">
@@ -356,7 +356,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">格式：ssh [-l login_name] [-p port] [user@]hostname</span><br><span class="line"></span><br><span class="line">ssh 192.168.0.11                       #不指定用户，默认使用当前宿主用户名登录</span><br><span class="line">ssh root@192.168.0.11                  # 指定用户登录</span><br><span class="line">ssh -l root 192.168.0.11</span><br><span class="line">ssh root@192.168.0.11 -p 2222          # 指定端口，默认端口22</span><br><span class="line">ssh root@192.168.0.11 &quot;ls /usr/local&quot;  # 远程登录后执行某命令</span><br></pre></td></tr></table></figure>
 
 <p>可以利用scp<strong>远程传输文件</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">格式：scp [file|folder] [user@host]:[remote_folder] [-P port]</span><br><span class="line"></span><br><span class="line">scp username@servername:/path/filename                   #从服务器上下载文件</span><br><span class="line">scp -r username@servername:remote_dir/local_dir          #从服务器上下载整个目录</span><br><span class="line">scp /path/local_filename username@servername:/path       #上传本地文件至服务器</span><br><span class="line">scp  -r /tmp/local_dir username@servername:remote_dir    #上传目录至服务器</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">格式：scp [file|folder] [user@host]:[remote_folder] [-P port]</span><br><span class="line"></span><br><span class="line">scp username@servername:/path/filename                   #从服务器上下载文件</span><br><span class="line">scp -r username@servername:remote_dir/local_dir          #从服务器上下载整个目录</span><br><span class="line">scp /path/local_filename username@servername:/path       #上传本地文件至服务器</span><br><span class="line">scp  -r /tmp/local_dir username@servername:remote_dir    #上传目录至服务器</span><br><span class="line">scp -P 60022 -r /local_dir username@servername:remote_dir  #指定端口，默认端口22</span><br></pre></td></tr></table></figure>
 
 <h2 id="设置免密登录"><a href="#设置免密登录" class="headerlink" title="设置免密登录"></a>设置免密登录</h2><p>但以上操作每次都需要输入目标服务器的密码，操作起来比较麻烦，且不适合集群服务器的批量操作。我们可以通过配置rsa私钥和公钥的方式实现免密ssh登录。</p>
 <p>这里介绍免密登录的单向配置，如果想实现双向的互信免密登录，再反向配置一遍即可。</p>
@@ -499,7 +499,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">64</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

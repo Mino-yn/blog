@@ -96,7 +96,7 @@
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/0.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup_5.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup_6.png">
-<meta property="og:updated_time" content="2019-12-25T02:06:13.314Z">
+<meta property="og:updated_time" content="2019-12-31T06:27:09.278Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Percona XtraBackup安装实践">
 <meta name="twitter:description" content="简介Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。 物理备份 XtraBackup优势 ： 1、无需停止数据库进行 InnoDB 热备，">
@@ -418,6 +418,14 @@
 <h4 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h4><p>服务器上安装过<code>Percona XtraBackup2.2</code>, 但从mysql5.7开始，必须使用xtrabackup2.4以上版本才能完成备份,老的版本执行会报错，已不适用。将老版本卸载后重新安装.</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -e 要删除的软件包</span><br></pre></td></tr></table></figure>
 
+<h3 id="问题三"><a href="#问题三" class="headerlink" title="问题三"></a>问题三</h3><h4 id="问题现象-2"><a href="#问题现象-2" class="headerlink" title="问题现象"></a>问题现象</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 src]# rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpmwarning: percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEYerror: Failed dependencies:	libc.so.6(GLIBC_2.14)(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64	libstdc++.so.6(GLIBCXX_3.4.15)(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br></pre></td></tr></table></figure>
+
+<h4 id="解决方法："><a href="#解决方法：" class="headerlink" title="解决方法："></a><strong>解决方法</strong>：</h4><p>查看操作系统版本，<code>CentOS 6</code> 下载 <code>el6</code> 的安装包即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/redhat-releaseCentOS release 6.5 (Final)$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-xtrabackup-24-2.4.12-1.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Tips：不要轻易在真实生产环境中直接安装，因为升级的过程中比较容易出现系统出错。</p>
+</blockquote>
 
       
     </div>
@@ -537,7 +545,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">64</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -583,7 +591,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">2.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#全库备份过程"><span class="nav-number">2.1.</span> <span class="nav-text">全库备份过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全库恢复的过程"><span class="nav-number">2.2.</span> <span class="nav-text">全库恢复的过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装实践"><span class="nav-number">3.</span> <span class="nav-text">安装实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#操作步骤"><span class="nav-number">3.1.</span> <span class="nav-text">操作步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装脚本"><span class="nav-number">3.2.</span> <span class="nav-text">安装脚本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他问题"><span class="nav-number">4.</span> <span class="nav-text">其他问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题一"><span class="nav-number">4.1.</span> <span class="nav-text">问题一</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#问题现象"><span class="nav-number">4.1.1.</span> <span class="nav-text">问题现象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方法"><span class="nav-number">4.1.2.</span> <span class="nav-text">解决方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题二"><span class="nav-number">4.2.</span> <span class="nav-text">问题二</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#问题现象-1"><span class="nav-number">4.2.1.</span> <span class="nav-text">问题现象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决办法"><span class="nav-number">4.2.2.</span> <span class="nav-text">解决办法</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">2.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#全库备份过程"><span class="nav-number">2.1.</span> <span class="nav-text">全库备份过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全库恢复的过程"><span class="nav-number">2.2.</span> <span class="nav-text">全库恢复的过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装实践"><span class="nav-number">3.</span> <span class="nav-text">安装实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#操作步骤"><span class="nav-number">3.1.</span> <span class="nav-text">操作步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装脚本"><span class="nav-number">3.2.</span> <span class="nav-text">安装脚本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他问题"><span class="nav-number">4.</span> <span class="nav-text">其他问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题一"><span class="nav-number">4.1.</span> <span class="nav-text">问题一</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#问题现象"><span class="nav-number">4.1.1.</span> <span class="nav-text">问题现象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方法"><span class="nav-number">4.1.2.</span> <span class="nav-text">解决方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题二"><span class="nav-number">4.2.</span> <span class="nav-text">问题二</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#问题现象-1"><span class="nav-number">4.2.1.</span> <span class="nav-text">问题现象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决办法"><span class="nav-number">4.2.2.</span> <span class="nav-text">解决办法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题三"><span class="nav-number">4.3.</span> <span class="nav-text">问题三</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#问题现象-2"><span class="nav-number">4.3.1.</span> <span class="nav-text">问题现象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方法："><span class="nav-number">4.3.2.</span> <span class="nav-text">解决方法：</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>

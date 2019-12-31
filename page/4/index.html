@@ -281,6 +281,171 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/26/MySQL-SQL/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/26/MySQL-SQL/" itemprop="url">SQL概述</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-26T14:59:45+08:00">
+                2019-09-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="SQL发展历史"><a href="#SQL发展历史" class="headerlink" title="SQL发展历史"></a>SQL发展历史</h3><ul>
+<li>1974年—–由Boyce和Chamberlin提出，当时称SEQUEL。</li>
+<li>1979年—–ORACLE公司首先提供商用的SQL，IBM公司在DB2 和SQL/DS数据库系统中也实现了SQL。</li>
+<li>1986年—–美国国家标准化组织ANSI宣布采用SQL作为数据库工业标准（ANSI X3. 135-1986），后为国际标准化组织（ISO）采纳为国际标准。</li>
+<li>1989年—–美国ANSI采纳在ANSI X3.135-1989报告中定义的关系数据库管理系统的SQL标准语言，称为ANSI SQL 89， 该标准替代ANSI X3.135-1986版本。</li>
+<li>目前，所有主要的关系数据库管理系统支持某些形式的SQL， 大部分数据库打算遵守ANSI SQL89标准。</li>
+</ul>
+<h3 id="SQL特点"><a href="#SQL特点" class="headerlink" title="SQL特点"></a>SQL特点</h3><p><strong>优势：</strong></p>
+<ul>
+<li>SQL语言集数据查询、数据操纵、数据定义和数据控制功能于一体。</li>
+<li>面向集合的描述性非过程化语言。</li>
+<li>功能强，效率高，类似自然语言，简单易学易维护。</li>
+<li>自含式语言，又是嵌入式语言。可独立使用，也可嵌入到宿主语言中。</li>
+</ul>
+<p><strong>劣势：</strong></p>
+<p>由于<code>SQL</code>是非过程性语言，即大多数语句都是独立执行的，与上下文无关，而绝大部分应用都是一个完整的过程，所以用<code>SQL</code>完全实现这些功能是很困难的。解决方案：</p>
+<ul>
+<li>扩充<code>SQL</code>，在<code>SQL</code>中引入过程性结构；</li>
+<li>把<code>SQL</code>嵌入到高级语言中，以便一起完成一个完整的应用。</li>
+</ul>
+<h3 id="SQL语言分类"><a href="#SQL语言分类" class="headerlink" title="SQL语言分类"></a>SQL语言分类</h3><p><code>SQL</code>语言共分为四大类：数据查询语言<code>DQL</code>，数据操纵语言<code>DML</code>，数据定义语言<code>DDL</code>，数据控制语言<code>DCL</code>。</p>
+<h4 id="数据查询语言DQL-Data-Query-Language"><a href="#数据查询语言DQL-Data-Query-Language" class="headerlink" title="数据查询语言DQL(Data Query Language)"></a>数据查询语言DQL(Data Query Language)</h4><p>数据查询语言DQL基本结构是由<code>SELECT</code>子句，<code>FROM</code>子句，<code>WHERE</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#子句组成的查询块：</span><br><span class="line">SELECT &lt;字段名表&gt;</span><br><span class="line">FROM &lt;表或视图名&gt;</span><br><span class="line">WHERE &lt;查询条件&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="数据操纵语言DML-Data-Manipulation-Language"><a href="#数据操纵语言DML-Data-Manipulation-Language" class="headerlink" title="数据操纵语言DML(Data Manipulation Language)"></a>数据操纵语言DML(Data Manipulation Language)</h4><p>数据操纵语言<code>DML</code>主要有三种形式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1) 插入：INSERT</span><br><span class="line">2) 更新：UPDATE</span><br><span class="line">3) 删除：DELETE</span><br></pre></td></tr></table></figure>
+
+<h4 id="数据定义语言DDL-Data-Definition-Language"><a href="#数据定义语言DDL-Data-Definition-Language" class="headerlink" title="数据定义语言DDL(Data Definition Language)"></a>数据定义语言DDL(Data Definition Language)</h4><p>数据定义语言<code>DDL</code>用来创建数据库中的各种对象—–表、视图、索引、同义词、聚簇等如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#创建表/视图/索引/同义词/簇</span><br><span class="line">CREATE TABLE/VIEW/INDEX/SYN/CLUSTER</span><br></pre></td></tr></table></figure>
+
+<p><strong>注：</strong><code>DDL</code>操作是隐性提交的！不能<code>rollback</code></p>
+<h4 id="数据控制语言DCL-Data-Control-Language"><a href="#数据控制语言DCL-Data-Control-Language" class="headerlink" title="数据控制语言DCL(Data Control Language)"></a>数据控制语言DCL(Data Control Language)</h4><p>数据控制语言DCL用来授予或回收访问数据库的某种特权，并控制数据库操纵事务发生的时间及效果，对数据库实行监视等。如：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#授权</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">MySQLGRANT</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#回退到某一点，</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">ROLLBACK</span> <span class="string">[WORK]</span> <span class="string">TO</span> <span class="string">[SAVEPOINT]：</span></span><br><span class="line"><span class="comment">#回滚--ROLLBACK，回滚命令使数据库状态回到上次最后提交的状态。</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">ROLLBACK;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#提交</span></span><br><span class="line"><span class="string">COMMIT</span> <span class="string">[WORK]</span></span><br></pre></td></tr></table></figure>
+
+<p>在数据库的插入、删除和修改操作时，只有当事务在提交到数据库时才算完成。在事务提交前，只有操作数据库的这个人才能有权看到所做的事情，别人只有在最后提交完成后才可以看到。</p>
+<p><strong>提交数据类型</strong></p>
+<p>提交数据有三种类型：显式提交、隐式提交及自动提交</p>
+<p>显式提交</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#用COMMIT命令直接完成的提交为显式提交。</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">COMMIT;；</span></span><br></pre></td></tr></table></figure>
+
+<p>隐式提交</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#SQL命令间接完成的提交为隐式提，命令包含：</span></span><br><span class="line"><span class="string">ALTER，AUDIT，COMMENT，CONNECT，CREATE，DISCONNECT，</span></span><br><span class="line"><span class="string">DROP，EXIT，GRANT，NOAUDIT，QUIT，REVOKE，RENAME</span></span><br></pre></td></tr></table></figure>
+
+<p>自动提交</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#当AUTOCOMMIT设置为ON时，在插入、修改、删除语句执行后，系统将自动进行提交。</span></span><br><span class="line"><span class="comment">#设置AUTOCOMMIT为ON:</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">SET</span> <span class="string">AUTOCOMMIT</span> <span class="string">ON；</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/26/MySQL-common-errors/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1595,145 +1760,14 @@
 <h4 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h4><p>服务器上安装过<code>Percona XtraBackup2.2</code>, 但从mysql5.7开始，必须使用xtrabackup2.4以上版本才能完成备份,老的版本执行会报错，已不适用。将老版本卸载后重新安装.</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -e 要删除的软件包</span><br></pre></td></tr></table></figure>
 
+<h3 id="问题三"><a href="#问题三" class="headerlink" title="问题三"></a>问题三</h3><h4 id="问题现象-2"><a href="#问题现象-2" class="headerlink" title="问题现象"></a>问题现象</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 src]# rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpmwarning: percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEYerror: Failed dependencies:	libc.so.6(GLIBC_2.14)(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64	libstdc++.so.6(GLIBCXX_3.4.15)(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br></pre></td></tr></table></figure>
 
-          
-        
-      
-    </div>
-    
-    
-    
+<h4 id="解决方法："><a href="#解决方法：" class="headerlink" title="解决方法："></a><strong>解决方法</strong>：</h4><p>查看操作系统版本，<code>CentOS 6</code> 下载 <code>el6</code> 的安装包即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/redhat-releaseCentOS release 6.5 (Final)$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-xtrabackup-24-2.4.12-1.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
 
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/11/case-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/09/11/case-2/" itemprop="url">案例2 · CPU利用率过高</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-11T09:25:13+08:00">
-                2019-09-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p>CPU异常告警：CPU 利用率连续 15 分钟超过了 90%，达到 96.75885416666917%，请求协助排查原因。</p>
-<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><p>1）连接上服务器，使用 <code>top</code> 命令动态，查看 CPU 状态发现 CPU 使用率长时间处于异常过高的状态。</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/case2-1.png" alt></p>
-<p>2）使用 <code>show processlist</code> 查看数据库线程，未发现有锁占用和大量线程阻塞的情况。</p>
-<p>3）查看数据库日志未发现明显异常。</p>
-<p>4）重新查看数据库线程，发现有许多查询都处于 <code>creating sort index</code> 的状态，通过客户端抽取其 SQL 语句，都是如下类似的查询结构：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">SELECT</span></span><br><span class="line"> <span class="string">material</span> <span class="string">AS</span> <span class="string">material_code,</span></span><br><span class="line"> <span class="string">material_t2</span> <span class="string">AS</span> <span class="string">module_code,</span></span><br><span class="line"> <span class="string">material_name_t2</span> <span class="string">AS</span> <span class="string">description,</span></span><br><span class="line"> <span class="string">quantity_t2</span> <span class="string">AS</span> <span class="string">consumption_unit,</span></span><br><span class="line"> <span class="string">unitofmeasure_t2</span> <span class="string">AS</span> <span class="string">component_unit</span></span><br><span class="line"><span class="string">FROM</span> <span class="string">pc_tf_bom_dtl</span></span><br><span class="line"><span class="string">WHERE</span> <span class="string">material='0060122449'</span> <span class="string">AND</span> <span class="string">plant='null'</span></span><br><span class="line"><span class="string">ORDER</span> <span class="string">BY</span> <span class="string">bom_level</span></span><br></pre></td></tr></table></figure>
-
-<p>除了material编号发生变化，其余部分相同。</p>
-<p>查看pc_tf_bom_dtl 表的结构：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `pc_tf_bom_dtl` (</span><br><span class="line">	`id` BIGINT(10) UNSIGNED NOT NULL AUTO_INCREMENT,</span><br><span class="line">	`material` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;物料号&apos;,</span><br><span class="line">	`material_name` VARCHAR(256) NULL DEFAULT NULL COMMENT &apos;物料描述&apos;,</span><br><span class="line">	`plant` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;工厂编码&apos;,</span><br><span class="line">	`plant_name` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;工厂名称	&apos;,</span><br><span class="line">	`material_t2` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;子件号&apos;,</span><br><span class="line">	`material_name_t2` VARCHAR(256) NULL DEFAULT NULL COMMENT &apos;子件物料描述&apos;,</span><br><span class="line">	`quantity_t2` DECIMAL(32,10) NULL DEFAULT NULL COMMENT &apos;耗用数量&apos;,</span><br><span class="line">	`unitofmeasure_t2` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;bom单位&apos;,</span><br><span class="line">	`bom_level` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;编码&apos;,</span><br><span class="line">	`lv` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;层级&apos;,</span><br><span class="line">	`partnumber` VARCHAR(40) NULL DEFAULT NULL COMMENT &apos;二三级物料的父项物料&apos;,</span><br><span class="line">	`src_etl_date` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;数据源取数时间&apos;,</span><br><span class="line">	`trg_etl_date` VARCHAR(32) NULL DEFAULT NULL COMMENT &apos;落数时间&apos;,</span><br><span class="line">	`dl_etl_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT &apos;dl层数据落地时间&apos;,</span><br><span class="line">	`etl_dbs_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT &apos;创建日期&apos;,</span><br><span class="line">	PRIMARY KEY (`id`)</span><br><span class="line">)</span><br><span class="line">COLLATE=&apos;utf8_general_ci&apos;</span><br><span class="line">ENGINE=InnoDB</span><br><span class="line">AUTO_INCREMENT=27303502</span><br></pre></td></tr></table></figure>
-
-<p>分析上述SQL查询语句的执行逻辑：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WHERE material=&apos;0060122449&apos; AND plant=&apos;null&apos;</span><br></pre></td></tr></table></figure>
-
-<p>因为数据量很大，虽然这条语句的目的是只查询物料编号为：0060122449的相关信息，但实际却需要查询大量的数据，而且最后还需进行排序，所以是非常低效的。</p>
-<h3 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h3><p><strong>增添</strong>一个对material字段的<strong>索引</strong></p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/case2-2.png" alt></p>
-<p>重新查看CPU利用率，发现MySQL CPU利用率很快的下降恢复正常。</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/case2-3.png" alt></p>
+<blockquote>
+<p>Tips：不要轻易在真实生产环境中直接安装，因为升级的过程中比较容易出现系统出错。</p>
+</blockquote>
 
           
         
@@ -1819,7 +1853,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">64</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

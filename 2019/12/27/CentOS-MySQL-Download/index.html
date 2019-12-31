@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="MySQL,">
 
 
 
@@ -79,14 +79,18 @@
 
 
 
+<meta name="description" content="简介Linux 上安装软件常用方式：  源码编译 压缩包解压（一般为 tar.gz） 编译好的安装包（RPM、DPKG等） 在线安装（YUM、APT等）  便捷性： YUM &amp;gt; RPM &amp;gt; tar.gz &amp;gt; 源码 通用性: 源码 &amp;gt; tar.gz &amp;gt; RPM &amp;gt; YUM 如：使用压缩包解压的方式安装，虽然需要自己额外进行一些配置工作，但掌握方法后各个平台都基本适">
+<meta name="keywords" content="MySQL">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CentOS MySQL Download">
+<meta property="og:title" content="CentOS安装MySQL">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2019/12/27/CentOS-MySQL-Download/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
+<meta property="og:description" content="简介Linux 上安装软件常用方式：  源码编译 压缩包解压（一般为 tar.gz） 编译好的安装包（RPM、DPKG等） 在线安装（YUM、APT等）  便捷性： YUM &amp;gt; RPM &amp;gt; tar.gz &amp;gt; 源码 通用性: 源码 &amp;gt; tar.gz &amp;gt; RPM &amp;gt; YUM 如：使用压缩包解压的方式安装，虽然需要自己额外进行一些配置工作，但掌握方法后各个平台都基本适">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-12-27T09:25:18.576Z">
+<meta property="og:updated_time" content="2019-12-31T01:26:46.193Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CentOS MySQL Download">
+<meta name="twitter:title" content="CentOS安装MySQL">
+<meta name="twitter:description" content="简介Linux 上安装软件常用方式：  源码编译 压缩包解压（一般为 tar.gz） 编译好的安装包（RPM、DPKG等） 在线安装（YUM、APT等）  便捷性： YUM &amp;gt; RPM &amp;gt; tar.gz &amp;gt; 源码 通用性: 源码 &amp;gt; tar.gz &amp;gt; RPM &amp;gt; YUM 如：使用压缩包解压的方式安装，虽然需要自己额外进行一些配置工作，但掌握方法后各个平台都基本适">
 
 
 
@@ -122,7 +126,7 @@
 
 
 
-  <title>CentOS MySQL Download | Mino's blog</title>
+  <title>CentOS安装MySQL | Mino's blog</title>
   
 
 
@@ -298,7 +302,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">CentOS MySQL Download</h1>
+          <h1 class="post-title" itemprop="name headline">CentOS安装MySQL</h1>
         
 
         <div class="post-meta">
@@ -348,7 +352,94 @@
       
 
       
-        
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>Linux</code> 上安装软件常用方式：</p>
+<ul>
+<li>源码编译</li>
+<li>压缩包解压（一般为 <code>tar.gz</code>）</li>
+<li>编译好的安装包（RPM、DPKG等）</li>
+<li>在线安装（YUM、APT等）</li>
+</ul>
+<p>便捷性：</p>
+<p>YUM &gt; RPM &gt; tar.gz &gt; 源码</p>
+<p>通用性:</p>
+<p>源码 &gt; tar.gz &gt; RPM &gt; YUM</p>
+<p>如：使用压缩包解压的方式安装，虽然需要自己额外进行一些配置工作，但掌握方法后各个平台都基本适用，YUM方式虽然简单，但平台和网络受限，必要时需添加一些特定的YUM源。</p>
+<h2 id="删除已安装的MySQL"><a href="#删除已安装的MySQL" class="headerlink" title="删除已安装的MySQL"></a>删除已安装的MySQL</h2><p><code>yum</code> 方式可以不删mariad除 <code>mariadb</code> ，安装的 <code>MySQL</code> 会覆盖掉之前存在的 <code>mariadb</code></p>
+<ul>
+<li>检查 <code>MariaDB</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -qa|grep mariadb</span><br><span class="line">mariadb-server-5.5.60-1.el7_5.x86_64</span><br><span class="line">mariadb-5.5.60-1.el7_5.x86_64</span><br><span class="line">mariadb-libs-5.5.60-1.el7_5.x86_64</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>删除 <code>MariDB</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -e --nodeps mariadb-server</span><br><span class="line">shell&gt; rpm -e --nodeps mariadb</span><br><span class="line">shell&gt; rpm -e --nodeps mariadb-libs</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查 <code>MySQL</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -qa|grep mysql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>删除 <code>MySQL</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -e --nodeps xxx</span><br></pre></td></tr></table></figure>
+
+<h2 id="YUM方式"><a href="#YUM方式" class="headerlink" title="YUM方式"></a>YUM方式</h2><h3 id="添加-MySQL-YUM-Repository"><a href="#添加-MySQL-YUM-Repository" class="headerlink" title="添加 MySQL YUM Repository"></a>添加 MySQL YUM Repository</h3><p><code>CentOS 7</code> 开始，<code>Mariadb</code> 成为 <code>YUM</code> 源种默认的数据库安装包，如果想安装官方 <code>MySQL</code> 版本需适用 <code>MySQL</code> 提供的 <code>YUM</code> 源。</p>
+<ul>
+<li>下载 <code>MySQL</code> 源</li>
+</ul>
+<p>官网地址：<a href="https://dev.mysql.com/downloads/repo/yum/" target="_blank" rel="noopener">https://dev.mysql.com/downloads/repo/yum/</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#查看系统版本</span><br><span class="line">shell&gt; cat /etc/redhat-release</span><br><span class="line">CentOS Linux release 7.7.1908 (Core)</span><br><span class="line"></span><br><span class="line">#选择对应版本进行下载,这里为CentOS 7 </span><br><span class="line">shell&gt; wget https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>安装 <code>MySQL</code> 源</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># CentOS7当前最新的MySQL源安装</span><br><span class="line">sudo rpm -Uvh mysql80-community-release-el7-3.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查是否安装成功</li>
+</ul>
+<p>1、执行成功后会在 <code>/etc/yum.repos.d/</code> 目录下生成两个 <code>repo</code>  文件：<code>mysql-community.repo</code> 、<code>mysql-community-source.repo</code>。</p>
+<p>2、通过 <code>yum repolist</code> 可以看到 <code>mysql</code> 相关资源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; yum repolist enabled | grep &quot;mysql.*-community.*&quot;</span><br><span class="line">mysql-connectors-community/x86_64 MySQL Connectors Community                 131</span><br><span class="line">mysql-tools-community/x86_64      MySQL Tools Community                      100</span><br><span class="line">mysql80-community/x86_64          MySQL 8.0 Community Server                 145</span><br></pre></td></tr></table></figure>
+
+<h3 id="选择-MySQL版本"><a href="#选择-MySQL版本" class="headerlink" title="选择 MySQL版本"></a>选择 MySQL版本</h3><p>使用 <code>MySQL Yum Repository</code> 安装 <code>MySQL</code> 默认选择当前最新的稳定版本，如果希望安装其他版本需切换一下版本。</p>
+<ul>
+<li>查看当前 <code>MySQL Yum Repository</code> 中所有的 <code>MySQL</code> 版本(每个版本在不同子仓库中)</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; yum repolist all | grep mysql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>切换版本为  <code>MySQL5.7</code></p>
+<p>方法1：使用 <code>yum-config-manager</code></p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; sudo yum-config-manager --disable mysql80-community</span><br><span class="line">shell&gt; sudo yum-config-manager --enable mysql57-community</span><br><span class="line"></span><br><span class="line"># 报错</span><br><span class="line">sudo: yum-config-manager: command not found</span><br><span class="line"># 解决</span><br><span class="line">yum -y install yum-utils</span><br></pre></td></tr></table></figure>
+
+<pre><code>方法2：直接编辑 `/etc/yum.repos.d/mysql-community.repo`</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># enabled=0禁用</span><br><span class="line">[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/$basearch/</span><br><span class="line">enabled=0</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql</span><br><span class="line"></span><br><span class="line"># enabled=1启用</span><br><span class="line">[mysql57-community]</span><br><span class="line">name=MySQL 5.7 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-5.7-community/el/7/$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查当前启用的 <code>MySQL</code>仓库</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; yum repolist enabled | grep mysq</span><br><span class="line">mysql-connectors-community/x86_64 MySQL Connectors Community                 131</span><br><span class="line">mysql-tools-community/x86_64      MySQL Tools Community                      100</span><br><span class="line">mysql57-community/x86_64          MySQL 5.7 Community Server                 384</span><br></pre></td></tr></table></figure>
+
+<p><em>如果同时启用了多个仓库，安装时会选择最新版本</em></p>
+<h3 id="安装MySQL"><a href="#安装MySQL" class="headerlink" title="安装MySQL"></a>安装MySQL</h3><p>该命令会安装 <code>MySQL</code> 服务器 ( <code>mysql-community-server</code> ) 及其所需的依赖、相关组件，包括 <code>mysql-community-client</code>、<code>mysql-community-common</code> 、<code>mysql-community-libs</code> 等</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; sudo yum install mysql-community-server</span><br></pre></td></tr></table></figure>
+
+<h3 id="启停MySQL"><a href="#启停MySQL" class="headerlink" title="启停MySQL"></a>启停MySQL</h3><p><strong>CentOS 7</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#启动</span><br><span class="line">sudo systemctl start mysqld.service</span><br><span class="line">#查看状态</span><br><span class="line">sudo systemctl status mysqld.service</span><br><span class="line">#停止</span><br><span class="line">sudo systemctl stop mysqld.service</span><br><span class="line">#重启</span><br><span class="line">sudo systemctl restart mysqld.service</span><br></pre></td></tr></table></figure>
+
+<p><strong>CentOS 6</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#启动</span><br><span class="line">sudo service mysqld start</span><br><span class="line">#查看状态</span><br><span class="line">sudo service mysqld status</span><br><span class="line">#停止</span><br><span class="line">sudo service mysqld stop</span><br><span class="line">#重启</span><br><span class="line">sudo service mysqld restart</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置用户"><a href="#设置用户" class="headerlink" title="设置用户"></a>设置用户</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; sudo grep &apos;temporary password&apos; /var/log/mysqld.log</span><br><span class="line">shell&gt; mysql -uroot -p</span><br><span class="line">#修改root用户密码</span><br><span class="line">ALTER USER &apos;root&apos;@&apos;localhost&apos; IDENTIFIED BY &apos;XXX&apos;;</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+
+<p>设置开机自启动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; systemctl enable mysqld</span><br><span class="line">shell&gt; systemctl daemon-reload</span><br></pre></td></tr></table></figure>
+
+
       
     </div>
     
@@ -362,6 +453,12 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/MySQL/" rel="tag"># MySQL</a>
+          
+        </div>
       
 
       
@@ -381,6 +478,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2019/12/31/scp-backstage/" rel="prev" title="Linux下SCP后台运行传输文件">
+                Linux下SCP后台运行传输文件 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -432,8 +533,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -448,7 +558,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">64</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -484,6 +594,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除已安装的MySQL"><span class="nav-number">2.</span> <span class="nav-text">删除已安装的MySQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#YUM方式"><span class="nav-number">3.</span> <span class="nav-text">YUM方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#添加-MySQL-YUM-Repository"><span class="nav-number">3.1.</span> <span class="nav-text">添加 MySQL YUM Repository</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#选择-MySQL版本"><span class="nav-number">3.2.</span> <span class="nav-text">选择 MySQL版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装MySQL"><span class="nav-number">3.3.</span> <span class="nav-text">安装MySQL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启停MySQL"><span class="nav-number">3.4.</span> <span class="nav-text">启停MySQL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置用户"><span class="nav-number">3.5.</span> <span class="nav-text">设置用户</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

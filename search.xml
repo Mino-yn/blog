@@ -1,9 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>CentOS MySQL Download</title>
+    <title>Linux下SCP后台运行传输文件</title>
+    <url>/blog/2019/12/31/scp-backstage/</url>
+    <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>传输一个大文件另一台服务器，当传输速率不高时有时需要传输几个小时，至十几个小时，为了避免由于其他原因导致传输的中断，需要将 <code>scp</code> 放到后台中运行。后台执行我们常用 <code>nohup command &amp;</code> 但是<code>scp</code> 需要输入密码，所以无法直接使用 <code>nohup</code> 。</p>
+<h3 id="方法一、配置互信"><a href="#方法一、配置互信" class="headerlink" title="方法一、配置互信"></a>方法一、配置互信</h3><ul>
+<li><a href="https://mino-yn.github.io/blog/2019/08/23/ssh%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88%E5%8D%95%E5%90%91%EF%BC%89/">配置互信</a></li>
+<li>后台执行 <code>scp</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#可以使用-l控制传输速度，传输过程中占用过大带宽，影响其他服务器。(100000/8/1024=12M)</span><br><span class="line">nohup scp -l 100000 test.tar root@172.172.230.211:/data &amp;</span><br></pre></td></tr></table></figure>
+
+<h3 id="方法二、bg命令转后台执行"><a href="#方法二、bg命令转后台执行" class="headerlink" title="方法二、bg命令转后台执行"></a>方法二、bg命令转后台执行</h3><ul>
+<li>运行 <code>scp</code> 命令</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nohup scp -P 60022 -r /TRS/back/* root@47.95.110.25:/backup</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>输入密码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#此时输完密码进程会挂起，还是在前台执行</span><br><span class="line">nohup: ignoring input and appending output to `nohup.out&apos;</span><br><span class="line">root@47.95.110.25&apos;s password:</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>输入 <code>ctrl+z</code> 暂停程序,出现以下提示</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[1]+  Stopped                 nohup scp -P 60022 -r /TRS/back/* root@47.95.110.25:/backup</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>执行 <code>bg</code> 使进程在后台继续运行</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@hr-jf11 TRS]# bg</span><br><span class="line">[1]+ nohup scp -P 60022 -r /TRS/back/* root@47.95.110.25:/backup</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看 <code>scp</code> 进程，进程已经在后台执行了。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ps -ef|grep scp</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CentOS安装MySQL</title>
     <url>/blog/2019/12/27/CentOS-MySQL-Download/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>Linux</code> 上安装软件常用方式：</p>
+<ul>
+<li>源码编译</li>
+<li>压缩包解压（一般为 <code>tar.gz</code>）</li>
+<li>编译好的安装包（RPM、DPKG等）</li>
+<li>在线安装（YUM、APT等）</li>
+</ul>
+<p>便捷性：</p>
+<p>YUM &gt; RPM &gt; tar.gz &gt; 源码</p>
+<p>通用性:</p>
+<p>源码 &gt; tar.gz &gt; RPM &gt; YUM</p>
+<p>如：使用压缩包解压的方式安装，虽然需要自己额外进行一些配置工作，但掌握方法后各个平台都基本适用，YUM方式虽然简单，但平台和网络受限，必要时需添加一些特定的YUM源。</p>
+<h2 id="删除已安装的MySQL"><a href="#删除已安装的MySQL" class="headerlink" title="删除已安装的MySQL"></a>删除已安装的MySQL</h2><p><code>yum</code> 方式可以不删mariad除 <code>mariadb</code> ，安装的 <code>MySQL</code> 会覆盖掉之前存在的 <code>mariadb</code></p>
+<ul>
+<li>检查 <code>MariaDB</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">shell&gt; rpm -qa|grep mariadb</span><br><span class="line">mariadb-server-5.5.60-1.el7_5.x86_64</span><br><span class="line">mariadb-5.5.60-1.el7_5.x86_64</span><br><span class="line">mariadb-libs-5.5.60-1.el7_5.x86_64</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>删除 <code>MariDB</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">shell&gt; rpm -e --nodeps mariadb-server</span><br><span class="line">shell&gt; rpm -e --nodeps mariadb</span><br><span class="line">shell&gt; rpm -e --nodeps mariadb-libs</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查 <code>MySQL</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">shell&gt; rpm -qa|grep mysql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>删除 <code>MySQL</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">shell&gt; rpm -e --nodeps xxx</span><br></pre></td></tr></table></figure>
+
+<h2 id="YUM方式"><a href="#YUM方式" class="headerlink" title="YUM方式"></a>YUM方式</h2><h3 id="添加-MySQL-YUM-Repository"><a href="#添加-MySQL-YUM-Repository" class="headerlink" title="添加 MySQL YUM Repository"></a>添加 MySQL YUM Repository</h3><p><code>CentOS 7</code> 开始，<code>Mariadb</code> 成为 <code>YUM</code> 源种默认的数据库安装包，如果想安装官方 <code>MySQL</code> 版本需适用 <code>MySQL</code> 提供的 <code>YUM</code> 源。</p>
+<ul>
+<li>下载 <code>MySQL</code> 源</li>
+</ul>
+<p>官网地址：<a href="https://dev.mysql.com/downloads/repo/yum/" target="_blank" rel="noopener">https://dev.mysql.com/downloads/repo/yum/</a></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#查看系统版本</span><br><span class="line">shell&gt; cat /etc/redhat-release</span><br><span class="line">CentOS Linux release 7.7.1908 (Core)</span><br><span class="line"></span><br><span class="line">#选择对应版本进行下载,这里为CentOS 7 </span><br><span class="line">shell&gt; wget https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>安装 <code>MySQL</code> 源</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># CentOS7当前最新的MySQL源安装</span><br><span class="line">sudo rpm -Uvh mysql80-community-release-el7-3.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查是否安装成功</li>
+</ul>
+<p>1、执行成功后会在 <code>/etc/yum.repos.d/</code> 目录下生成两个 <code>repo</code>  文件：<code>mysql-community.repo</code> 、<code>mysql-community-source.repo</code>。</p>
+<p>2、通过 <code>yum repolist</code> 可以看到 <code>mysql</code> 相关资源</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">shell&gt; yum repolist enabled | grep &quot;mysql.*-community.*&quot;</span><br><span class="line">mysql-connectors-community/x86_64 MySQL Connectors Community                 131</span><br><span class="line">mysql-tools-community/x86_64      MySQL Tools Community                      100</span><br><span class="line">mysql80-community/x86_64          MySQL 8.0 Community Server                 145</span><br></pre></td></tr></table></figure>
+
+<h3 id="选择-MySQL版本"><a href="#选择-MySQL版本" class="headerlink" title="选择 MySQL版本"></a>选择 MySQL版本</h3><p>使用 <code>MySQL Yum Repository</code> 安装 <code>MySQL</code> 默认选择当前最新的稳定版本，如果希望安装其他版本需切换一下版本。</p>
+<ul>
+<li>查看当前 <code>MySQL Yum Repository</code> 中所有的 <code>MySQL</code> 版本(每个版本在不同子仓库中)</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">shell&gt; yum repolist all | grep mysql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>切换版本为  <code>MySQL5.7</code></p>
+<p>方法1：使用 <code>yum-config-manager</code></p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">shell&gt; sudo yum-config-manager --disable mysql80-community</span><br><span class="line">shell&gt; sudo yum-config-manager --enable mysql57-community</span><br><span class="line"></span><br><span class="line"># 报错</span><br><span class="line">sudo: yum-config-manager: command not found</span><br><span class="line"># 解决</span><br><span class="line">yum -y install yum-utils</span><br></pre></td></tr></table></figure>
+
+<pre><code>方法2：直接编辑 `/etc/yum.repos.d/mysql-community.repo`</code></pre><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># enabled=0禁用</span><br><span class="line">[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/$basearch/</span><br><span class="line">enabled=0</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql</span><br><span class="line"></span><br><span class="line"># enabled=1启用</span><br><span class="line">[mysql57-community]</span><br><span class="line">name=MySQL 5.7 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-5.7-community/el/7/$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查当前启用的 <code>MySQL</code>仓库</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">shell&gt; yum repolist enabled | grep mysq</span><br><span class="line">mysql-connectors-community/x86_64 MySQL Connectors Community                 131</span><br><span class="line">mysql-tools-community/x86_64      MySQL Tools Community                      100</span><br><span class="line">mysql57-community/x86_64          MySQL 5.7 Community Server                 384</span><br></pre></td></tr></table></figure>
+
+<p><em>如果同时启用了多个仓库，安装时会选择最新版本</em></p>
+<h3 id="安装MySQL"><a href="#安装MySQL" class="headerlink" title="安装MySQL"></a>安装MySQL</h3><p>该命令会安装 <code>MySQL</code> 服务器 ( <code>mysql-community-server</code> ) 及其所需的依赖、相关组件，包括 <code>mysql-community-client</code>、<code>mysql-community-common</code> 、<code>mysql-community-libs</code> 等</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">shell&gt; sudo yum install mysql-community-server</span><br></pre></td></tr></table></figure>
+
+<h3 id="启停MySQL"><a href="#启停MySQL" class="headerlink" title="启停MySQL"></a>启停MySQL</h3><p><strong>CentOS 7</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#启动</span><br><span class="line">sudo systemctl start mysqld.service</span><br><span class="line">#查看状态</span><br><span class="line">sudo systemctl status mysqld.service</span><br><span class="line">#停止</span><br><span class="line">sudo systemctl stop mysqld.service</span><br><span class="line">#重启</span><br><span class="line">sudo systemctl restart mysqld.service</span><br></pre></td></tr></table></figure>
+
+<p><strong>CentOS 6</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#启动</span><br><span class="line">sudo service mysqld start</span><br><span class="line">#查看状态</span><br><span class="line">sudo service mysqld status</span><br><span class="line">#停止</span><br><span class="line">sudo service mysqld stop</span><br><span class="line">#重启</span><br><span class="line">sudo service mysqld restart</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置用户"><a href="#设置用户" class="headerlink" title="设置用户"></a>设置用户</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">shell&gt; sudo grep &apos;temporary password&apos; /var/log/mysqld.log</span><br><span class="line">shell&gt; mysql -uroot -p</span><br><span class="line">#修改root用户密码</span><br><span class="line">ALTER USER &apos;root&apos;@&apos;localhost&apos; IDENTIFIED BY &apos;XXX&apos;;</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+
+<p>设置开机自启动</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">shell&gt; systemctl enable mysqld</span><br><span class="line">shell&gt; systemctl daemon-reload</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
   </entry>
   <entry>
     <title>Explain(下)</title>
@@ -2046,6 +2176,14 @@
 <h4 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h4><p>服务器上安装过<code>Percona XtraBackup2.2</code>, 但从mysql5.7开始，必须使用xtrabackup2.4以上版本才能完成备份,老的版本执行会报错，已不适用。将老版本卸载后重新安装.</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpm -e 要删除的软件包</span><br></pre></td></tr></table></figure>
 
+<h3 id="问题三"><a href="#问题三" class="headerlink" title="问题三"></a>问题三</h3><h4 id="问题现象-2"><a href="#问题现象-2" class="headerlink" title="问题现象"></a>问题现象</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@hop02 src]# rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpmwarning: percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEYerror: Failed dependencies:	libc.so.6(GLIBC_2.14)(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64	libstdc++.so.6(GLIBCXX_3.4.15)(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br></pre></td></tr></table></figure>
+
+<h4 id="解决方法："><a href="#解决方法：" class="headerlink" title="解决方法："></a><strong>解决方法</strong>：</h4><p>查看操作系统版本，<code>CentOS 6</code> 下载 <code>el6</code> 的安装包即可。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cat /etc/redhat-releaseCentOS release 6.5 (Final)$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-xtrabackup-24-2.4.12-1.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Tips：不要轻易在真实生产环境中直接安装，因为升级的过程中比较容易出现系统出错。</p>
+</blockquote>
 ]]></content>
       <tags>
         <tag>XtraBackup</tag>
@@ -2757,7 +2895,7 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">格式：ssh [-l login_name] [-p port] [user@]hostname</span><br><span class="line"></span><br><span class="line">ssh 192.168.0.11                       #不指定用户，默认使用当前宿主用户名登录</span><br><span class="line">ssh root@192.168.0.11                  # 指定用户登录</span><br><span class="line">ssh -l root 192.168.0.11</span><br><span class="line">ssh root@192.168.0.11 -p 2222          # 指定端口，默认端口22</span><br><span class="line">ssh root@192.168.0.11 &quot;ls /usr/local&quot;  # 远程登录后执行某命令</span><br></pre></td></tr></table></figure>
 
 <p>可以利用scp<strong>远程传输文件</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">格式：scp [file|folder] [user@host]:[remote_folder] [-P port]</span><br><span class="line"></span><br><span class="line">scp username@servername:/path/filename                   #从服务器上下载文件</span><br><span class="line">scp -r username@servername:remote_dir/local_dir          #从服务器上下载整个目录</span><br><span class="line">scp /path/local_filename username@servername:/path       #上传本地文件至服务器</span><br><span class="line">scp  -r /tmp/local_dir username@servername:remote_dir    #上传目录至服务器</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">格式：scp [file|folder] [user@host]:[remote_folder] [-P port]</span><br><span class="line"></span><br><span class="line">scp username@servername:/path/filename                   #从服务器上下载文件</span><br><span class="line">scp -r username@servername:remote_dir/local_dir          #从服务器上下载整个目录</span><br><span class="line">scp /path/local_filename username@servername:/path       #上传本地文件至服务器</span><br><span class="line">scp  -r /tmp/local_dir username@servername:remote_dir    #上传目录至服务器</span><br><span class="line">scp -P 60022 -r /local_dir username@servername:remote_dir  #指定端口，默认端口22</span><br></pre></td></tr></table></figure>
 
 <h2 id="设置免密登录"><a href="#设置免密登录" class="headerlink" title="设置免密登录"></a>设置免密登录</h2><p>但以上操作每次都需要输入目标服务器的密码，操作起来比较麻烦，且不适合集群服务器的批量操作。我们可以通过配置rsa私钥和公钥的方式实现免密ssh登录。</p>
 <p>这里介绍免密登录的单向配置，如果想实现双向的互信免密登录，再反向配置一遍即可。</p>
