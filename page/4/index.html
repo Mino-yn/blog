@@ -281,6 +281,982 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/10/16/InnoDB-Date-Page-Structure/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/10/16/InnoDB-Date-Page-Structure/" itemprop="url">InnoDB数据页结构</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-16T15:50:51+08:00">
+                2019-10-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>页</code> 是 <code>InnoDB</code> 管理存储空间的基本单位，一个页的大小一般是 <code>16KB</code>，InnoDB为了不同的目的而设计了不同类型的列，其中用于存放记录的页叫做 <code>数据页</code>，官方称这种存放记录的页为索引（<code>index</code>）页。</p>
+<h2 id="数据页的划分"><a href="#数据页的划分" class="headerlink" title="数据页的划分"></a>数据页的划分</h2><p>一个 <code>InnoDB</code> 数据页大致被分为7个部分：</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB_page_data1.png" alt></p>
+<table>
+<thead>
+<tr>
+<th align="center">名称</th>
+<th align="center">中文名</th>
+<th align="center">占用空间大小</th>
+<th align="center">简单描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>File Header</code></td>
+<td align="center">文件头部</td>
+<td align="center"><code>38</code>字节</td>
+<td align="center">页的一些通用信息</td>
+</tr>
+<tr>
+<td align="center"><code>Page Header</code></td>
+<td align="center">页面头部</td>
+<td align="center"><code>56</code>字节</td>
+<td align="center">数据页专有的一些信息</td>
+</tr>
+<tr>
+<td align="center"><code>Infimum + Supremum</code></td>
+<td align="center">最小记录和最大记录</td>
+<td align="center"><code>26</code>字节</td>
+<td align="center">两个虚拟的行记录</td>
+</tr>
+<tr>
+<td align="center"><code>User Records</code></td>
+<td align="center">用户记录</td>
+<td align="center">不确定</td>
+<td align="center">实际存储的行记录内容</td>
+</tr>
+<tr>
+<td align="center"><code>Free Space</code></td>
+<td align="center">空闲空间</td>
+<td align="center">不确定</td>
+<td align="center">页中尚未使用的空间</td>
+</tr>
+<tr>
+<td align="center"><code>Page Directory</code></td>
+<td align="center">页面目录</td>
+<td align="center">不确定</td>
+<td align="center">页中的某些记录的相对位置</td>
+</tr>
+<tr>
+<td align="center"><code>File Trailer</code></td>
+<td align="center">文件尾部</td>
+<td align="center"><code>8</code>字节</td>
+<td align="center">校验页是否完整</td>
+</tr>
+</tbody></table>
+<h3 id="User-Record"><a href="#User-Record" class="headerlink" title="User Record"></a>User Record</h3><p><code>记录</code> 按照指定的<code>行格式</code>存储到 <code>User Records</code> 的部分，但最初生成页时没有 <code>User Records</code> 部分，每插入一条记录，会从<code>Free Space</code> 中申请一个记录大小的空间划分至 <code>User Records</code>  部分。</p>
+<p><strong>记录在页中的储存</strong></p>
+<p>每个记录的头信息中都有一个<code>next_record</code>属性，从而使页中的所有记录串联成一个<code>单链表</code>。链表的头为<code>infimum</code> 记录（<strong>最小记录</strong>），尾为 <code>Supermum</code> 记录（<strong>最大记录</strong>）。</p>
+<ul>
+<li><code>next_record</code>:  表示按照主键值从小到大的顺序，从当前记录到下一条真实记录的<strong>地址偏移量</strong>。并且规定 <code>infimum</code> 记录（即<strong>最小记录</strong>）的下一条记录是本页中主键值最小的用户记录，主键值最大的用户记录的下一条记录是<code>Superemum</code> 记录。</li>
+</ul>
+<p>指定<code>c1</code>列为主键，行格式为<code>compact</code> 的表中记录行格式示意图：</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB_page_data1.png" alt></p>
+<p>以箭头代表 <code>next_record</code> 中的地址偏移量，记录的存储示意图:</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/InnoDB_page_data2.png" alt></p>
+<h3 id="Page-Directory页目录"><a href="#Page-Directory页目录" class="headerlink" title="Page Directory页目录"></a>Page Directory页目录</h3><p>为了方便记录的查找，<code>InnoDB</code>设计了页目录<code>Page Directory</code>。</p>
+<p><strong>页目录的制作过程：</strong></p>
+<ul>
+<li><p><code>InnoDB</code> 将页中所有正常的记录划分为若干个组。</p>
+</li>
+<li><p>每个组的最后一条记录的头信息中的 <code>n_owned</code> 表示该记录拥有的记录数，即该组内共拥有多少条记录。</p>
+</li>
+<li><p>每个组的最后一个记录的地址偏移量作为一个 <code>槽</code>，存储在靠近页尾部的地方，存放在<code>Page Directory</code> 中</p>
+</li>
+</ul>
+<p><strong>每个分组记录条数的规定：</strong></p>
+<ul>
+<li>最小记录所在分组记录条数范围：1条</li>
+<li>最大记录所在分组记录条数范围：1-8条</li>
+<li>其余分组记录条数范围：4-8条</li>
+</ul>
+<p><strong>页中根据主键查找记录步骤：</strong></p>
+<ul>
+<li>通过二分法确定记录所在的槽</li>
+<li>通过记录的 <code>next_record</code> 属性遍历该槽所在组中的所有的记录。</li>
+</ul>
+<h3 id="Page-Header页面头部"><a href="#Page-Header页面头部" class="headerlink" title="Page Header页面头部"></a>Page Header页面头部</h3><p><code>Page Header</code> 是<code>页</code> 结构的第二个部分，占固定的 <code>56</code> 个字节，专门存储各种状态信息。</p>
+<table>
+<thead>
+<tr>
+<th align="center">名称</th>
+<th align="center">占用空间大小</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>PAGE_N_DIR_SLOTS</code></td>
+<td align="center"><code>2</code>字节</td>
+<td align="center">在页目录中的槽数量</td>
+</tr>
+<tr>
+<td align="center"><code>PAGE_HEAP_TOP</code></td>
+<td align="center"><code>2</code>字节</td>
+<td align="center">还未使用的空间最小地址，也就是说从该地址之后就是<code>Free Space</code></td>
+</tr>
+<tr>
+<td align="center"><code>PAGE_N_HEAP</code></td>
+<td align="center"><code>2</code>字节</td>
+<td align="center">本页中的记录的数量（包括最小和最大记录以及标记为删除的记录）</td>
+</tr>
+<tr>
+<td align="center"><code>PAGE_FREE</code></td>
+<td align="center"><code>2</code>字节</td>
+<td align="center">第一个已经标记为删除的记录地址（各个已删除的记录通过<code>next_record</code>也会组成一个单链表，这个单链表中的记录可以被重新利用）</td>
+</tr>
+<tr>
+<td align="center"><code>PAGE_GARBAGE</code></td>
+<td align="center"><code>2</code>字节</td>
+<td align="center">已删除记录占用的字节数</td>
+</tr>
+<tr>
+<td align="center"><code>PAGE_LAST_INSERT</code></td>
+<td align="center"><code>2</code>字节</td>
+<td align="center">最后插入记录的位置</td>
+</tr>
+<tr>
+<td align="center"><code>PAGE_DIRECTION</code></td>
+<td align="center"><code>2</code>字节</td>
+<td align="center">记录插入的方向</td>
+</tr>
+<tr>
+<td align="center"><code>PAGE_N_DIRECTION</code></td>
+<td align="center"><code>2</code>字节</td>
+<td align="center">一个方向连续插入的记录数量</td>
+</tr>
+<tr>
+<td align="center"><code>PAGE_N_RECS</code></td>
+<td align="center"><code>2</code>字节</td>
+<td align="center">该页中记录的数量（不包括最小和最大记录以及被标记为删除的记录）</td>
+</tr>
+<tr>
+<td align="center"><code>PAGE_MAX_TRX_ID</code></td>
+<td align="center"><code>8</code>字节</td>
+<td align="center">修改当前页的最大事务ID，该值仅在二级索引中定义</td>
+</tr>
+<tr>
+<td align="center"><code>PAGE_LEVEL</code></td>
+<td align="center"><code>2</code>字节</td>
+<td align="center">当前页在B+树中所处的层级</td>
+</tr>
+<tr>
+<td align="center"><code>PAGE_INDEX_ID</code></td>
+<td align="center"><code>8</code>字节</td>
+<td align="center">索引ID，表示当前页属于哪个索引</td>
+</tr>
+<tr>
+<td align="center"><code>PAGE_BTR_SEG_LEAF</code></td>
+<td align="center"><code>10</code>字节</td>
+<td align="center">B+树叶子段的头部信息，仅在B+树的Root页定义</td>
+</tr>
+<tr>
+<td align="center"><code>PAGE_BTR_SEG_TOP</code></td>
+<td align="center"><code>10</code>字节</td>
+<td align="center">B+树非叶子段的头部信息，仅在B+树的Root页定义</td>
+</tr>
+</tbody></table>
+<h3 id="File-Header文件头部"><a href="#File-Header文件头部" class="headerlink" title="File Header文件头部"></a>File Header文件头部</h3><p><code>Page Header</code>是专门针对<code>数据页</code>记录的各种状态信息。<code>File Header</code>针对各种类型的页都通用，描述了一些针对各种页都通用的信息，占固定的 <code>38</code> 个字节。</p>
+<table>
+<thead>
+<tr>
+<th align="center">名称</th>
+<th align="center">占用空间大小</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>FIL_PAGE_SPACE_OR_CHKSUM</code></td>
+<td align="center"><code>4</code>字节</td>
+<td align="center">页的校验和（checksum值）</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_OFFSET</code></td>
+<td align="center"><code>4</code>字节</td>
+<td align="center">页号</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_PREV</code></td>
+<td align="center"><code>4</code>字节</td>
+<td align="center">上一个页的页号</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_NEXT</code></td>
+<td align="center"><code>4</code>字节</td>
+<td align="center">下一个页的页号</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_LSN</code></td>
+<td align="center"><code>8</code>字节</td>
+<td align="center">页面被最后修改时对应的日志序列位置（英文名是：Log Sequence Number）</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_TYPE</code></td>
+<td align="center"><code>2</code>字节</td>
+<td align="center">该页的类型</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_FILE_FLUSH_LSN</code></td>
+<td align="center"><code>8</code>字节</td>
+<td align="center">仅在系统表空间的一个页中定义，代表文件至少被刷新到了对应的<code>LSN</code>值</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_ARCH_LOG_NO_OR_SPACE_ID</code></td>
+<td align="center"><code>4</code>字节</td>
+<td align="center">页属于哪个表空间</td>
+</tr>
+</tbody></table>
+<ul>
+<li><code>FIL_PAGE_TYPE</code></li>
+</ul>
+<p><code>FIL_PAGE_TYPE</code> 表示当前 <code>页</code>  的类型，我们说的存储数据的数据页的页类型为<code>FIL_PAGE_INDEX</code>。</p>
+<table>
+<thead>
+<tr>
+<th align="center">类型名称</th>
+<th align="center">十六进制</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>FIL_PAGE_TYPE_ALLOCATED</code></td>
+<td align="center">0x0000</td>
+<td align="center">最新分配，还没使用</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_UNDO_LOG</code></td>
+<td align="center">0x0002</td>
+<td align="center">Undo日志页</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_INODE</code></td>
+<td align="center">0x0003</td>
+<td align="center">段信息节点</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_IBUF_FREE_LIST</code></td>
+<td align="center">0x0004</td>
+<td align="center">Insert Buffer空闲列表</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_IBUF_BITMAP</code></td>
+<td align="center">0x0005</td>
+<td align="center">Insert Buffer位图</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_TYPE_SYS</code></td>
+<td align="center">0x0006</td>
+<td align="center">系统页</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_TYPE_TRX_SYS</code></td>
+<td align="center">0x0007</td>
+<td align="center">事务系统数据</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_TYPE_FSP_HDR</code></td>
+<td align="center">0x0008</td>
+<td align="center">表空间头部信息</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_TYPE_XDES</code></td>
+<td align="center">0x0009</td>
+<td align="center">扩展描述页</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_TYPE_BLOB</code></td>
+<td align="center">0x000A</td>
+<td align="center">BLOB页</td>
+</tr>
+<tr>
+<td align="center"><code>FIL_PAGE_INDEX</code></td>
+<td align="center">0x45BF</td>
+<td align="center">索引页，也就是我们所说的<code>数据页</code></td>
+</tr>
+</tbody></table>
+<ul>
+<li><code>FIL_PAGE_PREV</code>和<code>FIL_PAGE_NEXT</code></li>
+</ul>
+<p><code>FIL_PAGE_PREV</code>和<code>FIL_PAGE_NEXT</code>分别代表本页的上一个和下一个页的页号,这样通过建立一个双向链表将许多页串联起来，无需这些页在物理上真正连续。并不是所有页都有这两个属性，但数据页是有这两个属性的，所以所有数据页会组成一个双向链表。</p>
+<h3 id="File-Trailer文件尾部"><a href="#File-Trailer文件尾部" class="headerlink" title="File Trailer文件尾部"></a>File Trailer文件尾部</h3><p>通用于所有类型的页，用于检测一个页是否完整（即将数据同步至磁盘或内存时有没有发生只同步一半的情况）。<code>File Trailer</code> 部分由 <code>8</code> 个字节组成，可分为两个部分：</p>
+<ul>
+<li><p>前4个字节：页的校验和</p>
+<p>这个部分与<code>File Header</code>中的校验和相应，两者不同代表同步中间出现问题。</p>
+</li>
+<li><p>后4个字节：页面被最后修改时对应的日志序列位置（LSN）</p>
+<p>这个部分也是为了校验页的完整性的，首部和尾部的<code>LSN</code>值校验不成功，说明同步的过程中出现了问题。</p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/10/11/MySQL-character-set/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/10/11/MySQL-character-set/" itemprop="url">MySQL字符集</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-11T21:12:52+08:00">
+                2019-10-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>简介</p>
+<p>字符集：计算机底层是以二进制数进行计算和存储的，而我们要在数据库存储的数据则多是字符串的形式。为了将字符串存储至计算机中就需要建立字符与二进制数据的映射关系。将字符映射成一个二进制数据的过程称为<strong>编码</strong>，将二进制数据映射成字符的过程称为<strong>解码</strong>。<strong>字符集</strong>就是为了描述某个字符范围的<strong>编码规则</strong>而抽象出的概念。</p>
+<p>比较规则：为了比较两个字符的大小而制定的规则，同一种字符集可以有许多种不同的比较规则。</p>
+<p>常用字符集：</p>
+<ul>
+<li><p><code>ASCII</code>字符集</p>
+<p>共收录128个字符，包括空格、标点符号、数字、大小写字母和一些不可见字符，可用一个字节进行编码。</p>
+</li>
+<li><p><code>ISO 8859-1</code>字符集</p>
+<p>别名 <code>latin1</code> ,共收录256个字符，在<code>ASCII</code>字符集的基础上又扩充了128个西欧常用字符(包括德法两国的字母)，</p>
+</li>
+<li><p><code>utf8</code>字符集</p>
+<p>收录地球上能想到的所有字符，而且还在不断扩充。该字符集兼容<code>ASCII</code>字符集，采用<code>变长编码</code>方式，编码一个字符需要使用1～4个字节，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&apos;L&apos; -&gt;  01001100（十六进制：0x4C）</span><br><span class="line">&apos;啊&apos; -&gt;  111001011001010110001010（十六进制：0xE5958A）</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>小贴士： 其实准确的说，utf8只是Unicode字符集的一种编码方案，Unicode字符集可以采用utf8、utf16、utf32这几种编码方案，utf8使用1～4个字节编码一个字符，utf16使用2个或4个字节编码一个字符，utf32使用4个字节编码一个字符。更详细的Unicode和其编码方案的知识不是本书的重点，大家上网查查哈～ MySQL中并不区分字符集和编码方案的概念，所以后边唠叨的时候把utf8、utf16、utf32都当作一种字符集对待。</p>
+</blockquote>
+</li>
+</ul>
+<p>对于同一个字符，不同字符集也可能有不同的编码方式。比如对于汉字<code>&#39;我&#39;</code>来说，<code>ASCII</code>字符集中根本没有收录这个字符，<code>utf8</code>和<code>gb2312</code>字符集对汉字<code>我</code>的编码方式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">utf8编码：111001101000100010010001 (3个字节，十六进制表示是：0xE68891)</span><br><span class="line">gb2312编码：1100111011010010 (2个字节，十六进制表示是：0xCED2)</span><br></pre></td></tr></table></figure>
+
+<p>收录地球上能想到的所有字符，而且还在不断扩充。这种字符集兼容 <code>ASCII</code> 字符集，采用变长编码方式，编码一个字符需要使用 <code>1～4</code> 个字节，比方说这样：</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/26/pt-archiver/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/26/pt-archiver/" itemprop="url">pt-archiver</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-26T16:30:54+08:00">
+                2019-09-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="pt-archiver简介"><a href="#pt-archiver简介" class="headerlink" title="pt-archiver简介"></a>pt-archiver简介</h2><p><code>pt-archiver</code> 是 <code>Percona</code> 官方提供的归档工具，用于归档大型表中的记录到另一个表或文件。</p>
+<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p>​    工作上需要删除或者归档一张大表时，用<code>pt-archiver</code>可以很好的满足要求，其不仅可以归档数据，还有删除、导出到文件等功能。并且在主从架构当中，可以兼顾从库（一个或则多个）进行归档，避免归档、删除数据时候压力太大，造成从库的延迟。该工具可以在低影响，正向性的情况下小批量小批量的将旧数据取出并归档，而不会影响OLTP查询。也可以将数据插入到另一个表中，两表不必位于同一服务器上。</p>
+<p><strong>功能</strong>：</p>
+<ul>
+<li>归档到操作系统文件</li>
+<li>归档到同实例不同库下的表（<strong>tips</strong>：归档操作前，目标表要存在）</li>
+<li>归档到不同实例下的表（<strong>tips</strong>：归档操作前，目标表要存在）</li>
+</ul>
+<h3 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#至少需要指定--dest,--file,--purge 其中的一个。</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-dest</span>              <span class="string">指定要归档到的，兼容DSN选项</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-purge</span>             <span class="string">清除而不是归档，删除source数据库的相关匹配记录。</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-where</span> <span class="string">'id&lt;3000'</span>	<span class="string">设置操作条件</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-limit</span> <span class="number">10000</span>	    <span class="string">每次取1000行数据给pt-archive处理</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-txn-size</span> <span class="number">1000</span>	    <span class="string">设置1000行为一个事务提交一次</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-progress</span> <span class="number">5000</span>	    <span class="string">每处理5000行输出一次处理信息</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-statistics</span>	    <span class="string">结束的时候给出统计信息：开始的时间点，结束的时间点，查询的行数，归档的行数，删除的行数，以及各个阶段消耗的总的时间和比例，便于以此进行优化。只要不加上--quiet，默认情况下pt-archive都会输出执行过程的</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-file</span>              <span class="string">要归档到的文件，使用'/路径/文件名'的格式，如：--file</span> <span class="string">'/var/log/archive/%Y-%m-%d-%D.%t'</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-charset=UTF8</span>      <span class="string">指定字符集为UTF8</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-bulk-delete</span>       <span class="string">批量删除source上的旧数据</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-local</span>             <span class="string">不把optimize或analyze操作写入到binlog里面（防止造成主从延迟巨大）</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-no-delete</span>         <span class="string">不删除原来的数据，若不指定此参数，所有处理完成后，都会清理原表中的数据</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-statistics</span>        <span class="string">收集并打印时间统计信息。</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-dry-run</span>           <span class="string">打印查询并退出而不做任何事情。</span></span><br></pre></td></tr></table></figure>
+
+<p>注：批量操作和单条操作提交性能有近10倍的差距。</p>
+<h2 id="pt-archiver使用"><a href="#pt-archiver使用" class="headerlink" title="pt-archiver使用"></a>pt-archiver使用</h2><p><strong>注意：</strong> 归档的表大小写敏感，表必须至少有一个索引（否则报错：Cannot find an ascendable index in table ）。</p>
+<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>1、将表数据导出到文件中，不删除源数据（–no-delete，默认删除）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-archiver --source u=root,p=Haier@123,h=127.0.0.1,P=3306,D=employees,t=test --file=/tmp/date --where=&quot;id&lt;10&quot; --no-delete --no-safe-auto-increment --progress=100 --statistics</span><br></pre></td></tr></table></figure>
+
+<p>2、按条件删除表数据，不导出和迁移</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-archiver --source u=root,p=Haier@123,h=127.0.0.1,P=3306,D=employees,t=new_test --purge --where=&quot;id=1&quot; --no-safe-auto-increment --progress=100 --statistics</span><br></pre></td></tr></table></figure>
+
+<p>2、指定条件归档，源表删除，批量（每1000个插入提交一次）,如果源表不删除，加上–no-delete即可。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#将matomo_log_link_visit_action表中的数据安条件归档至matomo_log_link_visit_action_history表中</span></span><br><span class="line"><span class="string">pt-archiver</span> <span class="bullet">--source</span> <span class="string">h=10.138.228.231,P=3306,u=sre,p='xxx',D=matomo,t=matomo_log_link_visit_action</span> <span class="bullet">--charset=utf8</span> <span class="bullet">--dest</span> <span class="string">h=10.138.228.231,P=3306,u=sre,p='xxx',D=matomo,t=matomo_log_link_visit_action_history</span> <span class="bullet">--where</span> <span class="string">"server_time &lt; '2019-01-01'"</span> <span class="bullet">--limit</span> <span class="number">1000</span> <span class="bullet">--commit-each</span> <span class="bullet">--bulk-insert</span> <span class="bullet">--no-version-check</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># h=10.138.228.231               -- 数据库实例地址</span></span><br><span class="line"><span class="comment"># P=3306                         -- 数据库实例端口</span></span><br><span class="line"><span class="comment"># u=sre                          -- 数据库实例用户</span></span><br><span class="line"><span class="comment"># p=xxx                          -- 数据库实例用户密码</span></span><br><span class="line"><span class="comment"># D=matomo                       -- 数据库实例数据库</span></span><br><span class="line"><span class="comment"># t=matomo_log_link_visit_action -- 数据库实例表名称</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --source                       -- 指定要被归档的数据源</span></span><br><span class="line"><span class="comment"># --charset=utf8                 -- 使用的字符集，需与表字符集一致</span></span><br><span class="line"><span class="comment"># --file                         -- 指定目标操作系统文件名</span></span><br><span class="line"><span class="comment"># --dest                         -- 指定归档到的目标表</span></span><br><span class="line"><span class="comment"># --where "id &gt; 3008"            -- 指定 where 过滤条件，过滤出要归档的数据</span></span><br><span class="line"><span class="comment"># --limit 1000                   -- 每条语句读取和归档的数据行数，默认是 1</span></span><br><span class="line"><span class="comment"># --commit-each                  -- 每次获取和归档数据后，commit提交</span></span><br><span class="line"><span class="comment"># --no-version-check             -- 不做版本检查</span></span><br><span class="line"><span class="comment"># --bulk-insert                  -- 批量插入数据，会自动启用 --bulk-delete --commit-each，每次插入行数通过--limit 选项指定</span></span><br><span class="line"><span class="comment"># --statistics                   -- 显示 pt-archiver 本次操作的统计信息。</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/26/pt-query-digest/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/26/pt-query-digest/" itemprop="url">pt-query-digest</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-26T16:30:07+08:00">
+                2019-09-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="pt-query-digest简介"><a href="#pt-query-digest简介" class="headerlink" title="pt-query-digest简介"></a>pt-query-digest简介</h2><h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p><code>pt-query-digest</code>提供慢日志分析功能，可以统计出查询执行时间、次数、占比等，并把分析结果输出到文件中，然后借助分析结果找出问题进行优化。</p>
+<h3 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest [OPTIONS] [FILES] [DSN]</span><br><span class="line">--create-review-table    #当使用--review参数把分析结果输出到表中时，如果没有表就自动创建。</span><br><span class="line">--create-history-table   #当使用--history参数把分析结果输出到表中时，如果没有表就自动创建。</span><br><span class="line">--filter                 #对输入的慢查询按指定的字符串进行匹配过滤后再进行分析</span><br><span class="line">--limit                  #限制输出结果百分比或数量，默认值是20,即将最慢的20条语句输出，如果是50%则按总响应时间占比从大到小排序，输出到总和达到50%位置截止。</span><br><span class="line">--host                   #mysql服务器地址</span><br><span class="line">--user                   #mysql用户名</span><br><span class="line">--password               #mysql用户密码</span><br><span class="line">--history                #将分析结果保存到表中，分析结果比较详细，下次再使用--history时，如果存在相同的语句，且查询所在的时间区间和历史表中的不同，则会记录到数据表中，可以通过查询同一CHECKSUM来比较某类型查询的历史变化。</span><br><span class="line">--review                 #将分析结果保存到表中，这个分析只是对查询条件进行参数化，一个类型的查询一条记录，比较简单。当下次使用--review时，如果存在相同的语句分析，就不会记录到数据表中。</span><br><span class="line">--output                 #分析结果输出类型，值可以是report(标准分析报告)、slowlog(Mysql slow log)、json、json-anon，一般使用report，以便于阅读。</span><br><span class="line">--since                  #从什么时间开始分析，值为字符串，可以是指定的某个”yyyy-mm-dd [hh:mm:ss]”格式的时间点，也可以是简单的一个时间值：s(秒)、h(小时)、m(分钟)、d(天)，如12h就表示从12小时前开始统计。</span><br><span class="line">--until                  #截止时间，配合—since可以分析一段时间内的慢查询。</span><br></pre></td></tr></table></figure>
+
+<h2 id="pt-query-digest使用"><a href="#pt-query-digest使用" class="headerlink" title="pt-query-digest使用"></a>pt-query-digest使用</h2><h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>分析慢查询日志</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
+
+<p>分析最近12个小时内的查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest --since=12h  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
+
+<p> 分析最近指定范围内的查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest dzspdb-slow.log --since &apos;2019-08-25 10:00:00&apos; --until &apos;2019-09-25 10:00:00&apos; &gt; dzsp_slow_report.log</span><br></pre></td></tr></table></figure>
+
+<h3 id="输出结果分析"><a href="#输出结果分析" class="headerlink" title="输出结果分析"></a>输出结果分析</h3><h4 id="第一部分"><a href="#第一部分" class="headerlink" title="第一部分"></a>第一部分</h4><p>总体统计结果</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">执行日志分析的用户时间、系统时间、占用物理内存大小，占用虚拟内存大小</span></span><br><span class="line"><span class="comment">#7.7s user time, 90ms system time, 47.24M rss, 241.67M vsz</span></span><br><span class="line"><span class="string">工具执行时间</span></span><br><span class="line"><span class="comment">#Current date: Fri Sep 27 09:51:51 2019</span></span><br><span class="line"><span class="string">运行pt-query-digest的主机名</span></span><br><span class="line"><span class="comment">#Hostname: console</span></span><br><span class="line"><span class="string">被分析的文件</span></span><br><span class="line"><span class="comment">#Files: slow_query.log</span></span><br><span class="line"><span class="string">total：语句总数量、unique:唯一语句的数量、QPS:每秒查询率、concurrency:并发数</span></span><br><span class="line"><span class="comment"># Overall: 7.61k total, 891 unique, 0.00 QPS, 0.02x concurrency __________</span></span><br><span class="line"><span class="string">查询执行的时间范围</span></span><br><span class="line"><span class="comment"># Time range: 2018-12-21T14:35:34 to 2019-09-27T07:08:57</span></span><br><span class="line">     <span class="string">属性</span>              <span class="string">总计</span>     <span class="string">最小</span>     <span class="string">最大</span>    <span class="string">平均</span>     <span class="number">95</span><span class="string">%</span>  <span class="string">标准方差</span>   <span class="string">中值</span></span><br><span class="line"><span class="comment"># Attribute          total     min     max     avg     95%  stddev  median</span></span><br><span class="line"><span class="comment"># ============     ======= ======= ======= ======= ======= ======= =======</span></span><br><span class="line"><span class="comment"># Exec time        515373s      5s   6210s     68s    246s    216s     14s</span></span><br><span class="line"><span class="comment"># Lock time           808s       0    163s   106ms     5ms      3s   761us</span></span><br><span class="line"><span class="comment"># Rows sent        152.88M       0  15.14M  20.57k   1.39k 291.76k    0.99</span></span><br><span class="line"><span class="comment"># Rows examine     182.52G       0 867.98M  24.55M  72.18M  44.34M   3.68M</span></span><br><span class="line"><span class="comment"># Query size        30.21M       6  66.00k   4.06k  18.47k   5.67k  793.42</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">----------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="string">Exec</span> <span class="string">time</span>          <span class="string">语句执行时间</span></span><br><span class="line"><span class="string">Lock</span> <span class="string">time</span>          <span class="string">锁占用时间</span> </span><br><span class="line"><span class="string">Rows</span> <span class="string">sent</span>          <span class="string">发送到客户端的行数</span></span><br><span class="line"><span class="string">Rows</span> <span class="string">examine</span>       <span class="string">select语句扫描行数</span></span><br><span class="line"><span class="string">Query</span> <span class="string">size</span>         <span class="string">查询的字符数</span></span><br><span class="line"><span class="string">unique</span>             <span class="string">唯一查询数量，即对查询条件进行参数化以后，总共有多少个不同的查询</span></span><br><span class="line"><span class="number">95</span><span class="string">%</span>                <span class="string">把所有值从小到大排列，位置位于95%的那个数，这个数一般最具有参考价值</span></span><br><span class="line"><span class="string">median</span>             <span class="string">中位数，把所有值从小到大排列，位置位于中间那个数</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="第二部分"><a href="#第二部分" class="headerlink" title="第二部分"></a>第二部分</h4><p>查询分组统计结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># Profile</span><br><span class="line"># Rank Query ID                    Response time     Calls R/Call    V/M   Item</span><br><span class="line"># ==== =========================== ================= ===== ========= ===== =====</span><br><span class="line">#    1 0xFFF66E9B3D962FA319C806... 211420.4504 41.0%   260  813.1556 25.32 ROLLBACK</span><br><span class="line">#    2 0x73AFBACFEBF3942B3B02FB...  30241.2515  5.9%   156  193.8542  0.26 INSERT SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT d_etl_odsgvs_faglflext_all tdmetl.odsgvs_faglflext_all</span><br><span class="line">#    3 0xE1EA5439ED76CBFAA1C5A3...  24517.0767  4.8%     4 6129.2692  1.79 SELECT v_gvs_zgvs_bseg_edw</span><br><span class="line">#    4 0xE562308914915E2720E128...  21322.3718  4.1%  1282   16.6321  8.55 SELECT tdmetl.gvs_zgvs_bseg_edw</span><br><span class="line">#    5 0x0159EC63419857F0EC9D5B...  17472.3139  3.4%    71  246.0889  1.03 SELECT </span><br><span class="line">-----------------------------------------------------------------------------------------</span><br><span class="line">Rank            所有语句的排名，默认按查询时间降序排列，通过--order-by指定</span><br><span class="line">Query ID        语句的ID，（去掉多余空格和文本字符，计算hash值）</span><br><span class="line">Response        总的响应时间，单位s</span><br><span class="line">time            该查询在本次分析中总的时间占比</span><br><span class="line">calls           执行次数，即本次分析总共有多少条这种类型的查询语句</span><br><span class="line">R/Call          平均每次执行的响应时间</span><br><span class="line">V/M             响应时间Variance-to-mean(方差/平均值)的比率</span><br><span class="line">Item            查询对象</span><br></pre></td></tr></table></figure>
+
+<h4 id="第三部分"><a href="#第三部分" class="headerlink" title="第三部分"></a>第三部分</h4><p>每一种查询的详细统计结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"># Query 1: 0.00 QPS, 0.05x concurrency, ID 0xFFF66E9B3D962FA319C8068B5C1997CD at byte 3105049</span><br><span class="line"># This item is included in the report because it matches --limit.</span><br><span class="line"># Scores: V/M = 25.32</span><br><span class="line"># Time range: 2019-02-15T18:37:47 to 2019-04-03T21:18:48</span><br><span class="line"># Attribute    pct   total     min     max     avg     95%  stddev  median</span><br><span class="line"># ============ === ======= ======= ======= ======= ======= ======= =======</span><br><span class="line"># Count          3     260</span><br><span class="line"># Exec time     41 211420s    322s   1078s    813s   1013s    143s    793s</span><br><span class="line"># Lock time      0       0       0       0       0       0       0       0</span><br><span class="line"># Rows sent      0       0       0       0       0       0       0       0</span><br><span class="line"># Rows examine   0       0       0       0       0       0       0       0</span><br><span class="line"># Query size     0   2.03k       8       8       8       8       0       8</span><br><span class="line"># String:</span><br><span class="line"># Databases    tdmetl</span><br><span class="line"># Hosts        10.138.225.51 (140/53%), 10.138.225.43 (69/26%)... 3 more</span><br><span class="line"># Users        tdmsetldev</span><br><span class="line"># Query_time distribution</span><br><span class="line">#   1us</span><br><span class="line">#  10us</span><br><span class="line"># 100us</span><br><span class="line">#   1ms</span><br><span class="line">#  10ms</span><br><span class="line"># 100ms</span><br><span class="line">#    1s</span><br><span class="line">#  10s+  ################################################################</span><br><span class="line">rollback\G</span><br><span class="line">-------------------------------------------------------------------------------------</span><br><span class="line">查询的详细统计结果，最上面的表格列出了执行次数、最大、最小、平均、95%等各项目的统计。</span><br><span class="line">ID：查询的ID号，和查询分组统计结果的Query ID对应</span><br><span class="line">Databases：数据库名</span><br><span class="line">Users：各个用户执行的次数（占比）</span><br><span class="line">Query_time distribution ：查询时间分布, 长短体现区间占比</span><br><span class="line">Tables：查询中涉及到的表，此例中未涉及</span><br><span class="line">Explain： SQL语句  此例中未涉及</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/26/pt-slave-restart/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/26/pt-slave-restart/" itemprop="url">pt-slave-restart</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-26T16:29:40+08:00">
+                2019-09-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="pt-slave-restart简介"><a href="#pt-slave-restart简介" class="headerlink" title="pt-slave-restart简介"></a>pt-slave-restart简介</h2><h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p><code>pt-slave-restart</code>是一个在MySQL主从复制出错后，可以监控跳过特定错误并自动重启主从复制的工具。</p>
+<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p><code>pt-slave-restart</code>监控一个或者多个MySQL主从复制的slave，并试图跳过引起错误的语句。它以指数变化的休眠时间智能地检查 slave。你可以指定要跳过的错误，然后运行slave一直到一个确定的binlog位置。</p>
+<p><code>pt-slave-restart</code>一旦检测到slave有错误就会打印一行信息。默认情况下该信息包括：timestamp、connection information、relay_log_file、relay_log_pos、last_errno。可以使用<code>--verbose</code>选项添加更多信息，也可以使用<code>--quiet</code>选项阻止所有输出。</p>
+<p><strong>sleep</strong></p>
+<p><code>pt-slave-restart</code> 在检测slave的过程中智能的进行休眠，所以当前的休眠时间是会改变的，设定策略：</p>
+<ul>
+<li>初始的sleep 时间通过<code>--sleep</code>给出。</li>
+<li>若检测发现错误，将sleep时间改成之前的一半。</li>
+<li>若检测没有发现错误，将sleep时间改成之前的两倍。</li>
+<li>通过<code>--min-sleep</code>和<code>--max-sleep</code>参数限定sleep时间的下界和上界。</li>
+<li>一旦检测到错误，<code>pt-slave-restart</code>假定接下来很可能发生另一个错误,因此它将比较当前的sleep时间和初始的sleep时间，选取更小的值作为新的sleep时间。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">从Percona Toolkit 2.2.8版本起，pt-slave-restart开始支持由MySQL 5.6.5版本引入的GTID复制（保证了每个在主库上提交的事务在集群中有一个唯一的ID）。</span><br><span class="line">注意：</span><br><span class="line">当采用多线程复制（slave_parallel_workers &gt; 0）时，pt-slave-restart不能跳过事务。pt-slave-restart不能确定GTID事件是哪个特定slave线程执行失败的事务。</span><br><span class="line">默认行为是跳过来自master的下一个事务。由于每个服务器都有它自己的UUID，因此写可以来自不同的服务器。</span><br><span class="line">参考–master-uuid。</span><br></pre></td></tr></table></figure>
+
+<h3 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span><span class="bullet">-host=xxx</span> <span class="bullet">--user=xxx</span> <span class="bullet">--password=xxx</span>   <span class="comment">#连接实例信息，缩写-h xxx -u xxx -p xxx</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-port</span>               <span class="comment">#连接的端口号，缩写 -P</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-help</span>               <span class="comment">#显示帮助并退出</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-always</span>             <span class="comment">#永不停止slave线程，启用后pt-slave-restart将不允许手动停止从服务器</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-ask-pass</span>           <span class="comment">#替换`-p`命令，不显示密码输入</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-error-numbers</span>      <span class="comment">#指定要跳过哪些错误，可用`,`进行分隔</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-error-text</span>         <span class="comment">#根据错误信息进行匹配跳过</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-log`</span>               <span class="comment">#输出到文件</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-recurse</span>            <span class="comment">#在主端执行，监控从端</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-runtime</span>  <span class="string">`</span>         <span class="comment">#工具执行多长时间后退出：默认秒， m=minute,h=hours,d=days</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-slave-user</span>         <span class="comment">#从库账号，在主库运行时使用</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-slave-password`</span>    <span class="comment">#从库密码，在主库运行时使用</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-skip-count</span>         <span class="comment">#一次跳过错误的个数，默认为1</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-master-uuid</span>        <span class="comment">#级联复制的时候，指定跳过上级或者上上级事务的错误</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-until-master</span>       <span class="comment">#到达指定的master_log_pos,file位置后停止，格式：”file:pos“</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-until-relay</span>        <span class="comment">#和上面一样，但根据relay_log的位置来停止</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-sleep</span>              <span class="comment">#检查slave间隔的初始sleep秒数，默认为1</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="pt-slave-restart使用"><a href="#pt-slave-restart使用" class="headerlink" title="pt-slave-restart使用"></a>pt-slave-restart使用</h2><h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#跳过指定错误</span></span><br><span class="line"><span class="string">pt-slave-restart</span> <span class="bullet">--user=root</span> <span class="bullet">--ask-pass</span> <span class="string">socket=/data/mysql/3304/tmp/mysql3304.sock</span>  <span class="bullet">--error-numbers=1062</span></span><br><span class="line"><span class="comment">#后台跳过错误</span></span><br><span class="line"><span class="string">nohup</span> <span class="string">./pt-slave-restart</span> <span class="bullet">-usre</span> <span class="bullet">-p'sre@@p$i'</span>  <span class="string">&gt; myout.file 2&gt;&amp;1 &amp;</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/26/MySQL-SQL/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1088,721 +2064,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/20/mysql-server/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/09/20/mysql-server/" itemprop="url">mysql.server启动脚本阅读</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-20T14:39:48+08:00">
-                2019-09-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>MySQL</code>在类<code>Unix</code>系统上安装时会包含一个<code>mysql.server</code>启动脚本，其主要作用就是为了方便启动和关闭 <code>mysql</code> 服务，只能使用默认的 <code>/etc/my.cnf</code> 配置文件。</p>
-<p>调用<code>mysql.server</code>脚本启停<code>MySQL</code>服务：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; mysql.server start|stop</span><br></pre></td></tr></table></figure>
-
-<p>使用上述命令时，<code>mysql.server</code> 启动脚本会先进入<code>MySQL</code>的注册目录，然后调用<code>mysqld_safe</code>命令来启停<code>MySQL</code>服务，但我们通常会将复制 <code>mysql.server</code> 文件放到 <code>/etc/init.d</code>目录下，并将其重命名为<code>mysqld</code>。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</span><br></pre></td></tr></table></figure>
-
-<p>使用 <code>init.d</code> 启停MySQL服务：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/mysqld start|stop</span><br></pre></td></tr></table></figure>
-
-<h2 id="脚本分析"><a href="#脚本分析" class="headerlink" title="脚本分析"></a>脚本分析</h2><p><code>mysql.server</code> 主要分为三大部分：</p>
-<ul>
-<li>变量初始化部分</li>
-<li>函数声明部分</li>
-<li>具体执行部分</li>
-</ul>
-<h3 id="变量初始化部分"><a href="#变量初始化部分" class="headerlink" title="变量初始化部分"></a>变量初始化部分</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### 如果改写了basedir =  你必须同时改写datadir = 但这个可能会被MySQL配置文件的设置重写</span></span><br><span class="line"><span class="comment"># If you change base dir, you must also change datadir. These may get</span></span><br><span class="line"><span class="comment"># overwritten by settings in the MySQL configuration files.</span></span><br><span class="line"></span><br><span class="line"><span class="string">basedir=</span></span><br><span class="line"><span class="string">datadir=</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Default value, in seconds, afterwhich the script should timeout waiting</span></span><br><span class="line"><span class="comment"># for server start. </span></span><br><span class="line"><span class="comment"># Value here is overriden by value in my.cnf. </span></span><br><span class="line"><span class="comment"># 0 means don't wait at all</span></span><br><span class="line"><span class="comment"># Negative numbers mean to wait indefinitely</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### 定义mysql服务启动的时间限制，如果在900s中没有启动成功，则该脚本会退出。</span></span><br><span class="line"><span class="comment">### 这里设置的值会被my.cnf 所覆盖</span></span><br><span class="line"><span class="comment">### 0代表无需等待</span></span><br><span class="line"><span class="comment">### 负数表示无期限的等待</span></span><br><span class="line"><span class="string">service_startup_timeout=900</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Lock directory for RedHat / SuSE.</span></span><br><span class="line"><span class="comment">#系统关闭的过程(发出关闭信号，调动服务自身的进程)会检查/var/lock/subsys下的文件</span></span><br><span class="line"><span class="comment">#逐一关闭每个服务，若某一运行的服务在/var/lock/subsys下无相应选项，则系统关闭时会像杀死普通进程一样杀死该服务，通过查看/etc/rc.d/init.d下的脚本，可以发现每个服务操纵自己时都会去查看/var/lock/subsys下相应的服务</span></span><br><span class="line"><span class="comment">#很多程序需要判断是否当前已经有一个实例在运行，该目录是让程序判断是否有实例运行的标志，</span></span><br><span class="line"><span class="comment">#如：xinetd,如果存在该文件，则表示已经有xinetd在运行了，否则就是没有。当然程序中还需相应判断措施来真正确定是否有实例运行</span></span><br><span class="line"><span class="comment">#通常与该目录配套的还有/var/run 目录，用于存放对应实例的PID，/var/lock/subsys 与 /var/run 两个目录结合可以方便的判断</span></span><br><span class="line"><span class="comment">#很多服务是否在运行，运行的相关信息等。</span></span><br><span class="line"><span class="string">lockdir='/var/lock/subsys'</span></span><br><span class="line"><span class="string">lock_file_path="$lockdir/mysql"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The following variables are only set for letting mysql.server find things.</span></span><br><span class="line"><span class="comment">#以下变量的设置只是为了让 mysql.server 找到相应文件</span></span><br><span class="line"><span class="comment">#设置一些默认值</span></span><br><span class="line"><span class="comment">#判断basedir和datadir</span></span><br><span class="line"><span class="comment">#mysqld_pid_file_path 指定pid文件的路径 </span></span><br><span class="line"><span class="comment">#-z string 判断字符串是否为空</span></span><br><span class="line"><span class="comment">#如果basedir没有显示设置，则默认为/usr/local/mysql，这也是为什么很多mysql安装教程都推荐将mysql相关文件放到/usr/local/mysql下。</span></span><br><span class="line"><span class="comment">#如果datadir没有显示设置，则默认为$basedir/data。</span></span><br><span class="line"><span class="string">Set</span> <span class="string">some</span> <span class="string">defaults</span></span><br><span class="line"><span class="string">mysqld_pid_file_path=</span></span><br><span class="line"><span class="string">if</span> <span class="string">test</span> <span class="bullet">-z</span> <span class="string">"$basedir"</span></span><br><span class="line"><span class="string">then</span></span><br><span class="line">  <span class="string">basedir=/usr/local/mysql</span></span><br><span class="line">  <span class="string">bindir=/usr/local/mysql/bin</span></span><br><span class="line">  <span class="string">if</span> <span class="string">test</span> <span class="bullet">-z</span> <span class="string">"$datadir"</span></span><br><span class="line">  <span class="string">then</span></span><br><span class="line">    <span class="string">datadir=/usr/local/mysql/data</span></span><br><span class="line">  <span class="string">fi</span></span><br><span class="line">  <span class="string">sbindir=/usr/local/mysql/bin</span></span><br><span class="line">  <span class="string">libexecdir=/usr/local/mysql/bin</span></span><br><span class="line"><span class="string">else</span></span><br><span class="line">  <span class="string">bindir="$basedir/bin"</span></span><br><span class="line">  <span class="string">if</span> <span class="string">test</span> <span class="bullet">-z</span> <span class="string">"$datadir"</span></span><br><span class="line">  <span class="string">then</span></span><br><span class="line">    <span class="string">datadir="$basedir/data"</span></span><br><span class="line">  <span class="string">fi</span></span><br><span class="line">  <span class="string">sbindir="$basedir/sbin"</span></span><br><span class="line">  <span class="string">libexecdir="$basedir/libexec"</span></span><br><span class="line"><span class="string">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># datadir_set is used to determine if datadir was set (and so should be</span></span><br><span class="line"><span class="comment"># *not* set inside of the --basedir= handler.)</span></span><br><span class="line"><span class="comment">#datadir_set 用于确定是否建立了data 目录</span></span><br><span class="line"><span class="string">datadir_set=</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="函数声明部分"><a href="#函数声明部分" class="headerlink" title="函数声明部分"></a>函数声明部分</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Use LSB init script functions for printing messages, if possible</span></span><br><span class="line"><span class="comment">### 如果可能，使用LSB init脚本函数打印消息</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### 定义log_success_msg()和log_failure_msg()函数 </span></span><br><span class="line"><span class="comment">### 首先，判断/lib/lsb/init-functions文件是否存在，如果存在，则使定义在init-functions文件中的所有shell函数在当前脚本中生效。</span></span><br><span class="line"><span class="comment">### 如果没有，则定义两个函数，一个用于打印成功日志，一个是打印错误日志。</span></span><br><span class="line"><span class="comment">### 在RHCS 6.7中，该文件并不存在，已被/etc/init.d/functions所替代。</span></span><br><span class="line"><span class="string">lsb_functions="/lib/lsb/init-functions"</span></span><br><span class="line"><span class="string">if</span> <span class="string">test</span> <span class="bullet">-f</span> <span class="string">$lsb_functions</span> <span class="string">;</span> <span class="string">then</span></span><br><span class="line">  <span class="string">.</span> <span class="string">$lsb_functions</span></span><br><span class="line"><span class="string">else</span></span><br><span class="line">  <span class="string">log_success_msg()</span></span><br><span class="line">  <span class="string">&#123;</span></span><br><span class="line">    <span class="string">echo</span> <span class="string">" SUCCESS! $@"</span></span><br><span class="line">  <span class="string">&#125;</span></span><br><span class="line">  <span class="string">log_failure_msg()</span></span><br><span class="line">  <span class="string">&#123;</span></span><br><span class="line">    <span class="string">echo</span> <span class="string">" ERROR! $@"</span></span><br><span class="line">  <span class="string">&#125;</span></span><br><span class="line"><span class="string">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment">####传递参数</span></span><br><span class="line"><span class="comment">### 将第一个参数传递给mode，剩下的参数传递给other_args</span></span><br><span class="line"></span><br><span class="line"><span class="string">PATH="/sbin:/usr/sbin:/bin:/usr/bin:$basedir/bin"</span></span><br><span class="line"><span class="string">export</span> <span class="string">PATH</span></span><br><span class="line"></span><br><span class="line"><span class="string">mode=$1</span>    <span class="comment"># start or stop  启动或停止</span></span><br><span class="line"></span><br><span class="line"><span class="string">[</span> <span class="string">$#</span> <span class="bullet">-ge</span> <span class="number">1</span> <span class="string">]</span> <span class="string">&amp;&amp;</span> <span class="string">shift</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="string">other_args="$*"</span>   <span class="comment"># uncommon, but needed when called from an RPM upgrade action</span></span><br><span class="line">                  <span class="comment"># 不常见，但在RPM升级操作调用时会被需要</span></span><br><span class="line">           <span class="comment"># Expected: "--skip-networking --skip-grant-tables"  预期：跳过网络，跳过授权表</span></span><br><span class="line">           <span class="comment"># They are not checked here, intentionally, as it is the resposibility</span></span><br><span class="line">           <span class="comment"># of the "spec" file author to give correct arguments only.</span></span><br><span class="line"></span><br><span class="line"><span class="string">case</span> <span class="string">`echo</span> <span class="string">"testing\c"</span><span class="string">`,`echo</span> <span class="bullet">-n</span> <span class="string">testing`</span> <span class="string">in</span></span><br><span class="line">    <span class="string">*c*,-n*)</span> <span class="string">echo_n=</span>   <span class="string">echo_c=</span>     <span class="string">;;</span></span><br><span class="line">    <span class="string">*c*,*)</span>   <span class="string">echo_n=-n</span> <span class="string">echo_c=</span>     <span class="string">;;</span></span><br><span class="line">    <span class="string">*)</span>       <span class="string">echo_n=</span>   <span class="string">echo_c='\c'</span> <span class="string">;;</span></span><br><span class="line"><span class="string">esac</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">### 解析配置文件中的参数 ,该函数之后会涉及</span></span><br><span class="line"><span class="comment">### 主要涉及如下参数：--basedir，--datadir，--pid-file，--service-startup-timeout。</span></span><br><span class="line"><span class="string">parse_server_arguments()</span> <span class="string">&#123;</span></span><br><span class="line">  <span class="string">for</span> <span class="string">arg</span> <span class="string">do</span></span><br><span class="line">    <span class="string">case</span> <span class="string">"$arg"</span> <span class="string">in</span></span><br><span class="line"><span class="bullet">      -</span><span class="bullet">-basedir=*)</span>  <span class="string">basedir=`echo</span> <span class="string">"$arg"</span> <span class="string">| sed -e 's/^[^=]*=//'`</span></span><br><span class="line"><span class="string">                    bindir="$basedir/bin"</span></span><br><span class="line"><span class="string">		    if test -z "$datadir_set"; then</span></span><br><span class="line"><span class="string">		      datadir="$basedir/data"</span></span><br><span class="line"><span class="string">		    fi</span></span><br><span class="line"><span class="string">		    sbindir="$basedir/sbin"</span></span><br><span class="line"><span class="string">		    libexecdir="$basedir/libexec"</span></span><br><span class="line"><span class="string">        ;;</span></span><br><span class="line"><span class="string">      --datadir=*)  datadir=`echo "$arg" | sed -e 's/^[^=]*=//'`</span></span><br><span class="line"><span class="string">		    datadir_set=1</span></span><br><span class="line"><span class="string">	;;</span></span><br><span class="line"><span class="string">      --pid-file=*) mysqld_pid_file_path=`echo "$arg" | sed -e 's/^[^=]*=//'` ;;</span></span><br><span class="line"><span class="string">      --service-startup-timeout=*) service_startup_timeout=`echo "$arg" | sed -e 's/^[^=]*=//'` ;;</span></span><br><span class="line"><span class="string">    esac</span></span><br><span class="line"><span class="string">  done</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">### wait_for_pid函数</span></span><br><span class="line"><span class="string">### 在利用mysqld_safe启动mysql实例后，会调用该参数</span></span><br><span class="line"><span class="string">### wait_for_pid created "$!" "$mysqld_pid_file_path"; return_value=$?</span></span><br><span class="line"><span class="string">### 因为第一个参数是created，所以会执行test -s "$pid_file_path" &amp;&amp; i='' &amp;&amp; break命令。</span></span><br><span class="line"><span class="string">### -s file 如果文件的长度不为零，则为真</span></span><br><span class="line"><span class="string">### 该命令的意思是如果pid文件存在，则将变量i设置为空，并退出while循环。</span></span><br><span class="line"><span class="string">wait_for_pid () &#123;</span></span><br><span class="line"><span class="string">  verb="$1"           # created | removed</span></span><br><span class="line"><span class="string">  pid="$2"            # process ID of the program operating on the pid-file</span></span><br><span class="line"><span class="string">  pid_file_path="$3" # path to the PID file.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  i=0</span></span><br><span class="line"><span class="string">  avoid_race_condition="by checking again"</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  while test $i -ne $service_startup_timeout ; do</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    case "$verb" in</span></span><br><span class="line"><span class="string">      'created')</span></span><br><span class="line"><span class="string">        # wait for a PID-file to pop into existence.</span></span><br><span class="line"><span class="string">        test -s "$pid_file_path" &amp;&amp; i='' &amp;&amp; break</span></span><br><span class="line"><span class="string">        ;;</span></span><br><span class="line"><span class="string">      'removed')</span></span><br><span class="line"><span class="string">        # wait for this PID-file to disappear</span></span><br><span class="line"><span class="string">        test ! -s "$pid_file_path" &amp;&amp; i='' &amp;&amp; break</span></span><br><span class="line"><span class="string">        ;;</span></span><br><span class="line"><span class="string">      *)</span></span><br><span class="line"><span class="string">        echo "wait_for_pid () usage: wait_for_pid created|removed pid pid_file_path"</span></span><br><span class="line"><span class="string">        exit 1</span></span><br><span class="line"><span class="string">        ;;</span></span><br><span class="line"><span class="string">    esac</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    # if server isn't running, then pid-file will never be updated</span></span><br><span class="line"><span class="string">    if test -n "$pid"; then</span></span><br><span class="line"><span class="string">      if kill -0 "$pid" 2&gt;/dev/null; then</span></span><br><span class="line"><span class="string">        :  # the server still runs</span></span><br><span class="line"><span class="string">      else</span></span><br><span class="line"><span class="string">        # The server may have exited between the last pid-file check and now.  </span></span><br><span class="line"><span class="string">        if test -n "$avoid_race_condition"; then</span></span><br><span class="line"><span class="string">          avoid_race_condition=""</span></span><br><span class="line"><span class="string">          continue  # Check again.</span></span><br><span class="line"><span class="string">        fi</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        # there's nothing that will affect the file.</span></span><br><span class="line"><span class="string">        log_failure_msg "The server quit without updating PID file ($pid_file_path)."</span></span><br><span class="line"><span class="string">        return 1  # not waiting any more.</span></span><br><span class="line"><span class="string">      fi</span></span><br><span class="line"><span class="string">    fi</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    echo $echo_n ".$echo_c"</span></span><br><span class="line"><span class="string">    i=`expr $i + 1`</span></span><br><span class="line"><span class="string">    sleep 1</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  done</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  if test -z "$i" ; then</span></span><br><span class="line"><span class="string">    log_success_msg</span></span><br><span class="line"><span class="string">    return 0</span></span><br><span class="line"><span class="string">  else</span></span><br><span class="line"><span class="string">    log_failure_msg</span></span><br><span class="line"><span class="string">    return 1</span></span><br><span class="line"><span class="string">  fi</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="主体执行部分"><a href="#主体执行部分" class="headerlink" title="主体执行部分"></a>主体执行部分</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Get arguments from the my.cnf file,</span></span><br><span class="line"><span class="comment"># the only group, which is read from now on is [mysqld]</span></span><br><span class="line"><span class="comment">### 从my.cnf文件中获取参数，</span></span><br><span class="line"><span class="comment">### 从现在开始唯一读取的组是[mysqld]</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### 判断my_print_defaults的位置</span></span><br><span class="line"><span class="comment">### 它判断$bindir（通常指的是$basedir/bin）目录下是否存在该可执行文件，。</span></span><br><span class="line"><span class="string">if</span> <span class="string">test</span> <span class="bullet">-x</span> <span class="string">"$bindir/my_print_defaults"</span><span class="string">;</span>  <span class="string">then</span></span><br><span class="line">  <span class="string">print_defaults="$bindir/my_print_defaults"</span></span><br><span class="line"><span class="string">else</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Try to find basedir in /etc/my.cnf</span></span><br><span class="line">  <span class="comment">### 判断/etc/my.cnf是否存在并且可读，如果是，则判断该配置文件中是否指定了basedir参数，</span></span><br><span class="line">  <span class="comment">### 如果指定了，则取出该参数的值，并判断该值对应的目录中是否存在bin/my_print_defaults可执行文件</span></span><br><span class="line">  <span class="string">conf=/etc/my.cnf</span></span><br><span class="line">  <span class="string">print_defaults=</span></span><br><span class="line">  <span class="string">if</span> <span class="string">test</span> <span class="bullet">-r</span> <span class="string">$conf</span></span><br><span class="line">  <span class="string">then</span></span><br><span class="line">    <span class="string">subpat='^[^=]*basedir[^=]*=\(.*\)$'</span></span><br><span class="line">    <span class="string">dirs=`sed</span> <span class="bullet">-e</span> <span class="string">"/$subpat/!d"</span> <span class="bullet">-e</span> <span class="string">'s//\1/'</span> <span class="string">$conf`</span></span><br><span class="line">    <span class="string">for</span> <span class="string">d</span> <span class="string">in</span> <span class="string">$dirs</span></span><br><span class="line">    <span class="string">do</span></span><br><span class="line">      <span class="string">d=`echo</span> <span class="string">$d</span> <span class="string">| sed -e 's/[ 	]//g'`</span></span><br><span class="line"><span class="string">      if test -x "$d/bin/my_print_defaults"</span></span><br><span class="line"><span class="string">      then</span></span><br><span class="line"><span class="string">        print_defaults="$d/bin/my_print_defaults"</span></span><br><span class="line"><span class="string">        break</span></span><br><span class="line"><span class="string">      fi</span></span><br><span class="line"><span class="string">    done</span></span><br><span class="line"><span class="string">  fi</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  #如果在上述目录中实在没发现my_print_defaults文件，</span></span><br><span class="line"><span class="string">  #索性就将print_defaults设置为"my_print_defaults"，寄希望于该命令在当前的PATH环境中。</span></span><br><span class="line"><span class="string">  # Hope it's in the PATH ... but I doubt it</span></span><br><span class="line"><span class="string">  test -z "$print_defaults" &amp;&amp; print_defaults="my_print_defaults"</span></span><br><span class="line"><span class="string">fi</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#</span></span><br><span class="line"><span class="string"># Read defaults file from 'basedir'.   If there is no defaults file there</span></span><br><span class="line"><span class="string"># check if it's in the old (depricated) place (datadir) and read it from there</span></span><br><span class="line"><span class="string">#</span></span><br><span class="line"><span class="string">### 从'basedir'读取默认文件。如果没有默认文件，检查它是否在旧的(已删除的)位置(datadir)，并从那里读取它</span></span><br><span class="line"><span class="string">### 查找默认的配置文件</span></span><br><span class="line"><span class="string">### -r file 如果文件可读，则为真</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">extra_args=""</span></span><br><span class="line"><span class="string">if test -r "$basedir/my.cnf"</span></span><br><span class="line"><span class="string">then</span></span><br><span class="line"><span class="string">  extra_args="-e $basedir/my.cnf"</span></span><br><span class="line"><span class="string">fi</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">### 解析配置文件中的参数</span></span><br><span class="line"><span class="string">### my_print_defaults的用法如下：</span></span><br><span class="line"><span class="string">### my_print_defaults --defaults-file=example.cnf client mysql</span></span><br><span class="line"><span class="string">### 即读取配置文件中，client和mysql部分的参数配置，</span></span><br><span class="line"><span class="string">### 具体在本脚本中，是读取mysqld，server，mysql_server，mysql.server四个部分的配置参数。</span></span><br><span class="line"><span class="string">parse_server_arguments `$print_defaults $extra_args mysqld server mysql_server mysql.server`</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#</span></span><br><span class="line"><span class="string"># Set pid file if not given   </span></span><br><span class="line"><span class="string"># 若未给出，设置pid file的路径</span></span><br><span class="line"><span class="string">### -z string 判断字符串是否为空</span></span><br><span class="line"><span class="string">### 如果--pid-file没有在读取到的配置文件中设置或者脚本刚开始的mysqld_pid_file_path参数没有设置，</span></span><br><span class="line"><span class="string">### 则pid file默认设置在datadir下，以主机名.pid命名。</span></span><br><span class="line"><span class="string">### 如果该参数设置了，还需要进一步判断</span></span><br><span class="line"><span class="string">### 如果该参数中带有斜杠，则代表给定的值带有路径，可直接使用。</span></span><br><span class="line"><span class="string">### 如果该参数中没带路径，则代表给定的值只是pid的文件名，可将其设在datadir下。</span></span><br><span class="line"><span class="string">if test -z "$mysqld_pid_file_path"</span></span><br><span class="line"><span class="string">then</span></span><br><span class="line"><span class="string">  mysqld_pid_file_path=$datadir/`hostname`.pid</span></span><br><span class="line"><span class="string">else</span></span><br><span class="line"><span class="string">  case "$mysqld_pid_file_path" in</span></span><br><span class="line"><span class="string">    /* ) ;;</span></span><br><span class="line"><span class="string">    * )  mysqld_pid_file_path="$datadir/$mysqld_pid_file_path" ;;</span></span><br><span class="line"><span class="string">  esac</span></span><br><span class="line"><span class="string">fi</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">### mysql.server start选项</span></span><br><span class="line"><span class="string">### 首先，切换到$basedir中</span></span><br><span class="line"><span class="string">### 其次，判断$basedir/bin中的mysqld_safe是否是可执行文件，如果是，则启动mysqld实例，如果不是，则报错退出。</span></span><br><span class="line"><span class="string">### 启动流程实现过程</span></span><br><span class="line"><span class="string">### 首先，执行$bindir/mysqld_safe --datadir="$datadir" --pid-file="$mysqld_pid_file_path" $other_args &gt;/dev/null 2&gt;&amp;1 &amp;命令，启动mysqld实例。</span></span><br><span class="line"><span class="string">### 可以发现，sqld_safe其实是在basedir中执行的，包括mysql初始化脚本mysql_install_db，也建议在basedir中执行，具体可参考：</span></span><br><span class="line"><span class="string">### 分析MariaDB初始化脚本mysql_install_db</span></span><br><span class="line"><span class="string">### 然后通过wait_for_pid函数进行判断，具体可见下文对于wait_for_pid函数的分析</span></span><br><span class="line"><span class="string">### 判断完毕后，</span></span><br><span class="line"><span class="string">### 查看$lockdir目录是否可写，可写的话，则在目录上创建一个文件。</span></span><br><span class="line"><span class="string">case "$mode" in</span></span><br><span class="line"><span class="string">  'start')</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    # Start daemon</span></span><br><span class="line"><span class="string">    # Safeguard (relative paths, core dumps..)</span></span><br><span class="line"><span class="string">    cd $basedir</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    echo $echo_n "Starting MySQL"</span></span><br><span class="line"><span class="string">    if test -x $bindir/mysqld_safe</span></span><br><span class="line"><span class="string">    then</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      # Give extra arguments to mysqld with the my.cnf file. This script</span></span><br><span class="line"><span class="string">      # may be overwritten at next upgrade.</span></span><br><span class="line"><span class="string">      $bindir/mysqld_safe --datadir="$datadir" --pid-file="$mysqld_pid_file_path" $other_args &gt;/dev/null &amp;</span></span><br><span class="line"><span class="string">      wait_for_pid created "$!" "$mysqld_pid_file_path"; return_value=$?</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      # Make lock for RedHat / SuSE</span></span><br><span class="line"><span class="string">      if test -w "$lockdir"</span></span><br><span class="line"><span class="string">      then</span></span><br><span class="line"><span class="string">        touch "$lock_file_path"</span></span><br><span class="line"><span class="string">      fi</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      exit $return_value</span></span><br><span class="line"><span class="string">    else</span></span><br><span class="line"><span class="string">      log_failure_msg "Couldn't find MySQL server ($bindir/mysqld_safe)"</span></span><br><span class="line"><span class="string">    fi</span></span><br><span class="line"><span class="string">    ;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">### 服务脚本stop选项</span></span><br><span class="line"><span class="string">  'stop')</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    # Stop daemon. We use a signal here to avoid having to know the</span></span><br><span class="line"><span class="string">    # root password.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    if test -s "$mysqld_pid_file_path"</span></span><br><span class="line"><span class="string">    then</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      # signal mysqld_safe that it needs to stop</span></span><br><span class="line"><span class="string">      touch "$mysqld_pid_file_path.shutdown"</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      mysqld_pid=`cat "$mysqld_pid_file_path"`</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      if (kill -0 $mysqld_pid 2&gt;/dev/null)</span></span><br><span class="line"><span class="string">      then</span></span><br><span class="line"><span class="string">        echo $echo_n "Shutting down MySQL"</span></span><br><span class="line"><span class="string">        kill $mysqld_pid</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        # mysqld should remove the pid file when it exits, so wait for it.</span></span><br><span class="line"><span class="string">        wait_for_pid removed "$mysqld_pid" "$mysqld_pid_file_path"; return_value=$?</span></span><br><span class="line"><span class="string">      else</span></span><br><span class="line"><span class="string">        log_failure_msg "MySQL server process #$mysqld_pid is not running!"</span></span><br><span class="line"><span class="string">        rm "$mysqld_pid_file_path"</span></span><br><span class="line"><span class="string">      fi</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      # Delete lock for RedHat / SuSE</span></span><br><span class="line"><span class="string">      if test -f "$lock_file_path"</span></span><br><span class="line"><span class="string">      then</span></span><br><span class="line"><span class="string">        rm -f "$lock_file_path"</span></span><br><span class="line"><span class="string">      fi</span></span><br><span class="line"><span class="string">      exit $return_value</span></span><br><span class="line"><span class="string">    else</span></span><br><span class="line"><span class="string">      log_failure_msg "MySQL server PID file could not be found!"</span></span><br><span class="line"><span class="string">    fi</span></span><br><span class="line"><span class="string">    ;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  ### 服务脚本restart选项</span></span><br><span class="line"><span class="string">  ### 首先，先执行stop操作，如果stop操作成功的话，则继续执行start操作。</span></span><br><span class="line"><span class="string">  ### 如果stop操作失败的话，则会输出"Failed to stop running server, so refusing to try to start."信息，并退出脚本。</span></span><br><span class="line"><span class="string">  'restart')</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    # Stop the service and regardless of whether it was</span></span><br><span class="line"><span class="string">    # running or not, start it again.</span></span><br><span class="line"><span class="string">    if $0 stop  $other_args; then</span></span><br><span class="line"><span class="string">      $0 start $other_args</span></span><br><span class="line"><span class="string">    else</span></span><br><span class="line"><span class="string">      log_failure_msg "Failed to stop running server, so refusing to try to start."</span></span><br><span class="line"><span class="string">      exit 1</span></span><br><span class="line"><span class="string">    fi</span></span><br><span class="line"><span class="string">    ;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">   ### 服务脚本reload选项</span></span><br><span class="line"><span class="string">   ### 首先，判断pid文件的长度是否为0、</span></span><br><span class="line"><span class="string">   ### 如果pid文件的长度为0，则输出"MySQL PID file could not be found!"。</span></span><br><span class="line"><span class="string">   ### 如果不为0，则将该文件中的值设置为mysqld_pid变量的值。</span></span><br><span class="line"><span class="string">   ### 然后对该进程执行kill -HUP操作。</span></span><br><span class="line"><span class="string">   ### pid 是进程标识。如果想要更改配置而不需停止并重新启动服务，请使用该命令。在对配置文件作必要的更改后，发出该命令以动态更新服务配置。</span></span><br><span class="line"><span class="string">   ### 根据约定，当您发送一个挂起信号（信号 1 或 HUP）时，大多数服务器进程（所有常用的进程）都会进行复位操作并重新加载它们的配置文件。</span></span><br><span class="line"><span class="string">  'reload'|'force-reload')</span></span><br><span class="line"><span class="string">    if test -s "$mysqld_pid_file_path" ; then</span></span><br><span class="line"><span class="string">      read mysqld_pid &lt;  "$mysqld_pid_file_path"</span></span><br><span class="line"><span class="string">      kill -HUP $mysqld_pid &amp;&amp; log_success_msg "Reloading service MySQL"</span></span><br><span class="line"><span class="string">      touch "$mysqld_pid_file_path"</span></span><br><span class="line"><span class="string">    else</span></span><br><span class="line"><span class="string">      log_failure_msg "MySQL PID file could not be found!"</span></span><br><span class="line"><span class="string">      exit 1</span></span><br><span class="line"><span class="string">    fi</span></span><br><span class="line"><span class="string">    ;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  ### 首先，判断pid文件长度是否为0，如果不是，则读取该文件中的值，并判断pid对应的进程是否运行正常，</span></span><br><span class="line"><span class="string">  ### 如果运行正常，则输出"MySQL running"</span></span><br><span class="line"><span class="string">  ### 如果不正常，则输出"MySQL is not running, but PID file exists"</span></span><br><span class="line"><span class="string">  ### 如果pid文件的长度为0，则试图通过mysqld的启动命令来获取其pid，</span></span><br><span class="line"><span class="string">  ### 这个时候，可能存在一个mysqld程序启动了多个实例，这会导致pid_count=`echo $mysqld_pid | wc -w`大于1。</span></span><br><span class="line"><span class="string">  ### 这个时候，会输出"Multiple MySQL running but PID file could not be found"信息，并退出脚本。</span></span><br><span class="line"><span class="string">  ### 如果mysqld_pid为空，则会继续判断"$lock_file_path"是否存在，如果存在，</span></span><br><span class="line"><span class="string">  ### 则会输出"MySQL is not running, but lock file ($lock_file_path) exists"信息。</span></span><br><span class="line"><span class="string">  ### 如果"$lock_file_path"不存在，则会输出"MySQL is not running"信息。</span></span><br><span class="line"><span class="string">  ### 如果mysqld_pid等于1，则会输出"MySQL is running but PID file could not be found"信息。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  'status')</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    # First, check to see if pid file exists</span></span><br><span class="line"><span class="string">    if test -s "$mysqld_pid_file_path" ; then </span></span><br><span class="line"><span class="string">      read mysqld_pid &lt; "$mysqld_pid_file_path"</span></span><br><span class="line"><span class="string">      if kill -0 $mysqld_pid 2&gt;/dev/null ; then </span></span><br><span class="line"><span class="string">        log_success_msg "MySQL running ($mysqld_pid)"</span></span><br><span class="line"><span class="string">        exit 0</span></span><br><span class="line"><span class="string">      else</span></span><br><span class="line"><span class="string">        log_failure_msg "MySQL is not running, but PID file exists"</span></span><br><span class="line"><span class="string">        exit 1</span></span><br><span class="line"><span class="string">      fi</span></span><br><span class="line"><span class="string">    else</span></span><br><span class="line"><span class="string">      </span></span><br><span class="line"><span class="string">      # Try to find appropriate mysqld process</span></span><br><span class="line"><span class="string">      mysqld_pid=`pidof $libexecdir/mysqld`</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      # test if multiple pids exist</span></span><br><span class="line"><span class="string">      pid_count=`echo $mysqld_pid | wc -w`</span></span><br><span class="line"><span class="string">      if test $pid_count -gt 1 ; then</span></span><br><span class="line"><span class="string">        log_failure_msg "Multiple MySQL running but PID file could not be found ($mysqld_pid)"</span></span><br><span class="line"><span class="string">        exit 5</span></span><br><span class="line"><span class="string">      elif test -z $mysqld_pid ; then </span></span><br><span class="line"><span class="string">        if test -f "$lock_file_path" ; then </span></span><br><span class="line"><span class="string">          log_failure_msg "MySQL is not running, but lock file ($lock_file_path) exists"</span></span><br><span class="line"><span class="string">          exit 2</span></span><br><span class="line"><span class="string">        fi </span></span><br><span class="line"><span class="string">        log_failure_msg "MySQL is not running"</span></span><br><span class="line"><span class="string">        exit 3</span></span><br><span class="line"><span class="string">      else</span></span><br><span class="line"><span class="string">        log_failure_msg "MySQL is running but PID file could not be found"</span></span><br><span class="line"><span class="string">        exit 4</span></span><br><span class="line"><span class="string">      fi</span></span><br><span class="line"><span class="string">    fi</span></span><br><span class="line"><span class="string">    ;;</span></span><br><span class="line"><span class="string">    *)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">      # usage</span></span><br><span class="line"><span class="string">      ### 服务脚本其它选项</span></span><br><span class="line"><span class="string">      ### 如果脚本的第一个参数不是上述几个选项，则会输出Usage信息。</span></span><br><span class="line"><span class="string">      basename=`basename "$0"`</span></span><br><span class="line"><span class="string">      echo "Usage: $basename  &#123;start|stop|restart|reload|force-reload|status&#125;  [ MySQL server options ]"</span></span><br><span class="line"><span class="string">      exit 1</span></span><br><span class="line"><span class="string">    ;;</span></span><br><span class="line"><span class="string">esac</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">exit 0</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/18/mysql-install/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/09/18/mysql-install/" itemprop="url">mysql install</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-18T16:23:59+08:00">
-                2019-09-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/17/MySQL-Trusteeship/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/09/17/MySQL-Trusteeship/" itemprop="url">数据库托管流程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-17T15:20:12+08:00">
-                2019-09-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="接入堡垒机"><a href="#接入堡垒机" class="headerlink" title="接入堡垒机"></a>接入堡垒机</h4><ol>
-<li><p>首先登录至目标服务器（加入托管的数据库所在服务器），若无法登录需先申请登录目标服务器的特权账号。</p>
-</li>
-<li><p>配置从跳板机到目标服务器的<a href="https://mino-yn.github.io/blog/2019/08/23/ssh免密登录（单向）/">免密登录</a>。</p>
-</li>
-<li><p>提供目标服务器的ip和备注信息，将服务器加入堡垒机</p>
-</li>
-</ol>
-<h4 id="设置MySQL用户"><a href="#设置MySQL用户" class="headerlink" title="设置MySQL用户"></a>设置MySQL用户</h4><ol>
-<li><p>通过堡垒机登录需要托管的MySQL数据库</p>
-</li>
-<li><p>创建MySQL用户：sre 、hdm</p>
-</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#创建用户sre，赋予全局权限</span><br><span class="line">CREATE USER &apos;hdm&apos;@&apos;%&apos; IDENTIFIED BY PASSWORD &apos;*14533888C6CA3952B3957903FF7E69469C7E3A2B&apos;;</span><br><span class="line">GRANT SHOW DATABASES, PROCESS, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO &apos;hdm&apos;@&apos;%&apos;;</span><br><span class="line">GRANT SELECT ON *.* TO &apos;hdm&apos;@&apos;%&apos;;</span><br><span class="line"></span><br><span class="line">#创建用户hdm，用于接入阿里云HDM</span><br><span class="line">CREATE USER &apos;sre&apos;@&apos;%&apos; IDENTIFIED BY PASSWORD &apos;*66CC8D8F94978869E17ABDA6FD2E1A5D817E619E&apos;;</span><br><span class="line">GRANT all privileges on *.* to &apos;sre&apos;@&apos;%&apos; WITH GRANT OPTION;</span><br></pre></td></tr></table></figure>
-
-<h4 id="接入HDM"><a href="#接入HDM" class="headerlink" title="接入HDM"></a>接入HDM</h4><p>将目标服务器的<a href="https://mino-yn.github.io/blog/2019/09/09/HDM/">数据库实例接入HDM</a>，方便对数据库状态进行监控</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/12/Master-slave-replication/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/09/12/Master-slave-replication/" itemprop="url">使用Xtrabackup搭建MySQL主从</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-12T17:39:34+08:00">
-                2019-09-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="数据迁移"><a href="#数据迁移" class="headerlink" title="数据迁移"></a>数据迁移</h3><h4 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h4><p>1.主从，<a href="https://mino-yn.github.io/blog/2019/09/11/Xtrabackup/">安装 XtraBackup</a></p>
-<p>2.<a href="https://mino-yn.github.io/blog/2019/08/23/ssh%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88%E5%8D%95%E5%90%91%EF%BC%89/">配置主从互信</a></p>
-<p>3.主库，全备数据并传输到从服务器</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#备份主库：</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=root --password=Haier@123 --no-timestamp /data/backup</span><br><span class="line"></span><br><span class="line">#传输到从库：</span><br><span class="line">scp -r /data/backup/* root@10.133.7.19:/data/backup</span><br></pre></td></tr></table></figure>
-
-<p>4.从库，恢复全备数据</p>
-<ul>
-<li>主库和从库的数据库版本需一致</li>
-<li>MySQL配置文件内容尽可能保持一致</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#停止MySQL服务</span><br><span class="line">mysqladmin -uroot -pHaier@123 shutdown</span><br><span class="line"></span><br><span class="line">#备份上应用日志，一般没有看到报错且最后显示 OK 就没有问题</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --apply-log /data/backup </span><br><span class="line"></span><br><span class="line">#将原MySQL数据目录改名</span><br><span class="line">mv mysql mysql_bak</span><br><span class="line"></span><br><span class="line">#重建Mysql数据目录</span><br><span class="line">mkdir mysql</span><br><span class="line"></span><br><span class="line">#恢复数据,将备份还原到 my.cnf 指定的 datadir 中，不指定 --defaults-file，默认 /etc/my.cnf</span><br><span class="line">innobackupex --copy-back /data/backup</span><br><span class="line"></span><br><span class="line">#对新目录进行授权</span><br><span class="line">chown -R mysql:mysql mysql</span><br><span class="line"></span><br><span class="line">#重启MySQL服务，如果MySQL数据库启动失败，查看确认新的数据目录权限用户是否为mysql</span><br><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
-
-<h4 id="时间预估"><a href="#时间预估" class="headerlink" title="时间预估"></a>时间预估</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">文件大小：185 GB</span><br><span class="line">备份时间：25 min</span><br><span class="line">传输时间：30 min   ---以100MB/s的传输速度为基准</span><br><span class="line">恢复时间：1h 10 min</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">10.159.39.80 -&gt; 10.199.96.192</span><br><span class="line">文件大小：227G</span><br><span class="line">备份时间：32min</span><br><span class="line">传输时间：35min</span><br><span class="line">恢复时间：26min</span><br></pre></td></tr></table></figure>
-
-<h3 id="搭建主从关系"><a href="#搭建主从关系" class="headerlink" title="搭建主从关系"></a>搭建主从关系</h3><p>从库，建立复制关系</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@GPCMS-DB-M</span> <span class="string">backup]#</span> <span class="string">cat</span> <span class="string">xtrabackup_binlog_info</span></span><br><span class="line"><span class="string">mysql-binlog.000297</span>	<span class="number">900834433</span></span><br><span class="line"></span><br><span class="line"><span class="string">CHANGE</span> <span class="string">MASTER</span> <span class="string">TO</span> <span class="string">MASTER_HOST='10.133.7.18',</span></span><br><span class="line"><span class="string">MASTER_USER='repl',</span></span><br><span class="line"><span class="string">MASTER_PASSWORD='Changeme_123',</span></span><br><span class="line"><span class="string">MASTER_PORT=3306,</span></span><br><span class="line"><span class="string">MASTER_LOG_FILE='mysql-binlog.000297',</span> <span class="string">MASTER_LOG_POS=900834433,</span></span><br><span class="line"><span class="string">MASTER_CONNECT_RETRY=10;</span></span><br><span class="line"></span><br><span class="line"><span class="string">MySQL</span> <span class="string">[(none)]&gt;</span> <span class="string">start</span> <span class="string">slave;</span></span><br><span class="line"><span class="string">Query</span> <span class="string">OK,</span> <span class="number">0</span> <span class="string">rows</span> <span class="string">affected</span> <span class="string">(0.00</span> <span class="string">sec)</span></span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/11/Xtrabackup/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/09/11/Xtrabackup/" itemprop="url">Percona XtraBackup安装实践</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-11T17:25:50+08:00">
-                2019-09-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。</p>
-<p><strong>物理备份</strong></p>
-<p><strong>XtraBackup优势 ：</strong></p>
-<p>1、无需停止数据库进行 InnoDB 热备，备份过程中不会锁表，不影响现有业务。</p>
-<p>2、增量备份 MySQL。</p>
-<p>3、流压缩到传输到其它服务器。</p>
-<p>4、能比较容易地创建主从同步。</p>
-<p>5、备份MySQL时不会增大服务器负载。</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p><code>Xtrabackup</code> 包括两个工具: <code>xtrabackup</code>、<code>innobackupex</code>  ，其主要区别如下:</p>
-<ul>
-<li>xtrabackup: 只能备份innodb和xtradb两种引擎的表，不能备份myisam引擎的表</li>
-<li>innobackupex: 是一个封装了xtrabackup的Perl脚本，支持同时备份innodb和myisam，但在对myisam备份时需要加一个全局的读锁。还有就是myisam不支持增量备份。</li>
-</ul>
-<h3 id="全库备份过程"><a href="#全库备份过程" class="headerlink" title="全库备份过程"></a>全库备份过程</h3><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Xtrabackup4.png" alt></p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/Xtrabackup5.png" alt></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">1 首先会启动一个xtrabackup_log后台检测的进程，实时检测mysql redo的变化，一旦发现redo有新的日志写入，立刻将日志写入到日志文件xtrabackup_log中</span><br><span class="line"></span><br><span class="line">2 复制innodb的数据文件和系统表空间文件idbdata1到对应的以默认时间戳为备份目录的地方</span><br><span class="line"></span><br><span class="line">3 复制结束后，执行flush table with read lock操作</span><br><span class="line"></span><br><span class="line">4 复制.frm .myd .myi文件</span><br><span class="line"></span><br><span class="line">5 并且在这一时刻获得binary log 的位置</span><br><span class="line"></span><br><span class="line">6 将表进行解锁unlock tables</span><br><span class="line"></span><br><span class="line">7 停止xtrabackup_log进程</span><br></pre></td></tr></table></figure>
-
-<h3 id="全库恢复的过程"><a href="#全库恢复的过程" class="headerlink" title="全库恢复的过程"></a>全库恢复的过程</h3><p>这一阶段会启动xtrabackup内嵌的innodb实例，将xtrabackup日志xtrabackup_Log进行回放，将提交的事务信息变更应用到innodb数据或表空间，同时回滚未提交的事务。</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Xtrabackup6.png" alt></p>
-<h2 id="安装实践"><a href="#安装实践" class="headerlink" title="安装实践"></a>安装实践</h2><h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><p>1）下载 Percona-XtraBackup，采用从阿里云oss下载的方式</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar    #本地上传</span><br><span class="line">tar xvf Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line">- percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br><span class="line">- percona-xtrabackup-24-debuginfo-2.4.12-1.el7.x86_64.rpm</span><br><span class="line">- percona-xtrabackup-test-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<p>2）rpm 方式安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<p>报错信息：提示缺少依赖</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">warning: percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">	libev.so.4()(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br><span class="line">	perl(DBD::mysql) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br><span class="line">	perl(Digest::MD5) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br><span class="line">	rsync is needed by percona-xtrabackup-24-2.4.9-1.el7.x86_64</span><br></pre></td></tr></table></figure>
-
-<p>解决方法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/libev-4.15-1.el6.x86_64.rpm</span><br><span class="line">yum -y install perl-DBD-MySQL</span><br><span class="line">yum -y install perl-Digest-MD5</span><br><span class="line">yum -y install rsync perl l perl-Digest-MD5</span><br><span class="line">rpm -ivh libev-4.15-1.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<h3 id="安装脚本"><a href="#安装脚本" class="headerlink" title="安装脚本"></a>安装脚本</h3><p>通过建立执行脚本<code>install_xtrabackup.sh</code> 进行安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line"># Install XtraBackup</span><br><span class="line">cd /usr/local/src</span><br><span class="line">wget http://10.190.177.9:8085/Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line">tar xvf Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line"></span><br><span class="line">wget http://10.190.177.9:8085/libev-4.15-1.el6.x86_64.rpm</span><br><span class="line">yum -y install perl-DBD-MySQL</span><br><span class="line">yum -y install perl-Digest-MD5</span><br><span class="line">rpm -ivh libev-4.15-1.el6.x86_64.rpm</span><br><span class="line">rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line">xtrabackup --version</span><br></pre></td></tr></table></figure>
-
-<h2 id="其他问题"><a href="#其他问题" class="headerlink" title="其他问题"></a>其他问题</h2><h3 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h3><h4 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h4><p>使用<code>yum</code> 命令安装依赖包<code>percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</code>时报错</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">yum</span> <span class="bullet">-y</span> <span class="string">install</span> <span class="string">percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup1.png" alt></p>
-<p>报错提示<code>mariadb-libs</code> 与之前安装的 MySQL 发生冲突，查看 MySQL 安装包目录</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup2.png" alt></p>
-<p>检查后发现报错是由MySQL组件未安装完全导致的，之前安装MySQL时是通过 RPM 包的方式，为了省事只安装了部分组件便直接使用，未安装 MySQL 的<code>shared</code> 和<code>embedded</code> 组件。</p>
-<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a><strong>解决方法</strong></h4><p>为了方便，将未安装的 MySQL 组件安装上</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup3.png" alt></p>
-<p>将报错的<code>yum</code>命令重新执行，查看xtrabackup版本</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/0.png" alt></p>
-<p>安装成功</p>
-<h3 id="问题二"><a href="#问题二" class="headerlink" title="问题二"></a>问题二</h3><h4 id="问题现象-1"><a href="#问题现象-1" class="headerlink" title="问题现象"></a>问题现象</h4><p>执行<code>rpm</code> 命令安装xtrabackup时报错冲突。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup_5.png" alt></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#搜索指定rpm包是否安装</span><br><span class="line">rpm -qa |grep xtrabackup</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup_6.png" alt></p>
-<h4 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h4><p>服务器上安装过<code>Percona XtraBackup2.2</code>, 但从mysql5.7开始，必须使用xtrabackup2.4以上版本才能完成备份,老的版本执行会报错，已不适用。将老版本卸载后重新安装.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -e 要删除的软件包</span><br></pre></td></tr></table></figure>
-
-<h3 id="问题三"><a href="#问题三" class="headerlink" title="问题三"></a>问题三</h3><h4 id="问题现象-2"><a href="#问题现象-2" class="headerlink" title="问题现象"></a>问题现象</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 src]# rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpmwarning: percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEYerror: Failed dependencies:	libc.so.6(GLIBC_2.14)(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64	libstdc++.so.6(GLIBCXX_3.4.15)(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br></pre></td></tr></table></figure>
-
-<h4 id="解决方法："><a href="#解决方法：" class="headerlink" title="解决方法："></a><strong>解决方法</strong>：</h4><p>查看操作系统版本，<code>CentOS 6</code> 下载 <code>el6</code> 的安装包即可。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/redhat-releaseCentOS release 6.5 (Final)$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-xtrabackup-24-2.4.12-1.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>Tips：不要轻易在真实生产环境中直接安装，因为升级的过程中比较容易出现系统出错。</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1853,7 +2114,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">64</span>
+                  <span class="site-state-item-count">69</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1866,7 +2127,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/blog/tags/index.html">
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1903,7 +2164,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
