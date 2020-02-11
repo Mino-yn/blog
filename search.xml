@@ -1,6 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Maven</title>
+    <url>/blog/2020/02/11/maven/</url>
+    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>​    开发中常需要依赖第三方的包，包和包之间存在依赖关系，版本间还有兼容性问题，有时需要将旧包升级或降级，当项目复杂到一定程度时包管理变得非常重要。</p>
+<p><code>Maven</code> 是当前最受欢迎的Java项目管理构建自动化综合工具，主要做了两件事：</p>
+<ul>
+<li>统一开发规范与工具</li>
+<li>统一管理 <code>jar</code> 包</li>
+</ul>
+<h2 id="安装与配置"><a href="#安装与配置" class="headerlink" title="安装与配置"></a>安装与配置</h2><h3 id="下载安装包"><a href="#下载安装包" class="headerlink" title="下载安装包"></a>下载安装包</h3><p><a href="http://maven.apache.org/download.cgi" target="_blank" rel="noopener">官网下载安装包</a></p>
+<ul>
+<li><p>配置环境变量</p>
+<p>注：安装 <code>Maven</code> 前需确保已安装 <code>JDK</code>, 如果是 <code>Maven3</code> 则需 <code>JDK1.7</code> 以上</p>
+<p>1、解压压缩包</p>
+<p>2、配置系统变量</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">新建环境变量</span><br><span class="line">MAVEN_HOME：E:\apache-maven-3.5.4</span><br><span class="line">添加path环境变量</span><br><span class="line">%MAVEN_HOME%\bin</span><br></pre></td></tr></table></figure>
+
+<p>3、打开 <code>cmd</code> 输入 <code>mvn -version</code> 出现 <code>maven</code> 版本信息说明配置成功</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Maven0.png" alt></p>
+</li>
+</ul>
+<h3 id="本地仓库配置"><a href="#本地仓库配置" class="headerlink" title="本地仓库配置"></a>本地仓库配置</h3><ul>
+<li>若不配置本地仓库，会在如下默认位置存放远程下载到的包</li>
+</ul>
+<p>打开 <code>maven</code> 安装目录、 打开<code>conf</code> 目录下的  <code>settings</code> 文件</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Maven1.png" alt></p>
+<ul>
+<li>将本地仓库位置配置到 <code>E:\javaKit\mavenRes</code></li>
+</ul>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Meven2.png" alt></p>
+<p>中央仓库配置</p>
+<p>当构建一个Maven项目时，首先检查pom.xml文件以确定依赖包的下载位置，执行顺序如下</p>
+<ul>
+<li>从本地资源库中查找并获得依赖包，如果没有，执行第二步</li>
+<li>从 <code>Maven</code> 默认中央仓库中查找并获得依赖包（<a href="http://repo1.maven.org/maven2/），如果没有执行第3步" target="_blank" rel="noopener">http://repo1.maven.org/maven2/），如果没有执行第3步</a></li>
+<li>如果在 <code>pom.xml</code> 中定义了自定义的远程仓库，也会在这里的仓库中查找并获得依赖包，如果都没有找到，则 <code>Maven</code> 会抛出异常</li>
+</ul>
+<p>修改默认中央仓库地址</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Maven3.png" alt></p>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Spring Boot入门</title>
+    <url>/blog/2020/02/10/Spring-Boot/</url>
+    <content><![CDATA[<h2 id="一、Spring-Boot入门"><a href="#一、Spring-Boot入门" class="headerlink" title="一、Spring Boot入门"></a>一、Spring Boot入门</h2><h3 id="1、Spring-Boot简介"><a href="#1、Spring-Boot简介" class="headerlink" title="1、Spring Boot简介"></a>1、Spring Boot简介</h3><ul>
+<li>简化Spring应用开发的一个框架；</li>
+<li>整个Spring技术栈的一个大整合；</li>
+<li>J2EE开发的一站式解决方案；</li>
+</ul>
+<p>2、微服务</p>
+<p>2014，martin fowler</p>
+<p>微服务：架构风格（服务微化）</p>
+<ul>
+<li><p>一个应用应该是一组小型服务;可以通过HTTP的方式进行互通；</p>
+</li>
+<li><p>每一个功能元素最终都是一个可独立替换和独立升级的软件单元；</p>
+</li>
+</ul>
+<p>单体应用：ALL IN ONE </p>
+<ul>
+<li>所有的东西写在一个应用里；</li>
+</ul>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Spring%20Boot0.png" alt></p>
+<p><a href="https://www.jianshu.com/p/4821a29fa998" target="_blank" rel="noopener">详细参照微服务文档</a></p>
+<p>环境约束</p>
+<p>-jdk1.8：Spring Boot1.7及以上     </p>
+<p>-maven3.x</p>
+<p>-Intellij IDEA2017</p>
+<p>-SpringBoot 1.5.9 RELEASE</p>
+<p>实际本地环境</p>
+]]></content>
+      <tags>
+        <tag>Sring Boot</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>IDEA</title>
+    <url>/blog/2020/02/06/java-ide/</url>
+    <content><![CDATA[<h3 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h3><ul>
+<li><p><a href="https://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java JDK</a></p>
+</li>
+<li><p><a href="http://www.jetbrains.com/" target="_blank" rel="noopener">IntelliJ IDEA</a></p>
+</li>
+</ul>
+<h3 id="IDEA-安装目录"><a href="#IDEA-安装目录" class="headerlink" title="IDEA 安装目录"></a>IDEA 安装目录</h3><ul>
+<li>bin :  容器、执行文件、启动参数</li>
+<li>lib：IDEA依赖的类库</li>
+<li>license：各种插件许可、插件</li>
+</ul>
+<h3 id="IDEA常用快捷方式"><a href="#IDEA常用快捷方式" class="headerlink" title="IDEA常用快捷方式"></a>IDEA常用快捷方式</h3><p><strong>IDEA常用快捷键</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">---------代码自动生成-----------</span><br><span class="line">alt+/            代码自动补全</span><br><span class="line">alt+insert       自动生成构造方法等</span><br><span class="line">ctrl+shift+回车   补全结尾</span><br><span class="line">ctrl+j           自动代码生成模板</span><br><span class="line">---------代码优化--------------</span><br><span class="line">alt+回车          导包或者修正已导的包</span><br><span class="line">ctrl+alt+l       格式化代码</span><br><span class="line">ctrl+alt+i       代码自动缩进</span><br><span class="line">ctrl+e           显示最近打开的文件</span><br><span class="line">ctrl+p           方法参数提示</span><br><span class="line">ctrl+alt+t       把选中代码放入if等语句里</span><br><span class="line">---------代码编辑-------------</span><br><span class="line">ctrl+y           删除行</span><br><span class="line">ctrl+D           复制行</span><br><span class="line">ctrl+w           自动选中代码</span><br><span class="line">ctrl+g           跳转到指定行</span><br><span class="line">ctrl+shift+w     反选代码</span><br><span class="line">ctrl+shift+u     转换大小写</span><br><span class="line">alt+上下箭头      移动光标到上\下一个方法</span><br><span class="line">----------debug--------------</span><br><span class="line">F7              step into</span><br><span class="line">F8              step over</span><br><span class="line">alt+shift+f7    Force Step Into</span><br><span class="line">shift+f8        step out</span><br><span class="line">----------查询快捷键的使用------</span><br><span class="line">ctrl+n       查找类</span><br><span class="line">ctrl+shift+n 查找文件</span><br><span class="line">ctrl+G       定位行</span><br><span class="line">ctrl+f       查找当前窗口文本</span><br><span class="line">ctrl+R       当前窗口文本替换</span><br><span class="line">----------其他快捷键----------</span><br><span class="line">ctrl+z        回退</span><br><span class="line">ctrl+/        单行注释</span><br><span class="line">ctrl+shift+/  多行注释</span><br></pre></td></tr></table></figure>
+
+<p><strong>IDEA常用模板</strong></p>
+<ul>
+<li>Live Templates</li>
+<li>File and Code Templates</li>
+<li>Postfix Completion</li>
+</ul>
+<p>学习资料：<a href="https://www.bilibili.com/video/av71609179?p=2" target="_blank" rel="noopener">IntelliJ IDEA 入门到实战教程</a></p>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>RDS用户权限管理</title>
     <url>/blog/2020/01/13/RDS-privilege-management/</url>
     <content><![CDATA[<h3 id="只读用户"><a href="#只读用户" class="headerlink" title="只读用户"></a>只读用户</h3><p>只能进行读取数据库操作</p>

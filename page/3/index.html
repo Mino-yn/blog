@@ -281,6 +281,433 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/14/Case5-replication/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/11/14/Case5-replication/" itemprop="url">案例5 · 主从复制延迟</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-14T14:42:28+08:00">
+                2019-11-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p>从库两个线程 <code>Slave_IO_Running</code> 和 <code>Slave_SQL_Running</code> 均是 <strong>Yes</strong>，说明主从复制链路正常，但是 <code>Seconds_Behind_Master</code> 不断增大，且主从数据延迟有不断扩大的趋势。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.138.86.40</span><br><span class="line">                  Master_User: sre</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-bin.001212</span><br><span class="line">          Read_Master_Log_Pos: 137934465</span><br><span class="line">               Relay_Log_File: relay-log.001555</span><br><span class="line">                Relay_Log_Pos: 1036549424</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.001191</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB:</span><br><span class="line">          Replicate_Ignore_DB: test,mysql,infomation_schema</span><br><span class="line">           Replicate_Do_Table:</span><br><span class="line">       Replicate_Ignore_Table:</span><br><span class="line">      Replicate_Wild_Do_Table:</span><br><span class="line">  Replicate_Wild_Ignore_Table:</span><br><span class="line">                   Last_Errno: 0</span><br><span class="line">                   Last_Error:</span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 1036549261</span><br><span class="line">              Relay_Log_Space: 23223038991</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File:</span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File:</span><br><span class="line">           Master_SSL_CA_Path:</span><br><span class="line">              Master_SSL_Cert:</span><br><span class="line">            Master_SSL_Cipher:</span><br><span class="line">               Master_SSL_Key:</span><br><span class="line">        Seconds_Behind_Master: 422170</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">                Last_IO_Errno: 0</span><br><span class="line">                Last_IO_Error:</span><br><span class="line">               Last_SQL_Errno: 0</span><br><span class="line">               Last_SQL_Error:</span><br><span class="line">  Replicate_Ignore_Server_Ids:</span><br><span class="line">             Master_Server_Id: 51</span><br><span class="line">                  Master_UUID: 2a627321-7537-11e8-99de-0050568ce861</span><br><span class="line">             Master_Info_File: /data/mysql/data/hlmp@3306/master.info</span><br><span class="line">                    SQL_Delay: 0</span><br><span class="line">          SQL_Remaining_Delay: NULL</span><br><span class="line">      Slave_SQL_Running_State: Reading event from the relay log</span><br><span class="line">           Master_Retry_Count: 86400</span><br><span class="line">                  Master_Bind:</span><br><span class="line">      Last_IO_Error_Timestamp:</span><br><span class="line">     Last_SQL_Error_Timestamp:</span><br><span class="line">               Master_SSL_Crl:</span><br><span class="line">           Master_SSL_Crlpath:</span><br><span class="line">           Retrieved_Gtid_Set:</span><br><span class="line">            Executed_Gtid_Set:</span><br><span class="line">                Auto_Position: 0</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><p>检查当前正在使用的表：<code>show open tables where In_use=1;</code> 发现有一张表一直处于 <code>In_use</code> 状态。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;  show open tables where In_use=1;</span><br><span class="line">+----------+-----------------------+--------+-------------+</span><br><span class="line">| Database | Table                 | In_use | Name_locked |</span><br><span class="line">+----------+-----------------------+--------+-------------+</span><br><span class="line">| hlmp     | hlmp_bms_cost_summary |      1 |           0 |</span><br><span class="line">+----------+-----------------------+--------+-------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>根据 <code>Relay_Log_Pos</code> 解析 <code>relay-log.001555</code>，查看当时正在执行的操作是 <code>Delete_rows</code>，操作的表是 <code>hlmp.hlmp_bms_cost_summary</code>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">mysqlbinlog</span>   <span class="bullet">--no-defaults</span> <span class="bullet">--base64-output=decode-rows</span> <span class="string">relay-log.001592</span> <span class="bullet">--start-position=44477266</span> <span class="string">| more</span></span><br><span class="line"><span class="string">--vv                          # 将二进制转换为可阅读文本</span></span><br><span class="line"><span class="string">--base64-output=decode-rows   # 解析binlog为sql</span></span><br><span class="line"><span class="string">--start-position              # 起始位置</span></span><br><span class="line"><span class="string">--stop-position               # 结束位置</span></span><br><span class="line"><span class="string">--start-datetime              # 起始时间</span></span><br><span class="line"><span class="string">--stop-datetime               # 结束时间</span></span><br><span class="line"><span class="string">--no-defaults                 # 解决报错：unknown variable 'default-character-set=utf8'</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">[root@hlmp-db hlmp@3306]# mysqlbinlog   --no-defaults --base64-output=decode-rows relay-log.001555 --start-position=1036549424 | more</span><br><span class="line">/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=1*/;</span><br><span class="line">/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;</span><br><span class="line">DELIMITER /*!*/;</span><br><span class="line"># at 1036549424</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036549341 CRC32 0x1bda7585  Query   thread_id=133919        exec_time=52    error_code=0</span><br><span class="line">SET TIMESTAMP=1573812653/*!*/;</span><br><span class="line">SET @@session.pseudo_thread_id=133919/*!*/;</span><br><span class="line">SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=0, @@session.unique_checks=1, @@session.autocommit=1/*!*/;</span><br><span class="line">SET @@session.sql_mode=1075838976/*!*/;</span><br><span class="line">SET @@session.auto_increment_increment=1, @@session.auto_increment_offset=1/*!*/;</span><br><span class="line">/*!\C utf8 *//*!*/;</span><br><span class="line">SET @@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=33/*!*/;</span><br><span class="line">SET @@session.time_zone=&apos;SYSTEM&apos;/*!*/;</span><br><span class="line">SET @@session.lc_time_names=0/*!*/;</span><br><span class="line">SET @@session.collation_database=DEFAULT/*!*/;</span><br><span class="line">BEGIN</span><br><span class="line">/*!*/;</span><br><span class="line"># at 1036549504</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036549494 CRC32 0xa972affe  Table_map: `hlmp`.`hlmp_bms_cost_summary` mapped to number 389</span><br><span class="line"># at 1036549657</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036557664 CRC32 0x86e8f0b3  Delete_rows: table id 389</span><br><span class="line"># at 1036557827</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036565850 CRC32 0xdcb58e43  Delete_rows: table id 389</span><br><span class="line"># at 1036566013</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036573985 CRC32 0x78b661d2  Delete_rows: table id 389</span><br><span class="line"># at 1036574148</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036581985 CRC32 0x4490473f  Delete_rows: table id 389</span><br><span class="line"># at 1036582148</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036590027 CRC32 0xe71fb4c4  Delete_rows: table id 389</span><br><span class="line"># at 1036590190</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036598226 CRC32 0x819227f3  Delete_rows: table id 389</span><br><span class="line"># at 1036598389</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036606256 CRC32 0xab8ec990  Delete_rows: table id 389</span><br><span class="line"># at 1036606419</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036614229 CRC32 0xc3a91b17  Delete_rows: table id 389</span><br><span class="line"># at 1036614392</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036622259 CRC32 0xa0f85538  Delete_rows: table id 389</span><br><span class="line"># at 1036622422</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036630232 CRC32 0x16881e81  Delete_rows: table id 389</span><br><span class="line"># at 1036630395</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036638346 CRC32 0x16658bd4  Delete_rows: table id 389</span><br><span class="line"># at 1036638509</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036646413 CRC32 0xb59b8535  Delete_rows: table id 389</span><br><span class="line"># at 1036646576</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036654571 CRC32 0x7cd654d6  Delete_rows: table id 389</span><br><span class="line"># at 1036654734</span><br><span class="line">#191115 18:10:53 server id 51  end_log_pos 1036662718 CRC32 0xf87f7be0  Delete_rows: table id 389</span><br><span class="line"># at 1036662881</span><br></pre></td></tr></table></figure>
+
+<p>检查表结构，发现该表无主键</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show create table hlmp.hlmp_bms_cost_summary</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>在主从库分别为表 <code>hlmp.hlmp_bms_cost_summary</code> 添加主键</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1、备库停止 stop slave，可能会执行较久，因为需要回滚事务</span><br><span class="line">stop slave;</span><br><span class="line"></span><br><span class="line">2、在主库和从库上分别添加主键</span><br><span class="line">set sql_log_bin=0;   --设为0后，在会话中数据库上执行的语句都不记录binlog</span><br><span class="line">alter table hlmp.hlmp_bms_cost_summary add id int(10) unsigned primary key AUTO_INCREMENT;</span><br><span class="line"></span><br><span class="line">3、备库启动主从复制</span><br><span class="line">start slave;</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>无主键、无索引或索引区分度不高，导致的主从复制延迟</p>
+<h4 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a. show slave status， 显示position 一直没有变</span><br><span class="line">b. show open tables where In_use=1， 显示某个表一直是in_use为 1</span><br><span class="line">c. show create table，查看表结构可以看到无主键，或者无任何索引，或者索引区分度很差</span><br></pre></td></tr></table></figure>
+
+<h4 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a>解决方法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">a. 找到表区分度比较高的几个字段, 可以使用这个方法判断：</span><br><span class="line">select count(*) from xx;</span><br><span class="line">select count(*) from (select distinct xx from xxx) t;</span><br><span class="line">如果2个查询count(*)的结果差不多，说明可以对这些字段加索引</span><br><span class="line"></span><br><span class="line">b. 备库 </span><br><span class="line">stop slave;   ---可能会执行比较久，因为需要回滚事务。</span><br><span class="line"></span><br><span class="line">c. 在主库和从库上分别添加索引</span><br><span class="line">set sql_log_bin=0;</span><br><span class="line">alter table xx add key xx(xx);</span><br><span class="line">alter table &apos;xxxx&apos; add id int(10) unsigned primary key AUTO_INCREMENT;</span><br><span class="line"></span><br><span class="line">d. 备库 </span><br><span class="line">start slave</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/14/linux-firewall/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/11/14/linux-firewall/" itemprop="url">CentOS 6与 CentOS 7防火墙设置与端口打开</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-14T14:22:03+08:00">
+                2019-11-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><code>CentOS</code> 升级到7后，内置防火墙从 <code>iptables</code> 变为 <code>firewalled</code> 不同操作系统设置的方式不同。</p>
+<ul>
+<li>查看系统版本</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lsb_release -a             #可列出所有版本信息</span><br><span class="line">cat /etc/redhat-release    #只适合Redhat系的Linux</span><br><span class="line">cat /etc/issue             #适用于所有的Linux发行版</span><br></pre></td></tr></table></figure>
+
+<h3 id="CentOS-6"><a href="#CentOS-6" class="headerlink" title="CentOS 6"></a>CentOS 6</h3><ul>
+<li>打开/关闭/重启防火墙</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">chkconfig iptables on       # 开启防火墙</span><br><span class="line">chkconfig iptables off      # 关闭防火墙</span><br><span class="line">service iptables start      # 开启防火墙</span><br><span class="line">service iptables stop       # 关闭防火墙</span><br><span class="line">service iptables restarted  # 重启防火墙</span><br><span class="line">iptables -F                 # 清除防火墙规则</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>打开端口</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/sbin/iptables -I INPUT -p tcp --dport 22 -j ACCEPT   # 打开22端口</span><br><span class="line">/sbin/iptables -I INPUT -p tcp --dport 3306 -j ACCEPT # 打开3306端口</span><br><span class="line">/etc/rc.d/init.d/iptables save   # 保存防火墙</span><br><span class="line">/etc/init.d/iptables restart     # 重启防火墙</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看打开的端口</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/iptables status</span><br></pre></td></tr></table></figure>
+
+<h3 id="CentOS-7"><a href="#CentOS-7" class="headerlink" title="CentOS 7"></a>CentOS 7</h3><ul>
+<li>打开/关闭/重启防火墙</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start firewalld  # 启用防火墙systemctl stop firewalld   # 停止防火墙systemctl status firewalld # 查看状态</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>打开端口</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=80/tcp # 永久生效再加上--permanentfirewall-cmd --reload                        # 更新防火墙规则</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看打开的端口</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --list-ports</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/13/hexo-search/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/11/13/hexo-search/" itemprop="url">hexo博客添加搜索功能</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-13T09:08:21+08:00">
+                2019-11-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>文档慢慢变多时，标签和分类已经无法提供太大的作用，为了更加准确的定位到自己想看的文章，需要添加一个搜索功能。</p>
+<h4 id="安装插件"><a href="#安装插件" class="headerlink" title="安装插件"></a>安装插件</h4><p>在自己博客文件夹根目录（我的为<code>blog</code>）下点击右键选择 <code>Git Bash Here</code>安装插件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-generator-searchdb --save</span><br></pre></td></tr></table></figure>
+
+<h4 id="修改站点配置文件"><a href="#修改站点配置文件" class="headerlink" title="修改站点配置文件"></a>修改站点配置文件</h4><p><code>blog</code> 下的 <code>_config.yaml</code> 文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">search:</span><br><span class="line">    path: search.xml</span><br><span class="line">    field: post</span><br><span class="line">    format: html</span><br><span class="line">    limit: 10000</span><br></pre></td></tr></table></figure>
+
+<p>注：每个冒号后需加空格</p>
+<h4 id="修改主题配置文件"><a href="#修改主题配置文件" class="headerlink" title="修改主题配置文件"></a>修改主题配置文件</h4><p><code>/blog/themes/next</code> 下的 <code>_config.yml</code> 文件，修改 <code>local_search</code> 为 <code>true</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">local_search:</span><br><span class="line">    enable: true</span><br></pre></td></tr></table></figure>
+
+<h4 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h4><p>清除缓存后，生成部署网站</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g -d</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/11/Script-Download/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1324,499 +1751,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/10/24/index-type/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/10/24/index-type/" itemprop="url">XtraBackup实现数据迁移</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-24T17:22:15+08:00">
-                2019-10-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="数据迁移"><a href="#数据迁移" class="headerlink" title="数据迁移"></a>数据迁移</h3><p><a href="https://mino-yn.github.io/blog/2019/09/11/Xtrabackup/">安装 `XtraBackup</a>`</p>
-<p><a href="https://mino-yn.github.io/blog/2019/08/23/ssh%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88%E5%8D%95%E5%90%91%EF%BC%89/">配置互信</a></p>
-<p>全备数据并传输到现服务器</p>
-<p>准备工作：</p>
-<ul>
-<li>确认数据库版本是否一致。</li>
-<li>确认数据库存储引擎是否相同。</li>
-<li>查看空间是否充足。</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#备份原数据库：</span></span><br><span class="line"><span class="string">innobackupex</span> <span class="bullet">--defaults-file=/etc/my.cnf</span> <span class="bullet">--user=root</span> <span class="bullet">--password=Haier@123</span> <span class="bullet">--no-timestamp</span> <span class="string">/data/backup</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#传输到现服务器：</span></span><br><span class="line"><span class="string">scp</span> <span class="bullet">-r</span> <span class="string">/data/backup/*</span> <span class="string">root@10.133.7.19:/data/backup</span></span><br></pre></td></tr></table></figure>
-
-<p>现服务器，恢复全备数据</p>
-<ul>
-<li>原数据库与现数据库的数据库版本需一致</li>
-<li>MySQL配置文件内容尽可能保持一致</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#停止MySQL服务</span></span><br><span class="line"><span class="string">mysqladmin</span> <span class="bullet">-uroot</span> <span class="bullet">-pHaier@123</span> <span class="string">shutdown</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#备份上应用日志，一般没有看到报错且最后显示 OK 就没有问题</span></span><br><span class="line"><span class="string">innobackupex</span> <span class="bullet">--defaults-file=/etc/my.cnf</span> <span class="bullet">--apply-log</span> <span class="string">/data/backup</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">#将原MySQL数据目录改名</span></span><br><span class="line"><span class="string">mv</span> <span class="string">mysql</span> <span class="string">mysql_bak</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#重建Mysql数据目录</span></span><br><span class="line"><span class="string">mkdir</span> <span class="string">mysql</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#恢复数据,将备份还原到 my.cnf 指定的 datadir 中，不指定 --defaults-file，默认/etc/my.cnf</span></span><br><span class="line"><span class="string">innobackupex</span> <span class="bullet">--copy-back</span> <span class="string">/data/backup</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#对新目录进行授权</span></span><br><span class="line"><span class="string">chown</span> <span class="bullet">-R</span> <span class="attr">mysql:mysql</span> <span class="string">mysql</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#重启MySQL服务，如果MySQL数据库启动失败，查看确认新的数据目录权限用户是否为mysql</span></span><br><span class="line"><span class="string">/usr/local/mysql/bin/mysqld_safe</span> <span class="bullet">--defaults-file=/etc/my.cnf</span> <span class="bullet">--user=mysql</span> <span class="string">&gt;/dev/null</span> <span class="string">&amp;</span></span><br><span class="line"><span class="string">时间预</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="时间预估"><a href="#时间预估" class="headerlink" title="时间预估"></a>时间预估</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">文件大小：185 GB</span><br><span class="line">备份时间：35 min</span><br><span class="line">传输时间：30 min   ---以100MB/s的传输速度为基准</span><br><span class="line">恢复时间：1h 10 min</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/10/24/B-tree-indexe/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/10/24/B-tree-indexe/" itemprop="url">B+树索引</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-24T09:30:37+08:00">
-                2019-10-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="InnoDB索引"><a href="#InnoDB索引" class="headerlink" title="InnoDB索引"></a>InnoDB索引</h2><h3 id="InnoDB记录存储方式"><a href="#InnoDB记录存储方式" class="headerlink" title="InnoDB记录存储方式"></a>InnoDB记录存储方式</h3><p>在 <code>InnoDB</code> 存储引擎中，数据页间通过 <code>双向链表</code> 进行连接，无需在物理结构上相连。数据页中的记录按主键值从小到大的顺序通过 <code>单向链表</code> 进行连接。每个数据页中的记录划分为几个组，每组 <code>最后</code> 一条记录的 <code>地址偏移量</code> 单独提取出来存储在靠近 <code>页</code> 的尾部，这些地址偏移量称为 <code>槽</code> ，这些 <code>槽</code> 组成了该数据页的 <code>页目录</code>。</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/B%2Btree0.png" alt></p>
-<h3 id="没有索引的查找"><a href="#没有索引的查找" class="headerlink" title="没有索引的查找"></a>没有索引的查找</h3><p>这里只讨论条件为对某列进行 <code>精准匹配</code> 的情况</p>
-<p><strong>在同一页中查找</strong></p>
-<ul>
-<li>以主键为搜索条件查找</li>
-</ul>
-<p>在 <code>页目录</code> 中通过二分法快速定位至对应的 <code>槽</code> ,对 <code>槽</code> 所对应的分组的记录进行遍历。</p>
-<ul>
-<li>以其他列为搜索条件查找</li>
-</ul>
-<p>从 <code>最小记录</code> 开始遍历单列表链表中的每条记录，与搜索条件进行比对。</p>
-<p><strong>在多个页中查找</strong></p>
-<ul>
-<li><p>定位到记录所在页：没有索引的情况下，无法快速定位到记录所在的页，只能从第一个列沿双向链表遍历所有的数据页。</p>
-</li>
-<li><p>在每个页中按照上述方式进行查找。</p>
-</li>
-</ul>
-<h3 id="InnoDB索引方案"><a href="#InnoDB索引方案" class="headerlink" title="InnoDB索引方案"></a>InnoDB索引方案</h3><p>大部分情况下我们需要在很多数据页中查找记录，可以通过给数据页建立<code>目录项</code>（即 <code>索引</code>）的方式快速定位至记录所在的页，从而加快查询速度。</p>
-<p><strong>以对 <code>主键</code> 建立索引为例</strong></p>
-<p><strong>目录项的建立：</strong></p>
-<p>通过建立目录项的形式快速定位到记录所在页需要：</p>
-<ul>
-<li>下一数据页中用户记录的主键值需大于上一数据页中用户记录的主键值。</li>
-</ul>
-<p>在对页记录进行增删改操作时，如向已满的数据页中插入记录，需通过 <code>页分裂</code> （将当前页面分裂成两个，将本页中的一些记录移动至新创建的页中）等操作确保上述状态一直成立。</p>
-<ul>
-<li>给所有的页建立一个目录项</li>
-</ul>
-<p>每个目录项包括两个部分：1.页的用户记录中 <code>最小</code> 的主键值      2.页号</p>
-<p><strong>目录项的存储:</strong></p>
-<p><code>InnoDB</code> 存储引擎复用存储用户记录的数据页来存储目录项，通过记录头信息的 <code>record_type</code> 属性将 <code>目录项记录</code> 与 <code>用户记录</code> 区分开。</p>
-<p><code>record_type</code> 属性各取值含义：</p>
-<ul>
-<li><code>0</code> ：普通用户记录</li>
-<li><code>1</code> ：目录项记录</li>
-<li><code>2</code> ：最小记录</li>
-<li><code>3</code> ：最大记录</li>
-</ul>
-<p>为数据页建立目录项，并将目录项放入数据页中的样子：</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/B%2Btree3.png" alt></p>
-<p>页 <code>33</code>  存储更高级的目录项，页 <code>30</code> 、<code>32</code> 存储普通的<code>目录项</code> ,其余的数据页存储普通的用户记录，随着表中记录的增加目录的层级会逐渐增加。当根据主键值查找用户记录时，从上而下主要分为三步：</p>
-<ul>
-<li>确定<code>目录项记录</code>页</li>
-<li>通过<code>目录项记录</code>页确定用户记录真实所在的页。</li>
-<li>在真实存储用户记录的页中定位到具体的记录。</li>
-</ul>
-<p><code>目录项记录</code>与普通 <code>用户记录</code> 都使用同样的数据页存储，页的组成结构相同，都会为主键值生成 <code>页目录</code> ，从而在使用主键值查找时可使用二分法加快查询速度。 </p>
-<p><code>目录项记录</code> 与普通 <code>用户记录</code> 的区别</p>
-<ul>
-<li>目录项记录 <code>record_type</code> 值为 <code>1</code>，普通用户记录 <code>record_type</code> 值为<code>0</code></li>
-<li>目录项记录只有<code>主键值</code>、<code>页号</code>、如果是二级索引，还包括该索引所对应的列，用户记录由用户自定义，还包含<code>InnoDB</code> 添加的隐藏列。</li>
-<li>存储<code>目录项记录</code>的页中的主键值最小的<code>目录项记录</code>的<code>min_rec_mask</code>值为<code>1</code>，其余别的记录的<code>min_rec_mask</code>值都是<code>0</code>。</li>
-</ul>
-<h2 id="MyISAM索引"><a href="#MyISAM索引" class="headerlink" title="MyISAM索引"></a>MyISAM索引</h2><p><code>InnoDB</code> 存储引擎中，索引即数据，<code>聚簇索引</code>那棵B+树的叶子节点中包含了所有完整的用户记录。而 <code>MyISAM</code> 索引方案虽仍使用树形结构，但是将索引和数据分开进行存储。</p>
-<ul>
-<li><p>表中的记录按照记录的插入顺序单独存储在<code>数据文件</code> 中。该文件并不划分为若干个数据页，所有的数据都在存储在该文件中，可以通过行号而快速访问到一条记录。同时 <code>MyISAM</code> 也需要记录头信息存储额外的数据。</p>
-<p>记录使用<code>MyISAM</code>作为存储引擎在存储空间中的表示：</p>
-</li>
-</ul>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/B%2Btree2.png" alt></p>
-<ul>
-<li><code>索引</code> 信息另外存储到<code>索引文件</code>中。<code>MyISAM</code>会单独为表的主键创建一个索引，只不过在索引的叶子节点中存储的不是完整的用户记录，而是<code>主键值 + 行号</code>的组合。查找时需先通过 <code>索引</code> 找到相应的行号，再通过行号进行<code>回表</code> 操作找到相应的记录。<code>MyISAM</code> 中建立的所有索引都是二级索引。</li>
-<li>如果有需要的话，我们也可以对其它的列分别建立索引或者建立联合索引，原理和<code>InnoDB</code>中的索引差不多，不过在叶子节点处存储的是<code>相应的列 + 行号</code>。</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/10/18/Linux-view-space/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/10/18/Linux-view-space/" itemprop="url">Linux查看磁盘容量、文件大小</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-18T11:05:26+08:00">
-                2019-10-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="查看磁盘使用情况"><a href="#查看磁盘使用情况" class="headerlink" title="查看磁盘使用情况"></a>查看磁盘使用情况</h2><p><code>df</code> 命令用于查看 <code>Linux</code> 服务器的文件系统的磁盘占用情况，默认单位KB。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查询磁盘使用情况</span></span><br><span class="line"><span class="string">df</span> <span class="bullet">-h</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space0.png" alt></p>
-<p>执行结果各列含义：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">Filesystem</span>         <span class="string">磁盘分区</span></span><br><span class="line"><span class="string">Size</span>			   <span class="string">磁盘分区的大小</span></span><br><span class="line"><span class="string">Used</span>        	   <span class="string">已使用空间</span></span><br><span class="line"><span class="string">Avail</span>          	   <span class="string">可使用空间</span></span><br><span class="line"><span class="string">Use%</span>               <span class="string">已使用空间占百分比</span></span><br><span class="line"><span class="string">Mounted</span> <span class="string">on</span>         <span class="string">挂载点</span></span><br></pre></td></tr></table></figure>
-
-<p><code>df</code> 命令的参数使用说明：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span><span class="string">a或--all</span>                      <span class="string">包含全部的文件系统；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">h或--human-readable</span>           <span class="string">以可读性较高的方式来显示信息；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">H或--si</span>                       <span class="string">与-h参数相同，但在计算时是以1000</span> <span class="string">Bytes为换算单位而非1024</span> <span class="string">Bytes；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">i或--inodes</span>                   <span class="string">显示inode的信息；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">k或--kilobytes</span>                <span class="string">指定区块大小为1024字节；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">l或--local</span>                    <span class="string">仅显示本地端的文件系统；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">m或--megabytes</span>                <span class="string">指定区块大小为1048576字节；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">P或--portability</span>              <span class="string">使用POSIX的输出格式；</span></span><br><span class="line"><span class="bullet">-</span><span class="string">T或--print-type</span>               <span class="string">显示文件系统的类型；</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-no-sync</span>                      <span class="string">在取得磁盘使用信息前，不要执行sync指令，此为预设值；</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-sync</span>                         <span class="string">在取得磁盘使用信息前，先执行sync指令；</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-help</span>                         <span class="string">显示帮助；</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-version</span>                      <span class="string">显示版本信息。</span></span><br><span class="line"><span class="bullet">-</span><span class="string">t&lt;文件系统类型&gt;</span>                 <span class="string">仅显示指定文件系统类型的磁盘信息；</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-type=&lt;文件系统类型&gt;</span>         </span><br><span class="line"><span class="bullet">-</span><span class="string">x&lt;文件系统类型&gt;</span>                 <span class="string">不要显示指定文件系统类型的磁盘信息；</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-block-size=&lt;区块大小&gt;</span>          <span class="string">以指定的区块大小来显示区块数目；</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-exclude-type=&lt;文件系统类型&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="查看文件和目录大小"><a href="#查看文件和目录大小" class="headerlink" title="查看文件和目录大小"></a>查看文件和目录大小</h2><p><code>du</code> 命令用于查看文件和目录大小</p>
-<p>查看目录总大小，</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看/data目录的总大小</span></span><br><span class="line"><span class="comment">#直接执行</span></span><br><span class="line"><span class="string">du</span> <span class="bullet">-sh</span> <span class="string">/data</span></span><br><span class="line"><span class="comment">#先进入/data目录下，再进行查看</span></span><br><span class="line"><span class="string">cd</span> <span class="string">/data</span></span><br><span class="line"><span class="string">du</span> <span class="bullet">-sh</span></span><br></pre></td></tr></table></figure>
-
-<p>查看 <code>/data</code> 目录下各个子目录的大小，包括子目录的子目录，但不包含 <code>/data</code> 下文件</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">du</span> <span class="bullet">-h</span></span><br></pre></td></tr></table></figure>
-
-<p>如果要看 <code>/data</code> 目录下各个子目录的大小，包括子目录的子目录，且包含/data下文件，可以用以下命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">du -h *</span><br></pre></td></tr></table></figure>
-
-<p>查看 <code>/data</code> 目录下各个子目录的大小，不包括子目录的子目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">du -sh *</span><br></pre></td></tr></table></figure>
-
-<p>如果要看/data目录下各个子目录及子目录下文件的大小，需要使用-a参数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">du -ah</span><br></pre></td></tr></table></figure>
-
-<p><code>du</code> 命令参数使用说明</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">-a或-all                       输出所有文件的磁盘用量，不仅仅是目录</span><br><span class="line">-b或-bytes                     显示目录或文件大小时，以byte为单位。</span><br><span class="line">-c或--total                    除了显示个别目录或文件的大小外，同时也显示所有目录或文件的总和。</span><br><span class="line">-k或--kilobytes                以KB(1024bytes)为单位输出。</span><br><span class="line">-m或--megabytes                以MB为单位输出。</span><br><span class="line">-s或--summarize                仅显示总计，只列出最后加总的值。</span><br><span class="line">-h或--human-readable           以K，M，G为单位，提高信息的可读性。</span><br><span class="line">-x或--one-file-xystem          以一开始处理时的文件系统为准，若遇上其它不同的文件系统目录则略过。</span><br><span class="line">-L&lt;符号链接&gt;或                  显示选项中所指定符号链接的源文件大小。</span><br><span class="line">--dereference&lt;符号链接&gt; </span><br><span class="line">-S或--separate-dirs            显示个别目录的大小时，并不含其子目录的大小。</span><br><span class="line">-X&lt;文件&gt;或                      在&lt;文件&gt;指定目录或文件。</span><br><span class="line">--exclude-from=&lt;文件&gt; </span><br><span class="line">--exclude=&lt;目录或文件&gt; 略过指定的目录或文件。</span><br><span class="line">-D或--dereference-args 显示指定符号链接的源文件大小。</span><br><span class="line">-H或--si 与-h参数相同，但是K，M，G是以1000为换算单位。</span><br><span class="line">-l或--count-links 重复计算硬件链接的文件。</span><br></pre></td></tr></table></figure>
-
-<p>排序命令</p>
-<p><code>sort</code> 可以用于将文件内容排序并输出，也可将某些查询命令的执行结果排序后输出</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">du</span> <span class="bullet">-sxh</span> <span class="string">/dir/*</span> <span class="string">| sort -rh | head -5</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">du</span></span><br><span class="line"><span class="string">-s：仅显示总计</span></span><br><span class="line"><span class="string">-x：以一开始的文件系统为准，忽略其他不同文件系统的目录</span></span><br><span class="line"><span class="string">-h：以可读形式显示文件大小</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">sort</span></span><br><span class="line"><span class="string">-r：倒序排序</span></span><br><span class="line"><span class="string">-h：以可读数字进行比较</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">head</span></span><br><span class="line"><span class="string">-n：打印文本的前n行</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>问题现象</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">告警信息:Filesystem % Filesystem Space Used &gt; 90%  for 5 min.,当前值:90.06</span><br><span class="line">告警对象:data</span><br></pre></td></tr></table></figure>
-
-<p><strong>解决方法</strong></p>
-<p>告警显示 <code>/data</code> 下文件系统空间使用率大于90%持续5分钟，我们首先需要查找出是否有哪些大文件占用了过多的磁盘空间。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#查询磁盘使用情况</span><br><span class="line">df -h</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/view-space0.png" alt></p>
-<p>多次执行查找最大文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ du -sxh /data/* | sort -rh | head -5</span><br><span class="line">339G	/data/mysql</span><br><span class="line">243G	/data/backup</span><br><span class="line">4.0K	/data/backup.sh</span><br><span class="line"></span><br><span class="line">$ du -sxh /data/mysql/* | sort -rh | head -5</span><br><span class="line">267G	/data/mysql/cosmo_im_1004</span><br><span class="line">1.1G	/data/mysql/mysql-binlog.000944</span><br><span class="line">1.1G	/data/mysql/mysql-binlog.000943</span><br><span class="line">1.1G	/data/mysql/mysql-binlog.000942</span><br><span class="line">1.1G	/data/mysql/mysql-binlog.000941</span><br><span class="line"></span><br><span class="line">$ du -sxh /data/mysql/cosmo_im_1004/* | sort -rh | head -5</span><br><span class="line">231G	/data/mysql/cosmo_im_1004/bns_pm_pokayoke.ibd</span><br><span class="line">3.8G	/data/mysql/cosmo_im_1004/bns_pm_scanscehistory.ibd</span><br><span class="line">3.5G	/data/mysql/cosmo_im_1004/bns_pm_scanhistory_month.ibd</span><br><span class="line">3.4G	/data/mysql/cosmo_im_1004/bns_io_pm_pokayoke.ibd</span><br><span class="line">3.0G	/data/mysql/cosmo_im_1004/bns_pm_operation.ibd</span><br></pre></td></tr></table></figure>
-
-<p>最终，确定最大文件是 <code>/data/mysql/cosmo_im_1004/bns_pm_pokayoke.ibd</code></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><a class="page-number" href="/blog/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/blog/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/7/">7</a><a class="extend next" rel="next" href="/blog/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><a class="page-number" href="/blog/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/blog/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/8/">8</a><a class="extend next" rel="next" href="/blog/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1862,7 +1801,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">69</span>
+                  <span class="site-state-item-count">72</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1875,7 +1814,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/blog/tags/index.html">
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
