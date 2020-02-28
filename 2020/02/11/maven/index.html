@@ -79,22 +79,22 @@
 
 
 
-<meta name="description" content="简介​    开发中常需要依赖第三方的包，包和包之间存在依赖关系，版本间还有兼容性问题，有时需要将旧包升级或降级，当项目复杂到一定程度时包管理变得非常重要。 Maven 是当前最受欢迎的Java项目管理构建自动化综合工具，主要做了两件事：  统一开发规范与工具 统一管理 jar 包  安装与配置下载安装包官网下载安装包  配置环境变量 注：安装 Maven 前需确保已安装 JDK, 如果是 Mav">
+<meta name="description" content="简介​    开发中常需要依赖第三方的包，包和包之间存在依赖关系，版本间还有兼容性问题，有时需要将旧包升级或降级，当项目复杂到一定程度时包管理变得非常重要。 Maven 是当前最受欢迎的Java项目管理构建自动化综合工具，主要做了两件事：  统一开发规范与工具 统一管理 jar 包  安装与配置下载安装包官网下载安装包 配置环境变量注：安装 Maven 前需确保已安装 JDK, 如果是 Maven">
 <meta name="keywords" content="Java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Maven">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2020/02/11/maven/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="简介​    开发中常需要依赖第三方的包，包和包之间存在依赖关系，版本间还有兼容性问题，有时需要将旧包升级或降级，当项目复杂到一定程度时包管理变得非常重要。 Maven 是当前最受欢迎的Java项目管理构建自动化综合工具，主要做了两件事：  统一开发规范与工具 统一管理 jar 包  安装与配置下载安装包官网下载安装包  配置环境变量 注：安装 Maven 前需确保已安装 JDK, 如果是 Mav">
+<meta property="og:description" content="简介​    开发中常需要依赖第三方的包，包和包之间存在依赖关系，版本间还有兼容性问题，有时需要将旧包升级或降级，当项目复杂到一定程度时包管理变得非常重要。 Maven 是当前最受欢迎的Java项目管理构建自动化综合工具，主要做了两件事：  统一开发规范与工具 统一管理 jar 包  安装与配置下载安装包官网下载安装包 配置环境变量注：安装 Maven 前需确保已安装 JDK, 如果是 Maven">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Maven0.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Maven1.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Meven2.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Maven3.png">
-<meta property="og:updated_time" content="2020-02-11T07:23:35.709Z">
+<meta property="og:updated_time" content="2020-02-13T03:10:07.617Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Maven">
-<meta name="twitter:description" content="简介​    开发中常需要依赖第三方的包，包和包之间存在依赖关系，版本间还有兼容性问题，有时需要将旧包升级或降级，当项目复杂到一定程度时包管理变得非常重要。 Maven 是当前最受欢迎的Java项目管理构建自动化综合工具，主要做了两件事：  统一开发规范与工具 统一管理 jar 包  安装与配置下载安装包官网下载安装包  配置环境变量 注：安装 Maven 前需确保已安装 JDK, 如果是 Mav">
+<meta name="twitter:description" content="简介​    开发中常需要依赖第三方的包，包和包之间存在依赖关系，版本间还有兼容性问题，有时需要将旧包升级或降级，当项目复杂到一定程度时包管理变得非常重要。 Maven 是当前最受欢迎的Java项目管理构建自动化综合工具，主要做了两件事：  统一开发规范与工具 统一管理 jar 包  安装与配置下载安装包官网下载安装包 配置环境变量注：安装 Maven 前需确保已安装 JDK, 如果是 Maven">
 <meta name="twitter:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Maven0.png">
 
 
@@ -364,17 +364,13 @@
 <li>统一管理 <code>jar</code> 包</li>
 </ul>
 <h2 id="安装与配置"><a href="#安装与配置" class="headerlink" title="安装与配置"></a>安装与配置</h2><h3 id="下载安装包"><a href="#下载安装包" class="headerlink" title="下载安装包"></a>下载安装包</h3><p><a href="http://maven.apache.org/download.cgi" target="_blank" rel="noopener">官网下载安装包</a></p>
-<ul>
-<li><p>配置环境变量</p>
-<p>注：安装 <code>Maven</code> 前需确保已安装 <code>JDK</code>, 如果是 <code>Maven3</code> 则需 <code>JDK1.7</code> 以上</p>
+<h3 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h3><p>注：安装 <code>Maven</code> 前需确保已安装 <code>JDK</code>, 如果是 <code>Maven3</code> 则需 <code>JDK1.7</code> 以上</p>
 <p>1、解压压缩包</p>
 <p>2、配置系统变量</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">新建环境变量</span><br><span class="line">MAVEN_HOME：E:\apache-maven-3.5.4</span><br><span class="line">添加path环境变量</span><br><span class="line">%MAVEN_HOME%\bin</span><br></pre></td></tr></table></figure>
 
 <p>3、打开 <code>cmd</code> 输入 <code>mvn -version</code> 出现 <code>maven</code> 版本信息说明配置成功</p>
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Maven0.png" alt></p>
-</li>
-</ul>
 <h3 id="本地仓库配置"><a href="#本地仓库配置" class="headerlink" title="本地仓库配置"></a>本地仓库配置</h3><ul>
 <li>若不配置本地仓库，会在如下默认位置存放远程下载到的包</li>
 </ul>
@@ -384,8 +380,7 @@
 <li>将本地仓库位置配置到 <code>E:\javaKit\mavenRes</code></li>
 </ul>
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Meven2.png" alt></p>
-<p>中央仓库配置</p>
-<p>当构建一个Maven项目时，首先检查pom.xml文件以确定依赖包的下载位置，执行顺序如下</p>
+<h3 id="中央仓库配置"><a href="#中央仓库配置" class="headerlink" title="中央仓库配置"></a>中央仓库配置</h3><p>当构建一个Maven项目时，首先检查pom.xml文件以确定依赖包的下载位置，执行顺序如下</p>
 <ul>
 <li>从本地资源库中查找并获得依赖包，如果没有，执行第二步</li>
 <li>从 <code>Maven</code> 默认中央仓库中查找并获得依赖包（<a href="http://repo1.maven.org/maven2/），如果没有执行第3步" target="_blank" rel="noopener">http://repo1.maven.org/maven2/），如果没有执行第3步</a></li>
@@ -393,6 +388,14 @@
 </ul>
 <p>修改默认中央仓库地址</p>
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Maven3.png" alt></p>
+<p><a href="https://www.cnblogs.com/best/p/9676515.html" target="_blank" rel="noopener">学习资料：一小时学会Maven</a></p>
+<p>创建Maven项目</p>
+<p><strong>maven项目打包</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\IdeaProjects\learing-java&gt;mvn clean package</span><br></pre></td></tr></table></figure>
+
+<p><strong>maven项目运行</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\IdeaProjects\learing-java&gt;java -cp target/untitled-1.0-SNAPSHOT.jar org.example.App</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -432,6 +435,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2020/02/16/Pom-xml/" rel="prev" title="IDEA· jar包导入">
+                IDEA· jar包导入 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -508,7 +515,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">72</span>
+                  <span class="site-state-item-count">76</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -521,7 +528,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/blog/tags/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -554,7 +561,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装与配置"><span class="nav-number">2.</span> <span class="nav-text">安装与配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载安装包"><span class="nav-number">2.1.</span> <span class="nav-text">下载安装包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#本地仓库配置"><span class="nav-number">2.2.</span> <span class="nav-text">本地仓库配置</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装与配置"><span class="nav-number">2.</span> <span class="nav-text">安装与配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载安装包"><span class="nav-number">2.1.</span> <span class="nav-text">下载安装包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置环境变量"><span class="nav-number">2.2.</span> <span class="nav-text">配置环境变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#本地仓库配置"><span class="nav-number">2.3.</span> <span class="nav-text">本地仓库配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#中央仓库配置"><span class="nav-number">2.4.</span> <span class="nav-text">中央仓库配置</span></a></li></ol></li></ol></div>
             
 
           </div>

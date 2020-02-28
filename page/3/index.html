@@ -281,6 +281,823 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/29/MES-Data-archiving/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/11/29/MES-Data-archiving/" itemprop="url">MES数据归档</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-29T09:16:06+08:00">
+                2019-11-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="数据归档"><a href="#数据归档" class="headerlink" title="数据归档"></a>数据归档</h3><h4 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h4><table>
+<thead>
+<tr>
+<th>工厂编码</th>
+<th>工厂名</th>
+<th>数据库地址</th>
+<th>端口</th>
+<th>归档库</th>
+<th>月结结束时间</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1003</td>
+<td>中德滚筒</td>
+<td>10.180.129.24</td>
+<td>3306</td>
+<td>cosmo_im_1003</td>
+<td>2019-11-30 10:00</td>
+</tr>
+<tr>
+<td>1031</td>
+<td>重庆冰箱</td>
+<td>10.139.119.91</td>
+<td>3306</td>
+<td>cosmo_im_1031</td>
+<td>2019-11-30 12:00</td>
+</tr>
+<tr>
+<td>1028</td>
+<td>重庆波轮</td>
+<td>10.139.115.36</td>
+<td>3306</td>
+<td>cosmo_im_1028</td>
+<td>2019-11-30 09:00</td>
+</tr>
+<tr>
+<td>1004</td>
+<td>黄岛油烟机</td>
+<td>10.136.218.10</td>
+<td>3306</td>
+<td>cosmo_im_1004</td>
+<td>2019-11-30 08:00</td>
+</tr>
+<tr>
+<td>1033</td>
+<td>黄岛灶烤</td>
+<td>10.180.120.5</td>
+<td>3306</td>
+<td>cosmo_im_1033</td>
+<td>2019-11-30 08:00</td>
+</tr>
+<tr>
+<td>1027</td>
+<td>合肥滚筒</td>
+<td>10.142.216.8</td>
+<td>3306</td>
+<td>cosmo_im_1027</td>
+<td>2019-11-30 14:00</td>
+</tr>
+<tr>
+<td>1029</td>
+<td>重庆滚筒</td>
+<td>10.139.113.122</td>
+<td>3306</td>
+<td>cosmo_im_1029</td>
+<td>2019-11-30 12:00</td>
+</tr>
+</tbody></table>
+<h4 id="策略"><a href="#策略" class="headerlink" title="策略"></a>策略</h4><p>订单日期在10月1日之前，且订单状态已完成。</p>
+<table>
+<thead>
+<tr>
+<th>表</th>
+<th>说明</th>
+<th>关联字段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>base_production_order_t</td>
+<td>订单表</td>
+<td>Code</td>
+</tr>
+<tr>
+<td>bns_pm_operation</td>
+<td>条码表</td>
+<td>WorkUser_MOrderCode</td>
+</tr>
+<tr>
+<td>bns_pm_scanhistory_month</td>
+<td>扫描记录表</td>
+<td>Code</td>
+</tr>
+<tr>
+<td>bns_qm_processtest</td>
+<td>过程检验表</td>
+<td>Code</td>
+</tr>
+<tr>
+<td>bns_pm_prodprocess</td>
+<td>工位过站记录表</td>
+<td>Order_Code</td>
+</tr>
+<tr>
+<td>bns_pm_barcodecode</td>
+<td>物料绑定表</td>
+<td>….</td>
+</tr>
+</tbody></table>
+<h4 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h4><ul>
+<li><a href="https://mino-yn.github.io/blog/2019/09/06/Percona%20Toolkit/">安装 Percona Toolkit</a></li>
+<li>创建归档表</li>
+</ul>
+<p>数据归档表的表结构与原表一致，删除索引只保留主键。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 归档表的表结构与原表一致，命名统一采用原表名_archive的格式</span><br><span class="line">bns_pm_operation_archive</span><br><span class="line">bns_pm_scanhistory_month_archive</span><br><span class="line">bns_qm_processtest_archive</span><br><span class="line">bns_pm_prodprocess_archive</span><br><span class="line">bns_pm_barcodecode_archive</span><br><span class="line"></span><br><span class="line">#创建归档表与原表表结构一致</span><br><span class="line">create table xx_archive like xx;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>开始归档</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>工厂名</th>
+<th>数据库地址</th>
+<th>归档库</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>中德滚筒</td>
+<td>10.180.129.24</td>
+<td>cosmo_im_1003</td>
+</tr>
+<tr>
+<td>重庆冰箱</td>
+<td>10.139.119.91</td>
+<td>cosmo_im_1031</td>
+</tr>
+<tr>
+<td>重庆波轮</td>
+<td>10.139.115.36</td>
+<td>cosmo_im_1028</td>
+</tr>
+<tr>
+<td>黄岛油烟机</td>
+<td>10.136.218.10</td>
+<td>cosmo_im_1004</td>
+</tr>
+<tr>
+<td>黄岛灶烤</td>
+<td>10.180.120.5</td>
+<td>cosmo_im_1033</td>
+</tr>
+<tr>
+<td>合肥滚筒</td>
+<td>10.142.216.8</td>
+<td>cosmo_im_1027</td>
+</tr>
+<tr>
+<td>重庆滚筒</td>
+<td>10.139.113.122</td>
+<td>cosmo_im_1029</td>
+</tr>
+</tbody></table>
+<p>1、通过特权账号登录服务器，进入 <code>tmp</code> 目录下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /tmp</span><br></pre></td></tr></table></figure>
+
+<p>2、创建脚本文件 <code>MES_achiver.sh</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi MES_achiver.sh</span><br></pre></td></tr></table></figure>
+
+<p>3、打开文件后按键盘上的 <code>i</code> 转换到编辑模式（左下方显示 <code>-- INSERT --</code>）</p>
+<p>将以下脚本复制后粘贴进去。注意：修改数据库地址和归档库名。</p>
+<table>
+<thead>
+<tr>
+<th>工厂名</th>
+<th>数据库地址</th>
+<th>归档库</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>中德滚筒</td>
+<td>10.180.129.24</td>
+<td>cosmo_im_1003</td>
+</tr>
+<tr>
+<td>重庆冰箱</td>
+<td>10.139.119.91</td>
+<td>cosmo_im_1031</td>
+</tr>
+<tr>
+<td>重庆波轮</td>
+<td>10.139.115.36</td>
+<td>cosmo_im_1028</td>
+</tr>
+<tr>
+<td>黄岛油烟机</td>
+<td>10.136.218.10</td>
+<td>cosmo_im_1004</td>
+</tr>
+<tr>
+<td>黄岛灶烤</td>
+<td>10.180.120.5</td>
+<td>cosmo_im_1033</td>
+</tr>
+<tr>
+<td>合肥滚筒</td>
+<td>10.142.216.8</td>
+<td>cosmo_im_1027</td>
+</tr>
+<tr>
+<td>重庆滚筒</td>
+<td>10.139.113.122</td>
+<td>cosmo_im_1029</td>
+</tr>
+</tbody></table>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">#--------------------------------------------------------------------------------</span><br><span class="line">#脚本名称：  MES_achiver.sh</span><br><span class="line">#脚本功能：  MES工厂月结数据归档</span><br><span class="line">#归档策略：  归档订单日期是 2 个月以前，且订单状态是已完成</span><br><span class="line">#--------------------------------------------------------------------------------</span><br><span class="line"></span><br><span class="line"># bns_pm_barcodecode</span><br><span class="line"># 开始归档</span><br><span class="line">nohup pt-archiver --source h=XX,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=&apos;XX&apos;,t=bns_pm_barcodecode --charset=utf8 --dest  h=XX,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=&apos;XX&apos;,t=bns_pm_barcodecode_archive --where &quot;scan_time &lt; now()-interval 2 month&quot; --limit 1000 --commit-each --bulk-insert --no-version-check &gt; myout.file 2&gt;&amp;1 &amp;</span><br><span class="line"></span><br><span class="line"># bns_pm_operation</span><br><span class="line"># 开始归档</span><br><span class="line">nohup pt-archiver --source h=XX,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=&apos;XX&apos;,t=bns_pm_operation --charset=utf8 --dest  h=XX,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=&apos;XX&apos;,t=bns_pm_operation_archive --where &quot;WorkUser_MOrderCode IN (select Code from base_production_order_t where EST &lt; now()-interval 2 month and OrderStatus = &apos;2&apos;)&quot; --limit 1000 --commit-each --bulk-insert --no-version-check &gt; myout1.file 2&gt;&amp;1 &amp;</span><br><span class="line"></span><br><span class="line"># bns_pm_scanhistory_month</span><br><span class="line"># 开始归档</span><br><span class="line">nohup pt-archiver --source h=XX,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=&apos;XX&apos;,t=bns_pm_scanhistory_month --charset=utf8 --dest  h=XX,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=&apos;XX&apos;,t=bns_pm_scanhistory_month_archive --where &quot;Code IN (select Code from base_production_order_t where EST &lt; now()-interval 2 month and OrderStatus = &apos;2&apos;)&quot; --limit 1000 --commit-each --bulk-insert --no-version-check &gt; myout2.file 2&gt;&amp;1 &amp;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># bns_qm_processtest</span><br><span class="line"># 开始归档</span><br><span class="line">nohup pt-archiver --source h=XX,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=&apos;XX&apos;,t=bns_qm_processtest --charset=utf8 --dest  h=XX,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=&apos;XX&apos;,t=bns_qm_processtest_archive --where &quot;Code IN (select Code from base_production_order_t where EST &lt; now()-interval 2 month and OrderStatus = &apos;2&apos;)&quot; --limit 1000 --commit-each --bulk-insert --no-version-check &gt; myout3.file 2&gt;&amp;1 &amp;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># bns_pm_prodprocess</span><br><span class="line"># 开始归档</span><br><span class="line">nohup pt-archiver --source h=XX,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=&apos;XX&apos;,t=bns_pm_prodprocess --charset=utf8 --dest  h=XX,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=&apos;XX&apos;,t=bns_pm_prodprocess_archive --where &quot;Order_Code IN (select Code from base_production_order_t where EST &lt; now()-interval 2 month and OrderStatus = &apos;2&apos;)&quot; --limit 1000 --commit-each --bulk-insert --no-version-check &gt; myout4.file 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+
+<p>4、单击键盘的 <code>ESC</code> 然后输入<code>:wq!</code>  退出编辑文本编辑模式，并保存刚编辑的文本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#查看tmp目录下MES_achiver.sh目录是否存在</span><br><span class="line">ls</span><br><span class="line">#执行脚本文件</span><br><span class="line">bash MES_achiver.sh</span><br></pre></td></tr></table></figure>
+
+<p>实时查看进度，可以直接通过客户端查看，也可执行语句查看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#在MySQL中执行</span><br><span class="line">use information_schema;</span><br><span class="line">select table_name,table_rows from tables where TABLE_SCHEMA = &apos;xx&apos; and table_name=&apos;xx&apos;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="停止归档"><a href="#停止归档" class="headerlink" title="停止归档"></a>停止归档</h4><p>1、查看进程，在命令行执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep pt-archiver</span><br></pre></td></tr></table></figure>
+
+<p>2、查看其执行的语句确定要停止的进程的进程号后，杀掉进程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kill 进程号</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/MES.png" alt></p>
+<h4 id="设置自动归档"><a href="#设置自动归档" class="headerlink" title="设置自动归档"></a>设置自动归档</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"># 存储过程</span><br><span class="line">DELIMITER $$ </span><br><span class="line"></span><br><span class="line">DROP PROCEDURE IF EXISTS sp_archive$$ </span><br><span class="line">CREATE PROCEDURE sp_archive()</span><br><span class="line">BEGIN 	</span><br><span class="line">	INSERT INTO bns_pm_barcodecode_archive SELECT * FROM bns_pm_barcodecode WHERE </span><br><span class="line">	scan_time &lt; now() - interval 2 month;</span><br><span class="line">	DELETE FROM bns_pm_barcodecode WHERE scan_time &lt; now() - interval 2 month;</span><br><span class="line">	</span><br><span class="line">	INSERT INTO bns_pm_prodprocess_archive SELECT * FROM bns_pm_prodprocess WHERE </span><br><span class="line">    Order_Code IN (select Code from base_production_order_t where EST &lt; now()-interval 2     month and OrderStatus = &apos;2&apos;);</span><br><span class="line">    DELETE FROM bns_pm_prodprocess WHERE Order_Code IN (select Code from    base_production_order_t where EST &lt; now()-interval 2 month and OrderStatus = &apos;2&apos;);</span><br><span class="line">    </span><br><span class="line">    INSERT INTO bns_pm_operation_archive SELECT * FROM bns_pm_operation</span><br><span class="line">    WHERE WorkUser_MOrderCode IN (select Code from base_production_order_t where EST &lt; now()-interval 2 month and OrderStatus = &apos;2&apos;);</span><br><span class="line">    DELETE FROM bns_pm_operation WHERE WorkUser_MOrderCode IN (select Code from base_production_order_t where EST &lt; now()-interval 2 month and OrderStatus = &apos;2&apos;);</span><br><span class="line">    </span><br><span class="line">    INSERT INTO bns_pm_scanhistory_month_archive SELECT * FROM bns_pm_scanhistory_month</span><br><span class="line">    WHERE Code IN (select Code from base_production_order_t where EST &lt; now()-interval 2 month and OrderStatus = &apos;2&apos;);</span><br><span class="line">	DELETE FROM bns_pm_barcodecode WHERE Code IN (select Code from base_production_order_t where EST &lt; now()-interval 2 month and OrderStatus = &apos;2&apos;);</span><br><span class="line">	</span><br><span class="line">	INSERT INTO bns_qm_processtest_archive SELECT * FROM bns_qm_processtest</span><br><span class="line">    WHERE Code IN (select Code from base_production_order_t where EST &lt; now()-interval 2 month and OrderStatus = &apos;2&apos;);</span><br><span class="line">	DELETE FROM bns_qm_processtest WHERE Code IN (select Code from base_production_order_t where EST &lt; now()-interval 2 month and OrderStatus = &apos;2&apos;);</span><br><span class="line"></span><br><span class="line">END $$</span><br><span class="line"></span><br><span class="line">DELIMITER ;</span><br><span class="line"></span><br><span class="line"># 事件</span><br><span class="line">CREATE EVENT Event_Archive_Daily</span><br><span class="line">ON SCHEDULE EVERY 1 DAY STARTS &apos;2019-12-01 02:00:00&apos;</span><br><span class="line">ON COMPLETION PRESERVE</span><br><span class="line">ENABLE</span><br><span class="line">DO call sp_archive();</span><br></pre></td></tr></table></figure>
+
+<h4 id="10-138-232-85"><a href="#10-138-232-85" class="headerlink" title="10.138.232.85"></a>10.138.232.85</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#开始归档</span><br><span class="line">nohup pt-archiver --source h=10.138.232.85,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=&apos;csomo-barcode&apos;,t=base_barcode_info --charset=utf8 --dest h=10.138.232.85,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=&apos;csomo-barcode&apos;,t=base_barcode_info_archive --where &quot;barcode_request_id IN (SELECT id FROM base_barcode_request WHERE TYPE = 5 AND est &lt; &apos;2019-10-01 00:00:00&apos;)&quot; --limit 1000 --commit-each --bulk-insert --no-version-check &gt; myout5.file 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/15/mysql-live-session/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/11/15/mysql-live-session/" itemprop="url">MySQL实时会话状态</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-15T15:56:38+08:00">
+                2019-11-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看正在运行的线程，列出前100条</span></span><br><span class="line"><span class="string">show</span> <span class="string">processlist</span></span><br><span class="line"><span class="comment">#列出所有正在运行的线程</span></span><br><span class="line"><span class="string">show</span> <span class="string">full</span> <span class="string">processlist</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">mysql&gt;</span> <span class="string">show</span> <span class="string">processlist;</span></span><br><span class="line"><span class="string">+--------+---------+--------------------+--------------------+---------+------+----------+------------------+</span></span><br><span class="line"><span class="string">| Id     | User    | Host               | db                 | Command | Time | State    | Info             |</span></span><br><span class="line"><span class="string">+--------+---------+--------------------+--------------------+---------+------+----------+------------------+</span></span><br><span class="line"><span class="string">| 106125 | tdmsdev | 10.153.96.89:56808 | tdm                | Sleep   |  597 |          | NULL             |</span></span><br><span class="line"><span class="string">| 106134 | tdmsdev | 10.153.96.89:56827 | tdm                | Sleep   |  596 |          | NULL             |</span></span><br><span class="line"><span class="string">| 106178 | hdm     | 10.133.0.53:60606  | information_schema | Sleep   |    4 |          | NULL             |</span></span><br><span class="line"><span class="string">| 106179 | sre     | localhost          | NULL               | Query   |    0 | starting | show processlist |</span></span><br><span class="line"><span class="string">+--------+---------+--------------------+--------------------+---------+------+----------+------------------+</span></span><br><span class="line"><span class="string">4 rows in set (0.00 sec)</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Id</strong>：线程标识，<code>kill</code> 某线程时使用</li>
+<li><strong>User</strong>：显示当前用户，也就是执行 <code>SQL</code> 语句的用户</li>
+<li><strong>Host</strong>：显示执行 <code>SQL</code> 的 <code>IP</code> 和端口，可以用来追踪问题的来源</li>
+<li><strong>db</strong>：显示该线程连接的是哪个数据库</li>
+<li><strong>Command</strong>：显示当前执行的命令，一般：<code>Sleep</code> 休眠，<code>Query</code> 查询，<code>Connect</code> 连接，<code>Binlog Dump</code> 复制</li>
+<li><strong>Time</strong>：会话持续时间，单位（秒）</li>
+<li><strong>State</strong>：显示使用当前连接的状态，很重要列。请注意，<code>State</code> 只是语句执行中的某一个状态，以查询为例，需要经过 <code>copying to tmp table，sorting result，sending data</code> 等状态才算完成。</li>
+<li><strong>Info</strong>：显示执行的 <code>SQL</code> 语句，判断问题的重要依据。</li>
+</ul>
+<h3 id="State"><a href="#State" class="headerlink" title="State"></a>State</h3><ul>
+<li><p><strong>Sending data：</strong>正在处理SELECT查询的记录，同时正在把结果发送给客户端。</p>
+</li>
+<li><p><strong>Checking table：</strong>正在检查数据表（这是自动的）。</p>
+</li>
+<li><p><strong>Closing tables：</strong>正在将表中修改的数据刷新到磁盘中，同时正在关闭已经用完的表。这是一个很快的操作，如果不是这样的话，就应该确认磁盘空间是否已经满了或者磁盘是否正处于重负中。<br><strong>Connect Out：</strong>复制从服务器正在连接主服务器。</p>
+</li>
+<li><p><strong>Copying to tmp table on disk:</strong> 由于临时结果集大于<code>tmp_table_size</code>，正在将临时表从内存存储转为磁盘存储以此节省内存，大量线程处于该状态，可同时调大 <code>max_heap_table_size</code> 和 <code>tmp_table_size</code> 参数。</p>
+</li>
+<li><p><strong>Creating tmp table：</strong>正在创建临时表以存放部分查询结果。</p>
+</li>
+<li><p><strong>deleting from main table：</strong>服务器正在执行多表删除中的第一部分，刚删除第一个表。</p>
+</li>
+<li><p><strong>deleting from reference tables:</strong> 服务器正在执行多表删除中的第二部分，正在删除其他表的记</p>
+</li>
+<li><p><strong>Flushing tables:</strong> 正在执行FLUSH TABLES，等待其他线程关闭数据表。</p>
+</li>
+<li><p><strong>Killed:</strong> 发送了一个kill请求给某线程，那么这个线程将会检查kill标志位，同时会放弃下一个kill请求。MySQL会在每次的主循环中检查kill标志位，不过有些情况下该线程可能会过一小段才能死掉。如果该线程程被其他线程锁住了，那么kill请求会在锁释放时马上生效。</p>
+</li>
+<li><p><strong>Locked:</strong> 被其他查询锁住了。</p>
+</li>
+<li><p><strong>Sorting for group:</strong>  正在为GROUP BY做排序。</p>
+</li>
+<li><p><strong>Sorting for order:</strong> 正在为ORDER BY做排序。</p>
+</li>
+<li><p><strong>Opening tables:</strong> 这个过程应该会很快，除非受到其他因素的干扰。例如，在执ALTER TABLE或LOCK TABLE语句行完以前，数据表无法被其他线程打开。正尝试打开一个表。</p>
+</li>
+<li><p><strong>Removing duplicates:</strong> 正在执行一个SELECT DISTINCT方式的查询，但是MySQL无法在前一个阶段优化掉那些重复的记录。因此，MySQL需要再次去掉重复的记录，然后再把结果发送给客户端。</p>
+</li>
+<li><p><strong>Reopen table:</strong> 获得了对一个表的锁，但是必须在表结构修改之后才能获得这个锁。已经释放锁，关闭数据表，正尝试重新打开数据表。</p>
+</li>
+<li><p><strong>Repair by sorting:</strong> 修复指令正在排序以创建索引。</p>
+</li>
+<li><p><strong>Repair with keycache:</strong> 修复指令正在利用索引缓存一个一个地创建新索引。它会比Repair by sorting慢些。</p>
+</li>
+<li><p><strong>Searching rows for update：</strong> 正在讲符合条件的记录找出来以备更新。它必须在UPDATE要修改相关的记录之前就完成了。</p>
+</li>
+<li><p><strong>Sleeping：</strong> 正在等待客户端发送新请求.</p>
+</li>
+<li><p><strong>System lock：</strong> 正在等待取得一个外部的系统锁。如果当前没有运行多个mysqld服务器同时请求同一个表，那么可以通过增加–skip-external-locking参数来禁止外部系统锁。</p>
+</li>
+<li><p><strong>Upgrading lock：</strong> INSERT DELAYED正在尝试取得一个锁表以插入新记录。</p>
+</li>
+<li><p><strong>Updating:</strong> 正在搜索匹配的记录，并且修改它们。</p>
+</li>
+<li><p><strong>User Lock:</strong> 正在等待GET_LOCK()。</p>
+</li>
+<li><p>*<em>Waiting for tables flush: *</em>该线程得到通知，数据表结构已经被修改了，需要重新打开数据表以取得新的结构。然后，为了能的重新打开数据表，必须等到所有其他线程关闭这个表。以下几种情况下会产生这个通知：<code>FLUSH TABLES tbl_name</code>, <code>ALTER TABLE, RENAME TABLE, REPAIR TABLE</code>, <code>ANALYZE TABLE</code>,或<code>OPTIMIZE TABLE</code>。</p>
+</li>
+<li><p><strong>waiting for handler insert:</strong> INSERT DELAYED已经处理完了所有待处理的插入操作，正在等待新的请求。<br>大部分状态对应很快的操作，只要有一个线程保持同一个状态好几秒钟，那么可能是有问题发生了，需要检查一下。</p>
+</li>
+<li><p><strong>Writing to net</strong>：服务器正在将数据包写入网络。</p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/15/linux-service/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/11/15/linux-service/" itemprop="url">CentOS 6与CentOS 7启停服务</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-15T13:48:29+08:00">
+                2019-11-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>查看系统版本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lsb_release -a             #可列出所有版本信息</span><br><span class="line">cat /etc/redhat-release    #只适合Redhat系的Linux</span><br><span class="line">cat /etc/issue             #适用于所有的Linux发行版</span><br></pre></td></tr></table></figure>
+
+<h3 id="CentOS-6"><a href="#CentOS-6" class="headerlink" title="CentOS 6"></a>CentOS 6</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 设置服务自启动</span><br><span class="line">chkconfig --add mysqld          # 添加服务</span><br><span class="line">chkconfig mysqld on             # 开机自启服务</span><br><span class="line">chkconfig mysqld off            # 关闭开机自启</span><br><span class="line">chkconfig --list | grep mysqld  # 查看</span><br><span class="line"></span><br><span class="line"># 查看状态、启动、停止、重启</span><br><span class="line">service mysqld status/start/stop/restart</span><br></pre></td></tr></table></figure>
+
+<h3 id="CentOS-7"><a href="#CentOS-7" class="headerlink" title="CentOS 7"></a>CentOS 7</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable mysqld.service  # 开机自启服务</span><br><span class="line">systemctl disable mysqld.service # 关闭开机自启</span><br><span class="line"></span><br><span class="line"># 查看状态、启动、停止、重启</span><br><span class="line">systemctl status/start/stop/restart mysqld.service</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/14/MySQL-troubleshooting-step/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/11/14/MySQL-troubleshooting-step/" itemprop="url">MySQL故障排查</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-14T16:25:43+08:00">
+                2019-11-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h3><p>数据库连接不上</p>
+<p>业务查询慢，执行 <code>SQL</code> 操作没有反应</p>
+<h3 id="登录数据库"><a href="#登录数据库" class="headerlink" title="登录数据库"></a>登录数据库</h3><p>1）远程客户端是否能连接上数据库.</p>
+<ul>
+<li><p>查看会话连接数</p>
+</li>
+<li><p>查看线程状态</p>
+<p>检查是不是有线程阻塞，有没有锁（ <code>Locked</code> ）占用</p>
+<p><a href="https://huiraoo.github.io/blog/2019/11/15/mysql-live-session/" target="_blank" rel="noopener">线程状态</a></p>
+</li>
+</ul>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/troubleshooting1.png" alt></p>
+<p>2)  通过服务器登录数据库，查看 <code>mysqld</code> 进行是否存在</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">ps</span> <span class="bullet">-ef</span> <span class="string">| grep mysqld</span></span><br><span class="line"><span class="string">root      64511  64440  0 10:27 pts/2    00:00:00 grep --color=auto mysqld</span></span><br><span class="line"><span class="string">root      79355      1  0 Aug31 ?        00:00:00 /bin/sh /usr/local/mysql/bin/mysqld_safe --datadir=/data/mysql --pid-file=/data/mysql/mysql.pid</span></span><br><span class="line"><span class="string">mysql     79981  79355 99 Aug31 ?        2-01:38:14 /usr/local/mysql/bin/mysqld --basedir=/usr/local/mysql --datadir=/data/mysql --plugin-dir=/usr/local/mysql/lib/plugin --user=mysql --log-error=/data/mysql/error.log --pid-file=/data/mysql/mysql.pid --socket=/data/mysql/mysql.sock --port=3306</span></span><br></pre></td></tr></table></figure>
+
+<p>进程不存在，可能是服务器断电导致进行未自启动，启动 <code>mysql</code> 进程</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#使用 init.d</span></span><br><span class="line"><span class="string">$</span> <span class="string">/etc/init.d/mysqld</span> <span class="string">start</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#使用mysqld_safe</span></span><br><span class="line"><span class="string">$</span> <span class="string">mysqld_safe</span> <span class="bullet">--defaults-file=/etc/my.cnf</span> <span class="bullet">--user=mysql</span> <span class="string">&amp;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#使用service</span></span><br><span class="line"><span class="string">$</span> <span class="string">systemctl</span> <span class="string">start</span> <span class="string">mysqld</span></span><br><span class="line"><span class="string">$</span> <span class="string">service</span> <span class="string">mysql</span> <span class="string">start</span></span><br></pre></td></tr></table></figure>
+
+<p>3）登录 <code>MySQL</code> 查看线程状态，查看是否有锁占用，或者线程大量阻塞的情况。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -S /data/mysql/mysql.sock -usre -p&apos;sre@@p$i&apos;</span><br><span class="line">mysql&gt; show processlist;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>有锁占用或线程阻塞</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 删除正在执行锁表的线程</span></span><br><span class="line"><span class="string">kill</span> <span class="string">id;</span> </span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询出时间大于10的线程, 复制查询结果，批量执行</span></span><br><span class="line"><span class="string">select</span> <span class="string">concat('kill</span> <span class="string">', id, '</span><span class="string">;')</span> <span class="string">from</span> <span class="string">information_schema.processlist</span> <span class="string">where</span> <span class="string">time</span> <span class="string">&gt; 10;</span></span><br></pre></td></tr></table></figure>
+
+<p>快速杀掉大量会话连接</p>
+<p><code>kill.sh</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"># !/bin/sh</span><br><span class="line"></span><br><span class="line">#############################################################################</span><br><span class="line"># Kill all processlist According to status.</span><br><span class="line"># -h: 主机IP</span><br><span class="line"># -u: 用户名</span><br><span class="line"># -p: 密码</span><br><span class="line">#############################################################################</span><br><span class="line"></span><br><span class="line">host = &apos;&apos;</span><br><span class="line">user = &apos;&apos;</span><br><span class="line">pwd  = &apos;&apos;</span><br><span class="line">status = &apos;&apos;</span><br><span class="line"></span><br><span class="line">while :</span><br><span class="line">do</span><br><span class="line">  n=`mysqladmin processlist -h$host -u$user -p$pwd | grep -i $status | wc -l`</span><br><span class="line">  date=`date +%Y%m%d\[%H:%M:%S]`</span><br><span class="line">  echo $n</span><br><span class="line"></span><br><span class="line">  if [ &quot;$n&quot; -gt 10 ]</span><br><span class="line">  then</span><br><span class="line">  for i in `mysqladmin processlist -h$host -u$user -p$pwd | grep -i $status | awk &apos;&#123;print $2&#125;&apos;`</span><br><span class="line">  do</span><br><span class="line">  	mysqladmin processlist -h$host -u$user -p$pwd kill $i</span><br><span class="line">  done</span><br><span class="line"></span><br><span class="line">  echo &quot;$status is too many need killed it &quot; &gt;&gt; /tmp/kill.log</span><br><span class="line">  echo &quot;$date : $n&quot; &gt;&gt; /tmp/kill.log</span><br><span class="line">  fi</span><br><span class="line">  sleep 1</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+<p>4）查看磁盘空间</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[root@cosmoim-d-fslg ~]# df -h</span><br><span class="line">Filesystem                               Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/mapper/centos_cosmoim--fslg01-root  100G  8.5G   92G   9% /</span><br><span class="line">devtmpfs                                  16G     0   16G   0% /dev</span><br><span class="line">tmpfs                                     16G     0   16G   0% /dev/shm</span><br><span class="line">tmpfs                                     16G   65M   16G   1% /run</span><br><span class="line">tmpfs                                     16G     0   16G   0% /sys/fs/cgroup</span><br><span class="line">/dev/sda1                               1014M  190M  825M  19% /boot</span><br><span class="line">/dev/mapper/centos_cosmoim--fslg01-var    60G  286M   60G   1% /var</span><br><span class="line">/dev/mapper/centos_cosmoim--fslg01-tmp    60G   33M   60G   1% /tmp</span><br><span class="line">/dev/mapper/centos_cosmoim--fslg01-data  864G  114G  751G  14% /data</span><br><span class="line">tmpfs                                    3.2G     0  3.2G   0% /run/user/1001</span><br><span class="line">tmpfs                                    3.2G     0  3.2G   0% /run/user/0</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/14/Case5-replication/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1179,578 +1996,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/07/case4-backup-failed/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/11/07/case4-backup-failed/" itemprop="url">案例4 · MySQL备份失败</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-07T14:19:29+08:00">
-                2019-11-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p>供应商反应，xx系统备份作业卡住，请求协助查看数据库读写是否正常，如果是主从，查看主从是否同步。</p>
-<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><p>1、查看从库状态，发现从库的两个线程 <code>Slave_IO_Running</code> 和 <code>Slave_SQL_Running</code> 均为 yes 状态。即主从的复制链路是正常的，但是   <code>Seconds_Behind_Master</code> 在不断的增大，主从的复制延迟不断加大。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.0.51</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-binlog.000561</span><br><span class="line">          Read_Master_Log_Pos: 456352268</span><br><span class="line">               Relay_Log_File: relay-log.001401</span><br><span class="line">                Relay_Log_Pos: 241706776</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.000554</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB:</span><br><span class="line">          Replicate_Ignore_DB:</span><br><span class="line">           Replicate_Do_Table:</span><br><span class="line">       Replicate_Ignore_Table:</span><br><span class="line">      Replicate_Wild_Do_Table:</span><br><span class="line">  Replicate_Wild_Ignore_Table:</span><br><span class="line">                   Last_Errno: 0</span><br><span class="line">                   Last_Error:</span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 241706557</span><br><span class="line">              Relay_Log_Space: 8638198834</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File:</span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File:</span><br><span class="line">           Master_SSL_CA_Path:</span><br><span class="line">              Master_SSL_Cert:</span><br><span class="line">            Master_SSL_Cipher:</span><br><span class="line">               Master_SSL_Key:</span><br><span class="line">        Seconds_Behind_Master: 173350</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">                Last_IO_Errno: 0</span><br><span class="line">                Last_IO_Error:</span><br><span class="line">               Last_SQL_Errno: 0</span><br><span class="line">               Last_SQL_Error:</span><br><span class="line">  Replicate_Ignore_Server_Ids:</span><br><span class="line">             Master_Server_Id: 3306100</span><br><span class="line">                  Master_UUID: e1db90f2-fce1-11e8-86d2-005056b1d631</span><br><span class="line">             Master_Info_File: /data/mysql/master.info</span><br><span class="line">                    SQL_Delay: 0</span><br><span class="line">          SQL_Remaining_Delay: NULL</span><br><span class="line">      Slave_SQL_Running_State: Reading event from the relay log</span><br><span class="line">           Master_Retry_Count: 86400</span><br><span class="line">                  Master_Bind:</span><br><span class="line">      Last_IO_Error_Timestamp:</span><br><span class="line">     Last_SQL_Error_Timestamp:</span><br><span class="line">               Master_SSL_Crl:</span><br><span class="line">           Master_SSL_Crlpath:</span><br><span class="line">           Retrieved_Gtid_Set:</span><br><span class="line">            Executed_Gtid_Set:</span><br><span class="line">                Auto_Position: 0</span><br><span class="line">         Replicate_Rewrite_DB:</span><br><span class="line">                 Channel_Name:</span><br><span class="line">           Master_TLS_Version:</span><br></pre></td></tr></table></figure>
-
-<p>2、查看当前数据库线程状态无明显异常。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show processlist;</span><br><span class="line">+--------+-------------+-------------------+--------------------+-------------+---------+---------------------------------------------------------------+--------------------------------+</span><br><span class="line">| Id     | User        | Host              | db                 | Command     | Time    | State                                                         | Info                           |</span><br><span class="line">+--------+-------------+-------------------+--------------------+-------------+---------+---------------------------------------------------------------+--------------------------------+</span><br><span class="line">|     55 | system user |                   | NULL               | Connect     | 9392470 | Waiting for master to send event                              | NULL                           |</span><br><span class="line">|     56 | system user |                   | NULL               | Connect     |  173622 | Reading event from the relay log                              | NULL                           |</span><br><span class="line">| 378492 | repl        | 10.200.62.4:39052 | NULL               | Binlog Dump | 3624063 | Master has sent all binlog to slave; waiting for more updates | NULL                           |</span><br><span class="line">| 608750 | cvbak       | localhost         | NULL               | Query       |  127066 | Waiting for table flush                                       | FLUSH /*!40101 LOCAL */ TABLES |</span><br><span class="line">| 617031 | root        | localhost         | NULL               | Query       |       0 | starting                                                      | show processlist               |</span><br><span class="line">| 617070 | hdm         | 10.133.0.52:52864 | information_schema | Sleep       |       3 |                                                               | NULL                           |</span><br><span class="line">+--------+-------------+-------------------+--------------------+-------------+---------+---------------------------------------------------------------+--------------------------------+</span><br><span class="line">6 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
-
-<p>3、使用 <code>show open tables where In_use = 1;</code> 查看当前正在使用的表，发现有一张表一直处于  <code>In_use</code> 状态.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show open tables where In_use = 1;</span><br><span class="line">+----------+-----------------------+--------+-------------+</span><br><span class="line">| Database | Table                 | In_use | Name_locked |</span><br><span class="line">+----------+-----------------------+--------+-------------+</span><br><span class="line">| tdmetl   | odsgvs_tax_center_cpo |      1 |           0 |</span><br><span class="line">+----------+-----------------------+--------+-------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
-
-<p>4、根据从库状态的 <code>Relay_Log_Pos</code> 解析 <code>relay-log.001401</code>，发现在对表 <code>odsgvs_tax_center_cpo</code> 执行大量的 <code>Delete_rows</code> 操作。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@tdds-mysql-s mysql]# mysqlbinlog -vvv --base64-output=decode-rows  relay-log.001401 --start-position=241706776 | more</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=1*/;</span><br><span class="line">/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;</span><br><span class="line">DELIMITER /*!*/;</span><br><span class="line"># at 241706776</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241706622 CRC32 0x346b0eca      Anonymous_GTID  last_committed=61       sequence_number=62      rbr_only=yes</span><br><span class="line">/*!50718 SET TRANSACTION ISOLATION LEVEL READ COMMITTED*//*!*/;</span><br><span class="line">SET @@SESSION.GTID_NEXT= &apos;ANONYMOUS&apos;/*!*/;</span><br><span class="line"># at 241706841</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241706696 CRC32 0x9ba8f516      Query   thread_id=13233783      exec_time=0     error_code=0</span><br><span class="line">SET TIMESTAMP=1572656709/*!*/;</span><br><span class="line">SET @@session.pseudo_thread_id=13233783/*!*/;</span><br><span class="line">SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=0, @@session.unique_checks=1, @@session.autocommit=1/*!*/;</span><br><span class="line">SET @@session.sql_mode=1436549128/*!*/;</span><br><span class="line">SET @@session.auto_increment_increment=1, @@session.auto_increment_offset=1/*!*/;</span><br><span class="line">/*!\C utf8 *//*!*/;</span><br><span class="line">SET @@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=33/*!*/;</span><br><span class="line">SET @@session.lc_time_names=0/*!*/;</span><br><span class="line">SET @@session.collation_database=DEFAULT/*!*/;</span><br><span class="line">BEGIN</span><br><span class="line">/*!*/;</span><br><span class="line"># at 241706915</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241706842 CRC32 0xc6476297      Table_map: `tdmetl`.`odsgvs_tax_center_cpo` mapped to number 172320</span><br><span class="line"># at 241707061</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241715049 CRC32 0xca58a8bf      Delete_rows: table id 172320</span><br><span class="line"># at 241715268</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241723194 CRC32 0xa8aae720      Delete_rows: table id 172320</span><br><span class="line"># at 241723413</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241731146 CRC32 0xc0240197      Delete_rows: table id 172320</span><br><span class="line"># at 241731365</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241739309 CRC32 0xfeafd008      Delete_rows: table id 172320</span><br><span class="line"># at 241739528</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241747304 CRC32 0x3366f85c      Delete_rows: table id 172320</span><br><span class="line"># at 241747523</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241755470 CRC32 0x014525ce      Delete_rows: table id 172320</span><br><span class="line"># at 241755689</span><br></pre></td></tr></table></figure>
-
-<p>5、查看 <code>odsgvs_tax_center_cpo</code> 表结构，发现表的数据量很大，且无主键。确定原因：<strong>对无主键的表执行大量的删除或更新操作，导致从库卡住。</strong></p>
-<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>1、对表添加自增主键</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE &apos;xxxx&apos; ADD id int UNSIGNED primary key AUTO_INCREMENT;</span><br></pre></td></tr></table></figure>
-
-<p>2、大表删除使用 <code>truncate</code> 命令。</p>
-<p>具体解决步骤</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1、停止从库的slave</span><br><span class="line">2、给 odsgvs_tax_center_cpo 表添加主键</span><br><span class="line">4、重启slave</span><br><span class="line">5、使用 pt-slave-restart 在后台跳过错误</span><br><span class="line">nohup ./pt-slave-restart -usre -p&apos;sre@@p$i&apos;  &gt; myout.file 2&gt;&amp;1 &amp;</span><br><span class="line">6、稳定一段时间后查看其主从复制状态，以及主从库 odsgvs_tax_center_cpo 表的数据量是否一致。</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/06/shell-quick-start2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/11/06/shell-quick-start2/" itemprop="url">Shell快速入门（二）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-06T18:00:14+08:00">
-                2019-11-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="选择结构"><a href="#选择结构" class="headerlink" title="选择结构"></a>选择结构</h3><h4 id="IF-ELSE结构"><a href="#IF-ELSE结构" class="headerlink" title="IF ELSE结构"></a>IF ELSE结构</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">a=10</span><br><span class="line">b=10</span><br><span class="line">if [ $a = $b ]</span><br><span class="line">then</span><br><span class="line">  echo "a equals b"	# 输出这里</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
-
-<h4 id="IF-ELSE-IF-ELSE结构"><a href="#IF-ELSE-IF-ELSE结构" class="headerlink" title="IF ELSE-IF ELSE结构"></a>IF ELSE-IF ELSE结构</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">a=9 </span><br><span class="line">if [ $a = 10 ]</span><br><span class="line">then</span><br><span class="line">  echo "a == 10"</span><br><span class="line">elif [ $a -lt 10 ]</span><br><span class="line">then</span><br><span class="line">  echo "a &lt; 10"	# 输出这里</span><br><span class="line">else </span><br><span class="line">  echo "a &gt; 10"</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意：</strong> <code>if</code> 后面的表达式其左右两边都要留有一个空格，这是 Shell 语法，若无空格，执行Shell时会报错。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/06/shell-quick-start/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/11/06/shell-quick-start/" itemprop="url">Shell快速入门（一）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-06T15:48:21+08:00">
-                2019-11-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="文件结构"><a href="#文件结构" class="headerlink" title="文件结构"></a>文件结构</h3><p><code>shell</code> 脚本组成结构如下：</p>
-<ul>
-<li>文件标识：<code>#!/bin/bash</code> 中的<code>#!</code> 是一个特殊标记，标识该 <code>Shell</code> 脚本将使用 <code>/bin/bash</code> 这个Shell对文件内容进行解析。</li>
-<li>文件注释：对文件业务逻辑的注释</li>
-<li>Shell代码</li>
-</ul>
-<p><code>Shell</code> 脚本文件结构范例</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 备份数据库User表</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">######################################</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 连接指定数据数据库</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 全局变量:</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   BACKUP_DIR</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   ORACLE_SID</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 参数:</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   None</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 返回值:</span></span><br><span class="line"><span class="meta">#</span><span class="bash">   None</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">######################################</span></span></span><br><span class="line">connect()&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="打印字符串"><a href="#打印字符串" class="headerlink" title="打印字符串"></a>打印字符串</h3><p><code>echo</code> 适用于简单打印，<code>printf</code> 适用于统一缩进的复杂打印。</p>
-<h4 id="echo命令"><a href="#echo命令" class="headerlink" title="echo命令"></a><strong>echo命令</strong></h4><ul>
-<li>裸奔：无法输出 <code>;</code> </li>
-<li>单引号：无法在字符串中引用变量</li>
-<li>双引号：无法直接打印出特殊字符，需要将特殊字符进行转义。</li>
-</ul>
-<p>无任何变量和特殊字符：可裸奔；有特殊字符，无引用变量：单引号；既有特殊字符，又要引用变量：双引号。</p>
-<h4 id="printf命令"><a href="#printf命令" class="headerlink" title="printf命令"></a><strong>printf命令</strong></h4><p>可以对齐打印字符</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"> </span><br><span class="line">printf &quot;%-10s %-8s %-4s\n&quot; 姓名 年龄 存款K  </span><br><span class="line">printf &quot;%-10s %-8s %-4.2f\n&quot; 郭靖 30 52.20</span><br><span class="line">printf &quot;%-10s %-8s %-4.2f\n&quot; 杨过 25 26.32</span><br><span class="line">printf &quot;%-10s %-8s %-4.2f\n&quot; 郭芙 27 15.20</span><br><span class="line"></span><br><span class="line">#%-10s:左对齐，保留10位，是字符串</span><br><span class="line">#%-4.2f:左对齐，保留4位，小数点保留两位，是浮点型数字</span><br></pre></td></tr></table></figure>
-
-<p><code>%</code> :标识符  <code>-</code> :左对齐   <code>10</code> :保留10位长度  <code>s</code> ：字符串</p>
-<p><code>printf</code> 格式替代符：</p>
-<ul>
-<li>d: Decimal 十进制整数</li>
-<li>s: String 字符串</li>
-<li>c: Char 字符</li>
-<li>f: Float 浮点</li>
-</ul>
-<h3 id="数学运算"><a href="#数学运算" class="headerlink" title="数学运算"></a>数学运算</h3><h4 id="进行数学运算"><a href="#进行数学运算" class="headerlink" title="进行数学运算"></a>进行数学运算</h4><p>计算<code>10+5</code>并输出</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#方式1</span></span><br><span class="line"><span class="string">a=`expr</span> <span class="number">10</span> <span class="string">+</span> <span class="number">5</span><span class="string">`</span></span><br><span class="line"><span class="string">echo</span> <span class="string">$a</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#方式2</span></span><br><span class="line"><span class="string">let</span> <span class="string">a=10+5</span></span><br><span class="line"><span class="string">echo</span> <span class="string">$a</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#方式3，推荐</span></span><br><span class="line"><span class="string">((</span> <span class="string">a</span> <span class="string">=</span> <span class="number">10</span> <span class="string">+</span> <span class="number">5</span> <span class="string">))</span></span><br><span class="line"><span class="string">echo</span> <span class="string">$a</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="进行数值比较"><a href="#进行数值比较" class="headerlink" title="进行数值比较"></a>进行数值比较</h4><p>将需要运算的表达式放在两对括号中，Shell会计算出一个最终结果，<code>true</code> 或者 <code>false</code> 。括号中的表达式与<code>Java</code> 等高级语言的语法非常一致，可以使用 <code>&amp;&amp;</code> 或者 <code>||</code> 符号。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">a=15</span><br><span class="line">if (( a &gt; 10 &amp;&amp; a &lt; 20 ))</span><br><span class="line">then </span><br><span class="line">	echo "10 &lt; a &lt; 20"	</span><br><span class="line">else</span><br><span class="line">	echo "a &lt;= 10 or a &gt;= 20"</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
-
-<p>输出 <code>10 &lt; a &lt; 20</code> </p>
-<h3 id="字符串比较"><a href="#字符串比较" class="headerlink" title="字符串比较"></a>字符串比较</h3><p><code>Shell</code> 有专门的6个操作符进行字符串的比较：</p>
-<ul>
-<li><code>=</code> ：检测两个字符串是否相等，相等返回 <code>true</code></li>
-<li><code>!=</code> ：检测两个字符串是否相等，不相等返回 <code>true</code></li>
-<li><code>-z</code> ：检测字符串长度是否为0，为0返回 <code>true</code></li>
-<li><code>-n</code>：检测字符串长度是否为0，不为0返回 <code>true</code></li>
-<li><code>str</code> :检测字符串长度是否为空，不为空返回 <code>true</code></li>
-</ul>
-<p><strong>操作符左右两边都要加空格，否则会报语法错误</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line">a="abc"</span><br><span class="line">b="efg"</span><br><span class="line"><span class="meta">#</span><span class="bash"> 字符串是否相等</span></span><br><span class="line">if [ $a = $b ]</span><br><span class="line">then</span><br><span class="line">   echo "$a = $b : a 等于 b"</span><br><span class="line">else</span><br><span class="line">   echo "$a = $b: a 不等于 b"</span><br><span class="line">fi</span><br><span class="line">if [ $a != $b ]</span><br><span class="line">then</span><br><span class="line">   echo "$a != $b : a 不等于 b"</span><br><span class="line">else</span><br><span class="line">   echo "$a != $b: a 等于 b"</span><br><span class="line">fi</span><br><span class="line"><span class="meta">#</span><span class="bash"> 字符串长度是否为0</span></span><br><span class="line">if [ -z $a ]</span><br><span class="line">then</span><br><span class="line">   echo "-z $a : 字符串长度为 0"</span><br><span class="line">else</span><br><span class="line">   echo "-z $a : 字符串长度不为 0"</span><br><span class="line">fi</span><br><span class="line">if [ -n "$a" ]</span><br><span class="line">then</span><br><span class="line">   echo "-n $a : 字符串长度不为 0"</span><br><span class="line">else</span><br><span class="line">   echo "-n $a : 字符串长度为 0"</span><br><span class="line">fi</span><br><span class="line"><span class="meta">#</span><span class="bash"> 字符串是否为空</span></span><br><span class="line">if [ $a ]</span><br><span class="line">then</span><br><span class="line">   echo "$a : 字符串不为空"</span><br><span class="line">else</span><br><span class="line">   echo "$a : 字符串为空"</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/10/25/B-tree-index-use/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/10/25/B-tree-index-use/" itemprop="url">B+树索引的使用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-25T17:09:47+08:00">
-                2019-10-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ul>
-<li><code>B+</code>树索引在空间和时间上都有代价，所以不能随便乱建索引。</li>
-<li><code>B+</code>树索引适用于下边这些情况：<ul>
-<li>全值匹配</li>
-<li>匹配左边的列</li>
-<li>匹配范围值</li>
-<li>精确匹配某一列并范围匹配另外一列</li>
-<li>用于排序</li>
-<li>用于分组</li>
-</ul>
-</li>
-<li>在使用索引时需要注意下边这些事项：<ul>
-<li>只为用于搜索、排序或分组的列创建索引</li>
-<li>为列的基数大的列创建索引</li>
-<li>索引列的类型尽量小</li>
-<li>可以只对字符串值的前缀建立索引</li>
-<li>只有索引列在比较表达式中单独出现才可以适用索引</li>
-<li>为了尽可能少的让<code>聚簇索引</code>发生页面分裂和记录移位的情况，建议让主键拥有<code>AUTO_INCREMENT</code>属性。</li>
-<li>定位并删除表中的重复和冗余索引</li>
-<li>尽量使用<code>覆盖索引</code>进行查询，避免<code>回表</code>带来的性能损耗。</li>
-</ul>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1801,7 +2046,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">72</span>
+                  <span class="site-state-item-count">76</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1814,7 +2059,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/blog/tags/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
