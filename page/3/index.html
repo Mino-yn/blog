@@ -281,6 +281,448 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/06/MySQL-Explain1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/12/06/MySQL-Explain1/" itemprop="url">Explain(上)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-06T14:26:14+08:00">
+                2019-12-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>使用 <code>EXPLAIN</code> 语句可以得到经过 <code>MySQL</code> 查询优化器优化后生成的执行计划，本章目的就是明白使用<code>EXPLAIN</code> 语句所得到的各个输出项的作用。</p>
+<p><code>EXPLAIN</code> 语句输出各列的大体作用：</p>
+<table>
+<thead>
+<tr>
+<th align="center">列名</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>id</code></td>
+<td align="left">在一个大的查询语句中每个<code>SELECT</code>关键字都对应一个唯一的<code>id</code></td>
+</tr>
+<tr>
+<td align="center"><code>select_type</code></td>
+<td align="left"><code>SELECT</code>关键字对应的那个查询的类型</td>
+</tr>
+<tr>
+<td align="center"><code>table</code></td>
+<td align="left">表名</td>
+</tr>
+<tr>
+<td align="center"><code>partitions</code></td>
+<td align="left">匹配的分区信息</td>
+</tr>
+<tr>
+<td align="center"><code>type</code></td>
+<td align="left">针对单表的访问方法</td>
+</tr>
+<tr>
+<td align="center"><code>possible_keys</code></td>
+<td align="left">可能用到的索引</td>
+</tr>
+<tr>
+<td align="center"><code>key</code></td>
+<td align="left">实际上使用的索引</td>
+</tr>
+<tr>
+<td align="center"><code>key_len</code></td>
+<td align="left">实际使用到的索引长度</td>
+</tr>
+<tr>
+<td align="center"><code>ref</code></td>
+<td align="left">当使用索引列等值查询时，与索引列进行等值匹配的对象信息</td>
+</tr>
+<tr>
+<td align="center"><code>rows</code></td>
+<td align="left">预估的需要读取的记录条数</td>
+</tr>
+<tr>
+<td align="center"><code>filtered</code></td>
+<td align="left">某个表经过搜索条件过滤后剩余记录条数的百分比</td>
+</tr>
+<tr>
+<td align="center"><code>Extra</code></td>
+<td align="left">一些额外的信息</td>
+</tr>
+</tbody></table>
+<h2 id="执行计划输出中各列详解"><a href="#执行计划输出中各列详解" class="headerlink" title="执行计划输出中各列详解"></a>执行计划输出中各列详解</h2><h3 id="table"><a href="#table" class="headerlink" title="table"></a><strong>table</strong></h3><p><code>EXPLAIN</code> 语句输出的每条记录都对应着某个单表的访问方法，该条记录的 <code>table</code> 列代表该表表名。</p>
+<h3 id="id"><a href="#id" class="headerlink" title="id"></a><strong>id</strong></h3><p>当查询中包含 <code>子查询</code> 或包含 <code>UNION</code> 语句时一条查询语句可能会出现多个 <code>SELECT</code> 关键字。 查询语句中每出现一个 <code>SELECT</code> 关键字，便分配一个唯一的 <code>id</code> 值。 </p>
+<p>可以通过查看执行计划中的 <code>id</code> ，知道查询优化器是否对涉及子查询的查询语句进行重写，转换成连接查询。</p>
+<p>连接查询的执行计划中，每个表对应一条记录，这些记录的 <code>id</code> 列的值相同，出现在前面的表示驱动表，出现在后面的表示被驱动表。</p>
+<h3 id="select-type"><a href="#select-type" class="headerlink" title="select_type"></a><strong>select_type</strong></h3><p>一条大的查询语句中可以包含若干个 <code>SELECT</code> 关键字，每个 <code>SELECT</code> 关键字都代表一个小的查询语句有一个 <code>select_type</code> 属性。 <code>select_type</code> 属性代表了小查询在大查询中扮演的角色。 </p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SIMPLE</td>
+<td>查询语句中不包含UNION或子查询的查询</td>
+</tr>
+<tr>
+<td>PRIMARY</td>
+<td>包含UNION、UNION ALL或子查询的大查询的最左边SELECT</td>
+</tr>
+<tr>
+<td>UNION</td>
+<td>包含UNION、UNION ALL的大查询中除最左边小查询外的查询</td>
+</tr>
+<tr>
+<td>SUBQUERY</td>
+<td>子查询中第一个SELECT代表的查询（前提：1、子查询不能转为相应的semi-join形式   2、子查询是<strong>不相关子查询</strong>   3、优化器采用将子查询物化的形式执行该子查询）</td>
+</tr>
+<tr>
+<td>DEPENDENT SUBQUERY</td>
+<td>子查询中第一个SELECT代表的查询（前提：1、子查询不能转为相应的semi-join形式  2、子查询是<strong>相关子查询</strong>  ）</td>
+</tr>
+<tr>
+<td>DEPENDENT UNION</td>
+<td>包含UNION或UNION ALL的大查询中除最左边小查询外的其他小查询（前提：各小查询依赖于外部查询）</td>
+</tr>
+<tr>
+<td>DERIVED</td>
+<td>采用物化的方式执行的包含派生表的查询，该派生表对应的子查询的<code>select_type</code> 为 <code>DERIVED</code></td>
+</tr>
+<tr>
+<td>MATERIALIZED</td>
+<td>查询优化器执行包含子查询的语句时，选择将子查询物化后与外层查询进行连接查询时，该子查询对应的 <code>select_type</code> 属性为 <code>MATERIALIZED</code>.</td>
+</tr>
+</tbody></table>
+<h3 id="type"><a href="#type" class="headerlink" title="type"></a><strong>type</strong></h3><p><code>type</code> 表明了 <code>MySQL</code> 对某个表执行查询时的访问方法。</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>system</td>
+<td>表中仅有一条记录，且使用的存储引擎的统计数据是精准的，如:MyISAM、Memory</td>
+</tr>
+<tr>
+<td>const</td>
+<td>根据主键或唯一二级索引列与常数进行等值匹配时</td>
+</tr>
+<tr>
+<td>eq_ref</td>
+<td>连接查询时，被驱动表通过主键或唯一二级索引列等值匹配的方式进行访问，对该被驱动表的访问方法为<code>eq_ref</code></td>
+</tr>
+<tr>
+<td>ref</td>
+<td>通过普通二级索引列与常量进行等值匹配查询某表</td>
+</tr>
+<tr>
+<td>fulltext</td>
+<td>全文索引</td>
+</tr>
+<tr>
+<td>ref_or_null</td>
+<td>对普通二级索引进行等值匹配查询，且该索引列的值可以为NULL、对该表的访问方法<strong>可能</strong>为<code>ref_or_null</code></td>
+</tr>
+<tr>
+<td>index_merge</td>
+<td>使用<strong>索引合并</strong>的方式执行对表的查询</td>
+</tr>
+<tr>
+<td>unique_subquery</td>
+<td>包含<code>IN</code>子查询的语句，优化器将 <code>IN</code> 子查询转换为<code>EXISTS</code> 子查询。且子查询可使用主键进行等值匹配。</td>
+</tr>
+<tr>
+<td>index_subquery</td>
+<td>与<code>unique_subquery</code> 类似，但访问子查询中的表时使用的是普通索引</td>
+</tr>
+<tr>
+<td>range</td>
+<td>使用索引获取某些范围区间的记录，可能使用到 <code>range</code> 访问方法</td>
+</tr>
+<tr>
+<td>index</td>
+<td>可以使用索引覆盖，但需扫描全部索引记录</td>
+</tr>
+<tr>
+<td>ALL</td>
+<td>全表扫描</td>
+</tr>
+</tbody></table>
+<h3 id="possible-keys和key"><a href="#possible-keys和key" class="headerlink" title="possible_keys和key"></a><strong>possible_keys和key</strong></h3><p><code>possible_keys</code>：某个查询语句中，对某个表执行单表查询时可能用到的索引。</p>
+<p><code>key</code>：实际使用到的索引。</p>
+<h3 id="key-len"><a href="#key-len" class="headerlink" title="key_len"></a><strong>key_len</strong></h3><p><code>key_len</code> : 优化器决定使用某个索引执行查询时，该索引记录的最大长度，由三部分组成。</p>
+<ul>
+<li>固定长度类型的索引列，实际占用的存储空间的最大长度就是该固定值。指定字符集的变长类型的索引列，如某个索引列的类型是<code>VARCHAR(100)</code>，使用的字符集是<code>utf8</code>，那么该列实际占用的最大存储空间就是<code>100 × 3 = 300</code>个字节。</li>
+<li>索引列可存储 <code>NULL</code> 值，<code>key_len</code> 比不可存储 <code>NULL</code> 值多一个字节。</li>
+<li>变长字段：2个字节的空间存储变长列实际长度。</li>
+</ul>
+<h3 id="ref"><a href="#ref" class="headerlink" title="ref"></a><strong>ref</strong></h3><p>使用索引列等值匹配的条件执行查询时，<strong>ref</strong> 列展示与索引列进行等值匹配的是什么。</p>
+<p>常数：<code>const</code>             某个列：<code>库名.表名.列名</code>         函数：<code>func</code></p>
+<h3 id="rows"><a href="#rows" class="headerlink" title="rows"></a><strong>rows</strong></h3><ul>
+<li><p>全表扫描：预计需要扫描的行数</p>
+</li>
+<li><p>使用索引：预计需要扫描的索引记录行数</p>
+</li>
+</ul>
+<h3 id="filtered"><a href="#filtered" class="headerlink" title="filtered"></a><strong>filtered</strong></h3><p><code>MySQL</code> 在计算驱动扇出表采用的策略</p>
+<ul>
+<li>全表扫描：估计出满足搜索条件的记录有多少条。</li>
+<li>使用索引：估计出满足除使用到对应索引的搜索条件外其他搜索条件的记录有多少条。</li>
+</ul>
+<p>更关注连接查询中驱动表对应的执行计划记录的 <code>filtered</code> 值，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; EXPLAIN SELECT * FROM s1 INNER JOIN s2 ON s1.key1 = s2.key1 WHERE s1.common_field = &apos;a&apos;;</span><br><span class="line">+----+-------------+-------+------------+------+---------------+----------+---------+-------------------+------+----------+-------------+</span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key      | key_len | ref               | rows | filtered | Extra       |</span><br><span class="line">+----+-------------+-------+------------+------+---------------+----------+---------+-------------------+------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | s1    | NULL       | ALL  | idx_key1      | NULL     | NULL    | NULL              | 9688 |    10.00 | Using where |</span><br><span class="line">|  1 | SIMPLE      | s2    | NULL       | ref  | idx_key1      | idx_key1 | 303     | xiaohaizi.s1.key1 |    1 |   100.00 | NULL        |</span><br><span class="line">+----+-------------+-------+------------+------+---------------+----------+---------+-------------------+------+----------+-------------+</span><br><span class="line">2 rows in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>执行计划显示 <code>s1</code> :驱动表  <code>s2</code> :被驱动表。 <code>s1</code> 扇出值为：<code>9688*10.00% = 968.8</code> 说明需要对被驱动表执行约 <code>968</code> 次查询。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/04/linux-glibc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/12/04/linux-glibc/" itemprop="url">Linux · glibc 升级</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-04T16:20:41+08:00">
+                2019-12-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p>查看阿里云 <code>HDM</code> 中的数据库实例，发现很多处于异常状态，查看处于异常状态的 <code>DBgateway</code> 发现其版本信息一直显示由 <code>1.9.11</code> 正在升级至 <code>1.9.12</code>。分析可能由于依赖库版本过低导致。</p>
+<p>注意：一般情况下不要随意升级。</p>
+<h2 id="报错信息"><a href="#报错信息" class="headerlink" title="报错信息"></a>报错信息</h2><p>安装软件经常会遇到如下报错：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/lib64/libc.so.6: version `GLIBC_2.14&apos; not found</span><br></pre></td></tr></table></figure>
+
+<p>出现这种报错的原因是，使用高级的命令安装了软件，但是本机还是使用的是低级的依赖库，因此会出现报错。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ strings /lib64/libc.so.6 | grep GLIBC</span><br><span class="line">GLIBC_2.2.5</span><br><span class="line">GLIBC_2.2.6</span><br><span class="line">GLIBC_2.3</span><br><span class="line">GLIBC_2.3.2</span><br><span class="line">GLIBC_2.3.3</span><br><span class="line">GLIBC_2.3.4</span><br><span class="line">GLIBC_2.4</span><br><span class="line">GLIBC_2.5</span><br><span class="line">GLIBC_2.6</span><br><span class="line">GLIBC_2.7</span><br><span class="line">GLIBC_2.8</span><br><span class="line">GLIBC_2.9</span><br><span class="line">GLIBC_2.10</span><br><span class="line">GLIBC_2.11</span><br><span class="line">GLIBC_2.12</span><br><span class="line">GLIBC_PRIVATE</span><br></pre></td></tr></table></figure>
+
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><ul>
+<li>将 CentOS 6 升级到 <code>glibc 2.15</code> 版本</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/glibc-2.15.tar.gz</span><br><span class="line">wget https://ftp.gnu.org/gnu/glibc/glibc-2.15.tar.gz</span><br><span class="line">tar -zxvf glibc-2.15.tar.gz</span><br><span class="line">cd glibc-2.15</span><br><span class="line">mkdir build</span><br><span class="line">cd build</span><br><span class="line">../configure --prefix=/usr --disable-profile --enable-add-ons --with-headers=/usr/include --with-binutils=/usr/bin</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+
+<p>报错：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#configure: error: no acceptable C compiler found in $PATH  缺少gcc</span><br><span class="line">yum install gcc</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>验证是否升级成功</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ strings /lib64/libc.so.6 | grep GLIBC</span><br><span class="line">GLIBC_2.2.5</span><br><span class="line">GLIBC_2.2.6</span><br><span class="line">GLIBC_2.3</span><br><span class="line">GLIBC_2.3.2</span><br><span class="line">GLIBC_2.3.3</span><br><span class="line">GLIBC_2.3.4</span><br><span class="line">GLIBC_2.4</span><br><span class="line">GLIBC_2.5</span><br><span class="line">GLIBC_2.6</span><br><span class="line">GLIBC_2.7</span><br><span class="line">GLIBC_2.8</span><br><span class="line">GLIBC_2.9</span><br><span class="line">GLIBC_2.10</span><br><span class="line">GLIBC_2.11</span><br><span class="line">GLIBC_2.12</span><br><span class="line">GLIBC_2.13</span><br><span class="line">GLIBC_2.14</span><br><span class="line">GLIBC_2.15</span><br><span class="line">GLIBC_PRIVATE</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/29/MES-Data-archiving/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1644,358 +2086,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/09/Statistics-database-size/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/11/09/Statistics-database-size/" itemprop="url">定时统计数据库大小</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-09T15:16:54+08:00">
-                2019-11-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>背景</strong></p>
-<p>常有工单要求提供项目数据库的周增量及月增量，但HDM监控只能看到近一周数据库大小变化。为解决这一问题，需编写脚本自动查询数据库数据总量到指定表中。</p>
-<p><strong>系统</strong>：供应链、HMQM、</p>
-<p><strong>数据库实例</strong>：<code>10.200.62.4:3307</code></p>
-<p>库名 : <code>reportdb</code></p>
-<p>表名：<code>total_data</code></p>
-<p><strong>执行时间</strong>：周日、每月第一天</p>
-<p><code>totaldata.sh</code></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> /bin/bash</span><br><span class="line"><span class="meta">#</span> 定时统计数据库大小</span><br><span class="line">EXEC_DATE=`date +%Y-%m-%d`</span><br><span class="line">FILE_DIR=`dirname $0`</span><br><span class="line">FILE_NAME=`basename $0 .sh`</span><br><span class="line">USER="sre"</span><br><span class="line">PASSWORD='sre@@p$i'</span><br><span class="line"></span><br><span class="line">sed '/^#.*\|^$/d' $&#123;FILE_DIR&#125;/$&#123;FILE_NAME&#125;.def &gt;$&#123;FILE_DIR&#125;/$&#123;FILE_NAME&#125;.tmp</span><br><span class="line">for i in `cat $&#123;FILE_DIR&#125;/$&#123;FILE_NAME&#125;.tmp`</span><br><span class="line">do</span><br><span class="line">DEF_DATA_TMP="`echo $&#123;i&#125; |sed s/\ //g`" #去空格,得到一行数据</span><br><span class="line"><span class="meta">#</span>得到数据库的项目名、ip、端口</span><br><span class="line">PROJECT=`echo $&#123;i&#125; | cut -d "," -f1 | tr "[A-Z]" "[a-z]"`</span><br><span class="line">IP=`echo $&#123;i&#125; | cut -d "," -f2 | tr "[A-Z]" "[a-z]"`</span><br><span class="line">PORT=`echo $&#123;i&#125; | cut -d "," -f3 | tr "[A-Z]" "[a-z]"`</span><br><span class="line">echo "$&#123;IP&#125;:$&#123;PORT&#125;   $&#123;PROJECT&#125;"</span><br><span class="line"></span><br><span class="line">total=`mysql -u $&#123;USER&#125; -p"$&#123;PASSWORD&#125;" -h $&#123;IP&#125; -P$&#123;PORT&#125;   -e "select concat(round(sum((data_length + index_length)/1024/1024/1024),2),'GB') as data from information_schema.tables;"`&gt;&gt; myout.file 2&gt;&amp;1</span><br><span class="line">totaldata="`echo $&#123;total##*a&#125; |sed s/\ //g`"</span><br><span class="line">mysql -u $&#123;USER&#125; -p"$&#123;PASSWORD&#125;"  -S/data/mysql3307/mysql.sock -e "INSERT INTO reportdb.total_data (project,ip,date,total_data) VALUES('$&#123;PROJECT&#125;','$&#123;IP&#125;:$&#123;PORT&#125;','$&#123;EXEC_DATE&#125;','$&#123;totaldata&#125;')" &gt;&gt; myout.file 2&gt;&amp;1</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#下载地址</span><br><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/totaldata.sh</span><br></pre></td></tr></table></figure>
-
-<p><code>totaldata.def</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">#依次填写项目简称、IP、端口号</span><br><span class="line">HMQM-M,10.138.22.217,3100</span><br><span class="line">HMQM-S,10.138.22.218,3100</span><br><span class="line">HMQM-T,10.138.22.192,3306</span><br><span class="line">HDY-M,10.135.22.70,3306</span><br><span class="line">HDY-S,10.135.22.71,3306</span><br><span class="line">HDY-M,10.138.41.225,3306</span><br><span class="line">HDY-S,10.138.41.226,3306</span><br><span class="line">DZSP-M,10.138.22.10,3306</span><br><span class="line">DZSP-S,10.138.22.11,3306</span><br><span class="line">GMDC-M,10.138.228.127,3306</span><br><span class="line">GMDC-S,10.138.228.128,3306</span><br><span class="line">HLMP-M,10.138.86.40,3306</span><br><span class="line">HLMP-S,10.138.93.34,3306</span><br><span class="line">HDYBC-M,10.138.23.212,3100</span><br><span class="line">HDYBC-S,10.138.23.169,3100</span><br><span class="line">DBS-M,10.133.7.18,3306</span><br><span class="line">DBS-S,10.133.7.19,3306</span><br><span class="line">CPLM-M,10.138.98.218,3306</span><br><span class="line">CPLM-S,10.138.98.219,3306</span><br><span class="line">COSMOWMS-M,10.138.42.94,3306</span><br><span class="line">COSMOWMS-M,10.138.98.20,3306</span><br><span class="line">COSMOWMS-S,10.138.98.21,3306</span><br><span class="line">COSMOWMS-M,10.138.228.40,3306</span><br><span class="line">COSMOWMS-S,10.138.228.41,3306</span><br><span class="line">COSMOWMS-M,10.138.228.43,3306</span><br><span class="line">COSMOWMS-S,10.138.228.164,3306</span><br><span class="line">COSMOWMS-M,10.138.228.165,3306</span><br><span class="line">COSMOWMS-S,10.138.228.166,3306</span><br><span class="line">COSMOWMS-S,10.138.232.164,3306</span><br><span class="line">COSMOWMS-M,10.133.7.31,3306</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#下载地址</span><br><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/totaldata.def</span><br></pre></td></tr></table></figure>
-
-<p><strong>定时任务</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># crontab -e</span><br><span class="line">0      0     *       *       0      sh /tmp/test/totaldata.sh full</span><br><span class="line">0      0     1       *       *      sh /tmp/test/totaldata.sh full</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/08/HeidiSQL-import-DATA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/11/08/HeidiSQL-import-DATA/" itemprop="url">本地数据库迁移至RDS</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-08T11:01:02+08:00">
-                2019-11-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="使用-HeidiSQL-工具"><a href="#使用-HeidiSQL-工具" class="headerlink" title="使用 HeidiSQL 工具"></a>使用 <code>HeidiSQL</code> 工具</h2><p>有时需要将本地服务器数据库中的数据迁移至云数据库RDS，可以借助 <code>HeidiSQL</code> 工具进行，达到事半功倍的效果。</p>
-<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><h4 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h4><p>1、<code>HeidiSQL</code> 对数据的导入导出功能是借助 <code>mysqldump</code> 实现的，所以在整个迁移过程过程中数据库需<strong>停库</strong>。</p>
-<p>2、 为要进行迁移的 RDS 数据库创建高权限账号 <code>rds</code> 用于导入数据。</p>
-<h4 id="导出数据"><a href="#导出数据" class="headerlink" title="导出数据"></a>导出数据</h4><p>1、选择要导出的数据库或数据表，单击鼠标右键，选择导出数据脚本。</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data.png" alt></p>
-<p>2、根据实际情况选择合适的 <code>输出</code> 和 <code>数据</code> 参数，对要进行导出的数据库或数据表的内容进行选择导出。</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data3.png" alt></p>
-<p><strong>云数据库中无数据</strong> 的情况进行迁移</p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>配置</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>数据库</td>
-<td>删除、创建</td>
-</tr>
-<tr>
-<td>表</td>
-<td>删除、创建</td>
-</tr>
-<tr>
-<td>数据</td>
-<td>插入</td>
-</tr>
-<tr>
-<td>输出</td>
-<td>单个.sql文件</td>
-</tr>
-</tbody></table>
-<p><strong>数据</strong> 选项中的各项参数：</p>
-<ul>
-<li>无数据：不导出数据，只导出表结构</li>
-<li>删除+插入（清空现有数据）：清空数据表内容并插入导出的新内容</li>
-<li>插入：只插入新内容</li>
-<li>插入忽略：插入数据忽略掉错误内容</li>
-<li>替换已存在数据</li>
-</ul>
-<p><strong>输出</strong> 选项中各项参数：</p>
-<ul>
-<li>单个 <code>.sql</code> 文件：导出一个SQL文件</li>
-<li>目录-数据库子目录中每个对象一个文件：每个表一个单独的文件，存放到特定的文件夹中</li>
-<li>剪切板：导出到剪切板</li>
-<li>数据库：导入到另一个数据库中</li>
-<li>服务器，导入到另一个服务器中</li>
-</ul>
-<p>勾选数据库和表中的 <code>删除</code>、<code>创建</code>选项，则生成的SQL语句中含有删除和创建数据库或数据表的语句，通常勾选起来。</p>
-<h4 id="导入数据"><a href="#导入数据" class="headerlink" title="导入数据"></a>导入数据</h4><p>如果选择输出到数据库或服务器则无需单独进行数据导入工作，如果有导出的为SQL文件，则还需要对数据进行导入工作。</p>
-<p>1、单击文件，选择运行SQL文件</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data4.png" alt></p>
-<p>2、选择要执行的 sql 脚本，点击打开，数据导入成功。</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data5.png" alt></p>
-<h2 id="使用-mysqldump-在服务器操作"><a href="#使用-mysqldump-在服务器操作" class="headerlink" title="使用 mysqldump 在服务器操作"></a>使用 <code>mysqldump</code> 在服务器操作</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>使用 <code>HeidiSQL</code> 工具进行导入时，有时会提示需要 <code>Super</code> 权限。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Access denied; you need (at least one of) the SUPER privilege(s) for this operation</span><br></pre></td></tr></table></figure>
-
-<p>此时可借助 <code>mysqldump</code> 工具进行操作</p>
-<p><strong>错误出现场景</strong></p>
-<ul>
-<li>在创建 存储过程、函数、触发器、事件、视图的时候出现这个错误。</li>
-<li>从本地数据库导出 <code>SQL</code>，在 <code>RDS</code> 上应用该 <code>SQL</code> 的时候出现该错误。</li>
-<li>从 <code>RDS</code>  数据库实例中进行逻辑备份，导入到 <code>RDS</code> 或本地数据库中。</li>
-</ul>
-<p><strong>错误出现原因</strong></p>
-<ul>
-<li>导入<code>RDS MySQL</code> 实例：<code>SQL</code>  语句中含有需要 <code>Supper</code> 权限才可以执行的语句，而 <code>RDS MySQL</code>不提供 <code>Super</code>  权限，因此需要去除这类语句。</li>
-<li>本地 <code>MySQL</code> 实例没有启用 <code>GTID</code>。</li>
-</ul>
-<h3 id="操作步骤-1"><a href="#操作步骤-1" class="headerlink" title="操作步骤"></a>操作步骤</h3><ul>
-<li>使用 <code>mysqldump</code> 只导出本地数据库中的数据和表结构到<code>RDS</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">导出数据</span><br><span class="line">/usr/local/mysql/bin/mysqldump  --single-transaction -S/data/mysql/mysql@3307/mysql.sock -usre  -p&apos;sre@@p$i&apos; shin_survey &gt;shin_survey.sql</span><br><span class="line"></span><br><span class="line">如果本地数据库所在服务器无法连接至RDS，可将备份文件传输至10.133.0.53</span><br><span class="line">scp shin_survey.sql root@10.133.0.53:/tmp</span><br><span class="line"></span><br><span class="line">还原数据至RDS</span><br><span class="line">mysql -h rm-m5eh7vm829l4n623o.mysql.rds.aliyuncs.com -P3306 -u rds -p&apos;Changeme_123&apos; shin_survey &lt; shin_survey.sql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>使用 <code>mysqldump</code> 单独导出存储过程、函数</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">只导出存储过程和函数(不导出结构和数据)</span><br><span class="line">/usr/local/mysql/bin/mysqldump -R -ndt  -S/data/mysql/mysql@3307/mysql.sock -usre  -p&apos;sre@@p$i&apos; shin_survey &gt;shin_survey1.sql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>检查导出的 <code>SQL</code> 去除类似如下子句</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DEFINER=`root`@`%`</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>修改完毕后，通过下面的语句检查是否合乎要求。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">egrep -in &quot;definer|set @@&quot; shin_survey1.sql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>还原存储过程和函数至数据库</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">如果本地数据库所在服务器无法连接至RDS，可将备份文件传输至10.133.0.53</span><br><span class="line">scp shin_survey1.sql root@10.133.0.53:/tmp</span><br><span class="line"></span><br><span class="line">还原存储过程和函数至数据库</span><br><span class="line">mysql -h rm-m5eh7vm829l4n623o.mysql.rds.aliyuncs.com -P3306 -u rds -p&apos;Changeme_123&apos; shin_survey &lt; shin_survey1.sql</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2046,7 +2136,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">76</span>
+                  <span class="site-state-item-count">78</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2059,7 +2149,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/blog/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="MySQL,">
 
 
 
@@ -79,14 +79,18 @@
 
 
 
+<meta name="description" content="准备工作   本地数据库 说明    项目名称 海贝积分商城   机房位置 北京亦庄机房   本地数据库 10.159.33.219   主从 从库   数据量 127 GB   版本 MariaDB 10.1.18      阿里云ECS 说明    主机 10.162.177.68   自建MySQL MariaDB 10.1.19   用户名 root   密码 74kv6PQF$wVtlk">
+<meta name="keywords" content="MySQL">
 <meta property="og:type" content="article">
-<meta property="og:title" content="mysql-migration-to-cloud">
+<meta property="og:title" content="MySQL · 海贝商城迁移上云">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2020/02/28/mysql-migration-to-cloud/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
+<meta property="og:description" content="准备工作   本地数据库 说明    项目名称 海贝积分商城   机房位置 北京亦庄机房   本地数据库 10.159.33.219   主从 从库   数据量 127 GB   版本 MariaDB 10.1.18      阿里云ECS 说明    主机 10.162.177.68   自建MySQL MariaDB 10.1.19   用户名 root   密码 74kv6PQF$wVtlk">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-02-28T02:07:44.917Z">
+<meta property="og:updated_time" content="2020-03-02T01:02:07.501Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="mysql-migration-to-cloud">
+<meta name="twitter:title" content="MySQL · 海贝商城迁移上云">
+<meta name="twitter:description" content="准备工作   本地数据库 说明    项目名称 海贝积分商城   机房位置 北京亦庄机房   本地数据库 10.159.33.219   主从 从库   数据量 127 GB   版本 MariaDB 10.1.18      阿里云ECS 说明    主机 10.162.177.68   自建MySQL MariaDB 10.1.19   用户名 root   密码 74kv6PQF$wVtlk">
 
 
 
@@ -122,7 +126,7 @@
 
 
 
-  <title>mysql-migration-to-cloud | Mino's blog</title>
+  <title>MySQL · 海贝商城迁移上云 | Mino's blog</title>
   
 
 
@@ -298,7 +302,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">mysql-migration-to-cloud</h1>
+          <h1 class="post-title" itemprop="name headline">MySQL · 海贝商城迁移上云</h1>
         
 
         <div class="post-meta">
@@ -348,7 +352,118 @@
       
 
       
-        
+        <h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><table>
+<thead>
+<tr>
+<th>本地数据库</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>项目名称</td>
+<td>海贝积分商城</td>
+</tr>
+<tr>
+<td>机房位置</td>
+<td>北京亦庄机房</td>
+</tr>
+<tr>
+<td>本地数据库</td>
+<td>10.159.33.219</td>
+</tr>
+<tr>
+<td>主从</td>
+<td>从库</td>
+</tr>
+<tr>
+<td>数据量</td>
+<td>127 GB</td>
+</tr>
+<tr>
+<td>版本</td>
+<td>MariaDB 10.1.18</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>阿里云ECS</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主机</td>
+<td>10.162.177.68</td>
+</tr>
+<tr>
+<td>自建MySQL</td>
+<td>MariaDB 10.1.19</td>
+</tr>
+<tr>
+<td>用户名</td>
+<td>root</td>
+</tr>
+<tr>
+<td>密码</td>
+<td>74kv6PQF$wVtlkU^</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>阿里云RDS</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>测试实例</td>
+<td>rm-2zey293xldeni7k48.mysql.rds.aliyuncs.com</td>
+</tr>
+<tr>
+<td>版本</td>
+<td>MySQL 5.6</td>
+</tr>
+<tr>
+<td>生产实例</td>
+<td>rm-2zem962y8x2rlm74v.mysql.rds.aliyuncs.com</td>
+</tr>
+<tr>
+<td>版本</td>
+<td>MySQL 5.6</td>
+</tr>
+<tr>
+<td>用户名</td>
+<td>haibei</td>
+</tr>
+</tbody></table>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">注意：</span><br><span class="line">1、无ECS登录权限，找云管理王伟成添加堡垒机权限</span><br></pre></td></tr></table></figure>
+
+<h3 id="迁移方案"><a href="#迁移方案" class="headerlink" title="迁移方案"></a>迁移方案</h3><p>本地 <code>IDC</code> 数据库  -&gt;   <code>ECS</code> 自建数据库 -&gt;阿里云 <code>RDS</code></p>
+<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>耗时</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>全备</td>
+<td>——</td>
+</tr>
+<tr>
+<td>传输</td>
+<td>——</td>
+</tr>
+<tr>
+<td>恢复</td>
+<td>——</td>
+</tr>
+<tr>
+<td>DTS迁移</td>
+<td>2 h 15 min</td>
+</tr>
+</tbody></table>
+
       
     </div>
     
@@ -362,6 +477,12 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/MySQL/" rel="tag"># MySQL</a>
+          
+        </div>
       
 
       
@@ -436,8 +557,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -452,7 +582,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">76</span>
+                  <span class="site-state-item-count">78</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -465,7 +595,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/blog/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -488,6 +618,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#准备工作"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#迁移方案"><span class="nav-number">2.</span> <span class="nav-text">迁移方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作"><span class="nav-number">3.</span> <span class="nav-text">操作</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

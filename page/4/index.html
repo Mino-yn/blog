@@ -281,6 +281,358 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/09/Statistics-database-size/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/11/09/Statistics-database-size/" itemprop="url">定时统计数据库大小</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-09T15:16:54+08:00">
+                2019-11-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>背景</strong></p>
+<p>常有工单要求提供项目数据库的周增量及月增量，但HDM监控只能看到近一周数据库大小变化。为解决这一问题，需编写脚本自动查询数据库数据总量到指定表中。</p>
+<p><strong>系统</strong>：供应链、HMQM、</p>
+<p><strong>数据库实例</strong>：<code>10.200.62.4:3307</code></p>
+<p>库名 : <code>reportdb</code></p>
+<p>表名：<code>total_data</code></p>
+<p><strong>执行时间</strong>：周日、每月第一天</p>
+<p><code>totaldata.sh</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> /bin/bash</span><br><span class="line"><span class="meta">#</span> 定时统计数据库大小</span><br><span class="line">EXEC_DATE=`date +%Y-%m-%d`</span><br><span class="line">FILE_DIR=`dirname $0`</span><br><span class="line">FILE_NAME=`basename $0 .sh`</span><br><span class="line">USER="sre"</span><br><span class="line">PASSWORD='sre@@p$i'</span><br><span class="line"></span><br><span class="line">sed '/^#.*\|^$/d' $&#123;FILE_DIR&#125;/$&#123;FILE_NAME&#125;.def &gt;$&#123;FILE_DIR&#125;/$&#123;FILE_NAME&#125;.tmp</span><br><span class="line">for i in `cat $&#123;FILE_DIR&#125;/$&#123;FILE_NAME&#125;.tmp`</span><br><span class="line">do</span><br><span class="line">DEF_DATA_TMP="`echo $&#123;i&#125; |sed s/\ //g`" #去空格,得到一行数据</span><br><span class="line"><span class="meta">#</span>得到数据库的项目名、ip、端口</span><br><span class="line">PROJECT=`echo $&#123;i&#125; | cut -d "," -f1 | tr "[A-Z]" "[a-z]"`</span><br><span class="line">IP=`echo $&#123;i&#125; | cut -d "," -f2 | tr "[A-Z]" "[a-z]"`</span><br><span class="line">PORT=`echo $&#123;i&#125; | cut -d "," -f3 | tr "[A-Z]" "[a-z]"`</span><br><span class="line">echo "$&#123;IP&#125;:$&#123;PORT&#125;   $&#123;PROJECT&#125;"</span><br><span class="line"></span><br><span class="line">total=`mysql -u $&#123;USER&#125; -p"$&#123;PASSWORD&#125;" -h $&#123;IP&#125; -P$&#123;PORT&#125;   -e "select concat(round(sum((data_length + index_length)/1024/1024/1024),2),'GB') as data from information_schema.tables;"`&gt;&gt; myout.file 2&gt;&amp;1</span><br><span class="line">totaldata="`echo $&#123;total##*a&#125; |sed s/\ //g`"</span><br><span class="line">mysql -u $&#123;USER&#125; -p"$&#123;PASSWORD&#125;"  -S/data/mysql3307/mysql.sock -e "INSERT INTO reportdb.total_data (project,ip,date,total_data) VALUES('$&#123;PROJECT&#125;','$&#123;IP&#125;:$&#123;PORT&#125;','$&#123;EXEC_DATE&#125;','$&#123;totaldata&#125;')" &gt;&gt; myout.file 2&gt;&amp;1</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#下载地址</span><br><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/totaldata.sh</span><br></pre></td></tr></table></figure>
+
+<p><code>totaldata.def</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">#依次填写项目简称、IP、端口号</span><br><span class="line">HMQM-M,10.138.22.217,3100</span><br><span class="line">HMQM-S,10.138.22.218,3100</span><br><span class="line">HMQM-T,10.138.22.192,3306</span><br><span class="line">HDY-M,10.135.22.70,3306</span><br><span class="line">HDY-S,10.135.22.71,3306</span><br><span class="line">HDY-M,10.138.41.225,3306</span><br><span class="line">HDY-S,10.138.41.226,3306</span><br><span class="line">DZSP-M,10.138.22.10,3306</span><br><span class="line">DZSP-S,10.138.22.11,3306</span><br><span class="line">GMDC-M,10.138.228.127,3306</span><br><span class="line">GMDC-S,10.138.228.128,3306</span><br><span class="line">HLMP-M,10.138.86.40,3306</span><br><span class="line">HLMP-S,10.138.93.34,3306</span><br><span class="line">HDYBC-M,10.138.23.212,3100</span><br><span class="line">HDYBC-S,10.138.23.169,3100</span><br><span class="line">DBS-M,10.133.7.18,3306</span><br><span class="line">DBS-S,10.133.7.19,3306</span><br><span class="line">CPLM-M,10.138.98.218,3306</span><br><span class="line">CPLM-S,10.138.98.219,3306</span><br><span class="line">COSMOWMS-M,10.138.42.94,3306</span><br><span class="line">COSMOWMS-M,10.138.98.20,3306</span><br><span class="line">COSMOWMS-S,10.138.98.21,3306</span><br><span class="line">COSMOWMS-M,10.138.228.40,3306</span><br><span class="line">COSMOWMS-S,10.138.228.41,3306</span><br><span class="line">COSMOWMS-M,10.138.228.43,3306</span><br><span class="line">COSMOWMS-S,10.138.228.164,3306</span><br><span class="line">COSMOWMS-M,10.138.228.165,3306</span><br><span class="line">COSMOWMS-S,10.138.228.166,3306</span><br><span class="line">COSMOWMS-S,10.138.232.164,3306</span><br><span class="line">COSMOWMS-M,10.133.7.31,3306</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#下载地址</span><br><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/totaldata.def</span><br></pre></td></tr></table></figure>
+
+<p><strong>定时任务</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># crontab -e</span><br><span class="line">0      0     *       *       0      sh /tmp/test/totaldata.sh full</span><br><span class="line">0      0     1       *       *      sh /tmp/test/totaldata.sh full</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/08/HeidiSQL-import-DATA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/11/08/HeidiSQL-import-DATA/" itemprop="url">本地数据库迁移至RDS</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-08T11:01:02+08:00">
+                2019-11-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="使用-HeidiSQL-工具"><a href="#使用-HeidiSQL-工具" class="headerlink" title="使用 HeidiSQL 工具"></a>使用 <code>HeidiSQL</code> 工具</h2><p>有时需要将本地服务器数据库中的数据迁移至云数据库RDS，可以借助 <code>HeidiSQL</code> 工具进行，达到事半功倍的效果。</p>
+<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><h4 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h4><p>1、<code>HeidiSQL</code> 对数据的导入导出功能是借助 <code>mysqldump</code> 实现的，所以在整个迁移过程过程中数据库需<strong>停库</strong>。</p>
+<p>2、 为要进行迁移的 RDS 数据库创建高权限账号 <code>rds</code> 用于导入数据。</p>
+<h4 id="导出数据"><a href="#导出数据" class="headerlink" title="导出数据"></a>导出数据</h4><p>1、选择要导出的数据库或数据表，单击鼠标右键，选择导出数据脚本。</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data.png" alt></p>
+<p>2、根据实际情况选择合适的 <code>输出</code> 和 <code>数据</code> 参数，对要进行导出的数据库或数据表的内容进行选择导出。</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data3.png" alt></p>
+<p><strong>云数据库中无数据</strong> 的情况进行迁移</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>配置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据库</td>
+<td>删除、创建</td>
+</tr>
+<tr>
+<td>表</td>
+<td>删除、创建</td>
+</tr>
+<tr>
+<td>数据</td>
+<td>插入</td>
+</tr>
+<tr>
+<td>输出</td>
+<td>单个.sql文件</td>
+</tr>
+</tbody></table>
+<p><strong>数据</strong> 选项中的各项参数：</p>
+<ul>
+<li>无数据：不导出数据，只导出表结构</li>
+<li>删除+插入（清空现有数据）：清空数据表内容并插入导出的新内容</li>
+<li>插入：只插入新内容</li>
+<li>插入忽略：插入数据忽略掉错误内容</li>
+<li>替换已存在数据</li>
+</ul>
+<p><strong>输出</strong> 选项中各项参数：</p>
+<ul>
+<li>单个 <code>.sql</code> 文件：导出一个SQL文件</li>
+<li>目录-数据库子目录中每个对象一个文件：每个表一个单独的文件，存放到特定的文件夹中</li>
+<li>剪切板：导出到剪切板</li>
+<li>数据库：导入到另一个数据库中</li>
+<li>服务器，导入到另一个服务器中</li>
+</ul>
+<p>勾选数据库和表中的 <code>删除</code>、<code>创建</code>选项，则生成的SQL语句中含有删除和创建数据库或数据表的语句，通常勾选起来。</p>
+<h4 id="导入数据"><a href="#导入数据" class="headerlink" title="导入数据"></a>导入数据</h4><p>如果选择输出到数据库或服务器则无需单独进行数据导入工作，如果有导出的为SQL文件，则还需要对数据进行导入工作。</p>
+<p>1、单击文件，选择运行SQL文件</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data4.png" alt></p>
+<p>2、选择要执行的 sql 脚本，点击打开，数据导入成功。</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HeidiSQL-import-Data5.png" alt></p>
+<h2 id="使用-mysqldump-在服务器操作"><a href="#使用-mysqldump-在服务器操作" class="headerlink" title="使用 mysqldump 在服务器操作"></a>使用 <code>mysqldump</code> 在服务器操作</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>使用 <code>HeidiSQL</code> 工具进行导入时，有时会提示需要 <code>Super</code> 权限。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Access denied; you need (at least one of) the SUPER privilege(s) for this operation</span><br></pre></td></tr></table></figure>
+
+<p>此时可借助 <code>mysqldump</code> 工具进行操作</p>
+<p><strong>错误出现场景</strong></p>
+<ul>
+<li>在创建 存储过程、函数、触发器、事件、视图的时候出现这个错误。</li>
+<li>从本地数据库导出 <code>SQL</code>，在 <code>RDS</code> 上应用该 <code>SQL</code> 的时候出现该错误。</li>
+<li>从 <code>RDS</code>  数据库实例中进行逻辑备份，导入到 <code>RDS</code> 或本地数据库中。</li>
+</ul>
+<p><strong>错误出现原因</strong></p>
+<ul>
+<li>导入<code>RDS MySQL</code> 实例：<code>SQL</code>  语句中含有需要 <code>Supper</code> 权限才可以执行的语句，而 <code>RDS MySQL</code>不提供 <code>Super</code>  权限，因此需要去除这类语句。</li>
+<li>本地 <code>MySQL</code> 实例没有启用 <code>GTID</code>。</li>
+</ul>
+<h3 id="操作步骤-1"><a href="#操作步骤-1" class="headerlink" title="操作步骤"></a>操作步骤</h3><ul>
+<li>使用 <code>mysqldump</code> 只导出本地数据库中的数据和表结构到<code>RDS</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">导出数据</span><br><span class="line">/usr/local/mysql/bin/mysqldump  --single-transaction -S/data/mysql/mysql@3307/mysql.sock -usre  -p&apos;sre@@p$i&apos; shin_survey &gt;shin_survey.sql</span><br><span class="line"></span><br><span class="line">如果本地数据库所在服务器无法连接至RDS，可将备份文件传输至10.133.0.53</span><br><span class="line">scp shin_survey.sql root@10.133.0.53:/tmp</span><br><span class="line"></span><br><span class="line">还原数据至RDS</span><br><span class="line">mysql -h rm-m5eh7vm829l4n623o.mysql.rds.aliyuncs.com -P3306 -u rds -p&apos;Changeme_123&apos; shin_survey &lt; shin_survey.sql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>mysqldump</code> 单独导出存储过程、函数</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">只导出存储过程和函数(不导出结构和数据)</span><br><span class="line">/usr/local/mysql/bin/mysqldump -R -ndt  -S/data/mysql/mysql@3307/mysql.sock -usre  -p&apos;sre@@p$i&apos; shin_survey &gt;shin_survey1.sql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查导出的 <code>SQL</code> 去除类似如下子句</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DEFINER=`root`@`%`</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>修改完毕后，通过下面的语句检查是否合乎要求。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">egrep -in &quot;definer|set @@&quot; shin_survey1.sql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>还原存储过程和函数至数据库</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">如果本地数据库所在服务器无法连接至RDS，可将备份文件传输至10.133.0.53</span><br><span class="line">scp shin_survey1.sql root@10.133.0.53:/tmp</span><br><span class="line"></span><br><span class="line">还原存储过程和函数至数据库</span><br><span class="line">mysql -h rm-m5eh7vm829l4n623o.mysql.rds.aliyuncs.com -P3306 -u rds -p&apos;Changeme_123&apos; shin_survey &lt; shin_survey1.sql</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/07/case4-backup-failed/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1744,289 +2096,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/10/11/MySQL-character-set/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/10/11/MySQL-character-set/" itemprop="url">MySQL字符集</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-11T21:12:52+08:00">
-                2019-10-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>简介</p>
-<p>字符集：计算机底层是以二进制数进行计算和存储的，而我们要在数据库存储的数据则多是字符串的形式。为了将字符串存储至计算机中就需要建立字符与二进制数据的映射关系。将字符映射成一个二进制数据的过程称为<strong>编码</strong>，将二进制数据映射成字符的过程称为<strong>解码</strong>。<strong>字符集</strong>就是为了描述某个字符范围的<strong>编码规则</strong>而抽象出的概念。</p>
-<p>比较规则：为了比较两个字符的大小而制定的规则，同一种字符集可以有许多种不同的比较规则。</p>
-<p>常用字符集：</p>
-<ul>
-<li><p><code>ASCII</code>字符集</p>
-<p>共收录128个字符，包括空格、标点符号、数字、大小写字母和一些不可见字符，可用一个字节进行编码。</p>
-</li>
-<li><p><code>ISO 8859-1</code>字符集</p>
-<p>别名 <code>latin1</code> ,共收录256个字符，在<code>ASCII</code>字符集的基础上又扩充了128个西欧常用字符(包括德法两国的字母)，</p>
-</li>
-<li><p><code>utf8</code>字符集</p>
-<p>收录地球上能想到的所有字符，而且还在不断扩充。该字符集兼容<code>ASCII</code>字符集，采用<code>变长编码</code>方式，编码一个字符需要使用1～4个字节，</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&apos;L&apos; -&gt;  01001100（十六进制：0x4C）</span><br><span class="line">&apos;啊&apos; -&gt;  111001011001010110001010（十六进制：0xE5958A）</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>小贴士： 其实准确的说，utf8只是Unicode字符集的一种编码方案，Unicode字符集可以采用utf8、utf16、utf32这几种编码方案，utf8使用1～4个字节编码一个字符，utf16使用2个或4个字节编码一个字符，utf32使用4个字节编码一个字符。更详细的Unicode和其编码方案的知识不是本书的重点，大家上网查查哈～ MySQL中并不区分字符集和编码方案的概念，所以后边唠叨的时候把utf8、utf16、utf32都当作一种字符集对待。</p>
-</blockquote>
-</li>
-</ul>
-<p>对于同一个字符，不同字符集也可能有不同的编码方式。比如对于汉字<code>&#39;我&#39;</code>来说，<code>ASCII</code>字符集中根本没有收录这个字符，<code>utf8</code>和<code>gb2312</code>字符集对汉字<code>我</code>的编码方式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">utf8编码：111001101000100010010001 (3个字节，十六进制表示是：0xE68891)</span><br><span class="line">gb2312编码：1100111011010010 (2个字节，十六进制表示是：0xCED2)</span><br></pre></td></tr></table></figure>
-
-<p>收录地球上能想到的所有字符，而且还在不断扩充。这种字符集兼容 <code>ASCII</code> 字符集，采用变长编码方式，编码一个字符需要使用 <code>1～4</code> 个字节，比方说这样：</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/26/pt-archiver/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/09/26/pt-archiver/" itemprop="url">pt-archiver</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-26T16:30:54+08:00">
-                2019-09-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="pt-archiver简介"><a href="#pt-archiver简介" class="headerlink" title="pt-archiver简介"></a>pt-archiver简介</h2><p><code>pt-archiver</code> 是 <code>Percona</code> 官方提供的归档工具，用于归档大型表中的记录到另一个表或文件。</p>
-<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p>​    工作上需要删除或者归档一张大表时，用<code>pt-archiver</code>可以很好的满足要求，其不仅可以归档数据，还有删除、导出到文件等功能。并且在主从架构当中，可以兼顾从库（一个或则多个）进行归档，避免归档、删除数据时候压力太大，造成从库的延迟。该工具可以在低影响，正向性的情况下小批量小批量的将旧数据取出并归档，而不会影响OLTP查询。也可以将数据插入到另一个表中，两表不必位于同一服务器上。</p>
-<p><strong>功能</strong>：</p>
-<ul>
-<li>归档到操作系统文件</li>
-<li>归档到同实例不同库下的表（<strong>tips</strong>：归档操作前，目标表要存在）</li>
-<li>归档到不同实例下的表（<strong>tips</strong>：归档操作前，目标表要存在）</li>
-</ul>
-<h3 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#至少需要指定--dest,--file,--purge 其中的一个。</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-dest</span>              <span class="string">指定要归档到的，兼容DSN选项</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-purge</span>             <span class="string">清除而不是归档，删除source数据库的相关匹配记录。</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-where</span> <span class="string">'id&lt;3000'</span>	<span class="string">设置操作条件</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-limit</span> <span class="number">10000</span>	    <span class="string">每次取1000行数据给pt-archive处理</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-txn-size</span> <span class="number">1000</span>	    <span class="string">设置1000行为一个事务提交一次</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-progress</span> <span class="number">5000</span>	    <span class="string">每处理5000行输出一次处理信息</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-statistics</span>	    <span class="string">结束的时候给出统计信息：开始的时间点，结束的时间点，查询的行数，归档的行数，删除的行数，以及各个阶段消耗的总的时间和比例，便于以此进行优化。只要不加上--quiet，默认情况下pt-archive都会输出执行过程的</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-file</span>              <span class="string">要归档到的文件，使用'/路径/文件名'的格式，如：--file</span> <span class="string">'/var/log/archive/%Y-%m-%d-%D.%t'</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-charset=UTF8</span>      <span class="string">指定字符集为UTF8</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-bulk-delete</span>       <span class="string">批量删除source上的旧数据</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-local</span>             <span class="string">不把optimize或analyze操作写入到binlog里面（防止造成主从延迟巨大）</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-no-delete</span>         <span class="string">不删除原来的数据，若不指定此参数，所有处理完成后，都会清理原表中的数据</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-statistics</span>        <span class="string">收集并打印时间统计信息。</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-dry-run</span>           <span class="string">打印查询并退出而不做任何事情。</span></span><br></pre></td></tr></table></figure>
-
-<p>注：批量操作和单条操作提交性能有近10倍的差距。</p>
-<h2 id="pt-archiver使用"><a href="#pt-archiver使用" class="headerlink" title="pt-archiver使用"></a>pt-archiver使用</h2><p><strong>注意：</strong> 归档的表大小写敏感，表必须至少有一个索引（否则报错：Cannot find an ascendable index in table ）。</p>
-<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>1、将表数据导出到文件中，不删除源数据（–no-delete，默认删除）：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-archiver --source u=root,p=Haier@123,h=127.0.0.1,P=3306,D=employees,t=test --file=/tmp/date --where=&quot;id&lt;10&quot; --no-delete --no-safe-auto-increment --progress=100 --statistics</span><br></pre></td></tr></table></figure>
-
-<p>2、按条件删除表数据，不导出和迁移</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-archiver --source u=root,p=Haier@123,h=127.0.0.1,P=3306,D=employees,t=new_test --purge --where=&quot;id=1&quot; --no-safe-auto-increment --progress=100 --statistics</span><br></pre></td></tr></table></figure>
-
-<p>2、指定条件归档，源表删除，批量（每1000个插入提交一次）,如果源表不删除，加上–no-delete即可。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#将matomo_log_link_visit_action表中的数据安条件归档至matomo_log_link_visit_action_history表中</span></span><br><span class="line"><span class="string">pt-archiver</span> <span class="bullet">--source</span> <span class="string">h=10.138.228.231,P=3306,u=sre,p='xxx',D=matomo,t=matomo_log_link_visit_action</span> <span class="bullet">--charset=utf8</span> <span class="bullet">--dest</span> <span class="string">h=10.138.228.231,P=3306,u=sre,p='xxx',D=matomo,t=matomo_log_link_visit_action_history</span> <span class="bullet">--where</span> <span class="string">"server_time &lt; '2019-01-01'"</span> <span class="bullet">--limit</span> <span class="number">1000</span> <span class="bullet">--commit-each</span> <span class="bullet">--bulk-insert</span> <span class="bullet">--no-version-check</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># h=10.138.228.231               -- 数据库实例地址</span></span><br><span class="line"><span class="comment"># P=3306                         -- 数据库实例端口</span></span><br><span class="line"><span class="comment"># u=sre                          -- 数据库实例用户</span></span><br><span class="line"><span class="comment"># p=xxx                          -- 数据库实例用户密码</span></span><br><span class="line"><span class="comment"># D=matomo                       -- 数据库实例数据库</span></span><br><span class="line"><span class="comment"># t=matomo_log_link_visit_action -- 数据库实例表名称</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --source                       -- 指定要被归档的数据源</span></span><br><span class="line"><span class="comment"># --charset=utf8                 -- 使用的字符集，需与表字符集一致</span></span><br><span class="line"><span class="comment"># --file                         -- 指定目标操作系统文件名</span></span><br><span class="line"><span class="comment"># --dest                         -- 指定归档到的目标表</span></span><br><span class="line"><span class="comment"># --where "id &gt; 3008"            -- 指定 where 过滤条件，过滤出要归档的数据</span></span><br><span class="line"><span class="comment"># --limit 1000                   -- 每条语句读取和归档的数据行数，默认是 1</span></span><br><span class="line"><span class="comment"># --commit-each                  -- 每次获取和归档数据后，commit提交</span></span><br><span class="line"><span class="comment"># --no-version-check             -- 不做版本检查</span></span><br><span class="line"><span class="comment"># --bulk-insert                  -- 批量插入数据，会自动启用 --bulk-delete --commit-each，每次插入行数通过--limit 选项指定</span></span><br><span class="line"><span class="comment"># --statistics                   -- 显示 pt-archiver 本次操作的统计信息。</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2077,7 +2146,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">76</span>
+                  <span class="site-state-item-count">78</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2090,7 +2159,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/blog/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
