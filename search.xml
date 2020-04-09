@@ -1,6 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>MySQL · 积分中心数据库迁移上云</title>
+    <url>/blog/2020/04/02/mysql-POINT-cloud/</url>
+    <content><![CDATA[<p>背景</p>
+<table>
+<thead>
+<tr>
+<th>项目信息</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>项目名称</td>
+<td>积分中心</td>
+</tr>
+<tr>
+<td>机房位置</td>
+<td>北京亦庄/卓郎机房</td>
+</tr>
+<tr>
+<td>本地数据库</td>
+<td>10.199.96.192</td>
+</tr>
+<tr>
+<td>数据量</td>
+<td>267GB</td>
+</tr>
+<tr>
+<td>版本</td>
+<td>MariaDB 5.5.49</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>中转数据库</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主机</td>
+<td>10.163.19.14</td>
+</tr>
+<tr>
+<td>自建MySQL</td>
+<td>MariaDB 5.5.49</td>
+</tr>
+<tr>
+<td>公网IP</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>说明</strong>：用户中心数据库迁移上云时，开通了 <code>10.163.19.14</code> 服务器的公网IP。在 <code>10.163.19.14</code> 上搭建<code>10.199.96.192</code>  的从库的方式，通过 <code>10.163.19.14</code>  中转的方式迁移上云。</p>
+<h2 id="迁移方案"><a href="#迁移方案" class="headerlink" title="迁移方案"></a>迁移方案</h2><p>本地 IDC 数据库 -&gt; 开通公网IP的中转自建数据库 -&gt; 阿里云 RDS</p>
+<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><table>
+<thead>
+<tr>
+<th align="left">步骤</th>
+<th align="left">耗时</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">全备</td>
+<td align="left">1 h 20 min</td>
+</tr>
+<tr>
+<td align="left">传输</td>
+<td align="left">——</td>
+</tr>
+<tr>
+<td align="left">恢复</td>
+<td align="left">——</td>
+</tr>
+<tr>
+<td align="left">DTS迁移</td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+]]></content>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Go开发环境搭建</title>
+    <url>/blog/2020/04/01/Go-environment/</url>
+    <content><![CDATA[<h2 id="下载资源"><a href="#下载资源" class="headerlink" title="下载资源"></a>下载资源</h2><p><code>go安装包</code></p>
+<p><a href="https://mino-yn.oss-cn-qingdao.aliyuncs.com/Installation%20package/go1.13.1.windows-amd64.zip" target="_blank" rel="noopener">https://mino-yn.oss-cn-qingdao.aliyuncs.com/Installation%20package/go1.13.1.windows-amd64.zip</a></p>
+<p><code>goland</code></p>
+<p><a href="https://mino-yn.oss-cn-qingdao.aliyuncs.com/Installation%20package/goland-2019.3.2.exe" target="_blank" rel="noopener">https://mino-yn.oss-cn-qingdao.aliyuncs.com/Installation%20package/goland-2019.3.2.exe</a></p>
+<p><code>git</code></p>
+<p><a href="https://mino-yn.oss-cn-qingdao.aliyuncs.com/Installation%20package/Git-2.22.0-64-bit.exe" target="_blank" rel="noopener">https://mino-yn.oss-cn-qingdao.aliyuncs.com/Installation%20package/Git-2.22.0-64-bit.exe</a></p>
+<h2 id="搭建环境"><a href="#搭建环境" class="headerlink" title="搭建环境"></a>搭建环境</h2><p><a href="https://www.jianshu.com/p/683d64d5622f" target="_blank" rel="noopener">Go开发环境搭建Windows下</a></p>
+<p><a href="https://shimo.im/docs/9pJJRJPr6thtPxJd/read" target="_blank" rel="noopener">Goland破解教程（通用）</a></p>
+<ul>
+<li><a href="https://mino-yn.oss-cn-qingdao.aliyuncs.com/Installation%20package/GO/GO-Activation%20code.txt" target="_blank" rel="noopener">激活码</a></li>
+</ul>
+<p>配置系统环境变量</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#GOPATH</span><br><span class="line">G:\Go-WorkSpace</span><br><span class="line">#GOROOT</span><br><span class="line">C:\Go</span><br></pre></td></tr></table></figure>
+
+<p>安装Git</p>
+<h2 id="拉取GIT代码"><a href="#拉取GIT代码" class="headerlink" title="拉取GIT代码"></a>拉取GIT代码</h2><p>打开 <code>gopath</code> 所在目录新建三个文件夹：<code>bin</code>、 <code>src</code>  、<code>pkg</code></p>
+<ul>
+<li><p><code>bin</code> :   存放编译后的可执行文件</p>
+</li>
+<li><p><code>pkg</code> ：存放编译后的包文件、一些公用包文件</p>
+</li>
+<li><p><code>src</code> :   存放项目源文件</p>
+</li>
+</ul>
+<p>一般，<code>bin</code> 和 <code>pkg</code> 目录可以不创建，<code>go</code> 命令会自动创建（如 <code>go install</code>），<code>src</code> 目录，存放源文件，<code>Go</code> 中源文件以包（<code>package</code>）的形式组织。通常，新建一个包就在 <code>src</code> 目录中新建一个文件夹。</p>
+<h3 id="拉取项目代码"><a href="#拉取项目代码" class="headerlink" title="拉取项目代码"></a>拉取项目代码</h3><p>​    以<code>cmdb</code> 为例，本地路径要与<code>gitlab</code>保持一致，这样引用包的时候不会报错。<code>cmdb</code>路径：<a href="https://git.haier.net/console/cmdb" target="_blank" rel="noopener">https://git.haier.net/console/cmdb</a> .</p>
+<ul>
+<li>依次在 <code>src</code> 建一个 <code>git.haier.net</code> 的文件夹和 <code>console</code> 文件夹</li>
+<li>在<code>console</code>文件夹里右键打开 <code>git bash</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#拉取dev分支代码</span><br><span class="line">git clone -b dev https://git.haier.net/console/cmdb.git</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>用 <code>goland</code> 打开项目</li>
+</ul>
+<h3 id="拉取依赖"><a href="#拉取依赖" class="headerlink" title="拉取依赖"></a>拉取依赖</h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment">#设置代理</span></span><br><span class="line"><span class="string">export</span> <span class="string">GOPROXY=[https://goproxy.cn](https://goproxy.cn/)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#清理无用的依赖</span></span><br><span class="line"><span class="string">go</span> <span class="string">mod</span> <span class="string">tidy</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#下载依赖至本地</span></span><br><span class="line"><span class="string">go</span> <span class="string">mod</span> <span class="string">download</span></span><br></pre></td></tr></table></figure>
+
+<p>如果仍有 <code>swagger</code>  、<code>doc</code>  的 <code>import</code> 报错，先注释掉</p>
+]]></content>
+      <tags>
+        <tag>GO</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hdm慢日志分析异常</title>
+    <url>/blog/2020/03/31/hdm-slow/</url>
+    <content><![CDATA[<p>背景</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/hdm-slow0.png" alt></p>
+]]></content>
+      <tags>
+        <tag>hdm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>服务器内存使用率</title>
+    <url>/blog/2020/03/25/Mysql-Mem/</url>
+    <content><![CDATA[<h2 id="Linux查看内存使用率"><a href="#Linux查看内存使用率" class="headerlink" title="Linux查看内存使用率"></a>Linux查看内存使用率</h2><ul>
+<li><code>free</code></li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment">#查看内存</span></span><br><span class="line"><span class="string">free</span>  <span class="bullet">-m</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">#计算内存使用率的命令</span></span><br><span class="line"><span class="string">free</span> <span class="bullet">-m</span> <span class="string">| sed -n '2p' | awk '&#123;print "used mem is "$3"M,total mem is "$2"M,used percent is "$3/$2*100"%"&#125;'</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>ps</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment">#linux 下 取进程占用内存(MEM)最高的前10个进程</span></span><br><span class="line"><span class="string">ps</span> <span class="string">aux|head</span> <span class="bullet">-1</span><span class="string">;ps</span> <span class="string">aux|grep</span> <span class="bullet">-v</span> <span class="string">PID</span> <span class="string">| sort -rn -k +4 | head  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#linux 下 取进程占用 cpu 最高的前10个进程</span></span><br><span class="line"><span class="string">ps aux|head -1;ps aux|grep -v PID|sort -rn -k +3|head</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#然后根据查到的结果，可以把没用的进程杀掉（kill + PID号）</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>日志空间的处理</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment">#可以看到文件中每个文件的大小</span></span><br><span class="line"><span class="string">du</span> <span class="bullet">-a</span>   </span><br><span class="line"><span class="comment">#按照文件大小排序</span></span><br><span class="line"><span class="string">du</span> <span class="bullet">-sh</span> <span class="string">*</span> <span class="string">| sort -nr</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>top</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">PID</span> <span class="string">—</span> <span class="string">进程id</span></span><br><span class="line"><span class="string">USER</span> <span class="string">—</span> <span class="string">进程所有者</span></span><br><span class="line"><span class="string">PR</span> <span class="string">—</span> <span class="string">进程优先级</span></span><br><span class="line"><span class="string">NI</span> <span class="string">—</span> <span class="string">nice值。负值表示高优先级，正值表示低优先级</span></span><br><span class="line"><span class="string">VIRT</span> <span class="string">—</span> <span class="string">进程使用的虚拟内存总量，单位kb。VIRT=SWAP+RES</span></span><br><span class="line"><span class="string">RES</span> <span class="string">—</span> <span class="string">进程使用的、未被换出的物理内存大小，单位kb。RES=CODE+DATA</span></span><br><span class="line"><span class="string">SHR</span> <span class="string">—</span> <span class="string">共享内存大小，单位kb</span></span><br><span class="line"><span class="string">S</span> <span class="string">—</span> <span class="string">进程状态。D=不可中断的睡眠状态</span> <span class="string">R=运行</span> <span class="string">S=睡眠</span> <span class="string">T=跟踪/停止</span> <span class="string">Z=僵尸进程</span></span><br><span class="line"><span class="string">%CPU</span> <span class="string">—</span> <span class="string">上次更新到现在的CPU时间占用百分比</span></span><br><span class="line"><span class="string">%MEM</span> <span class="string">—</span> <span class="string">进程使用的物理内存百分比</span></span><br><span class="line"><span class="string">TIME+</span> <span class="string">—</span> <span class="string">进程使用的CPU时间总计，单位1/100秒</span></span><br><span class="line"><span class="string">COMMAND</span> <span class="string">—</span> <span class="string">进程名称（命令名/命令行）</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>PostgreSQL安装部署</title>
     <url>/blog/2020/03/11/postgresql/</url>
     <content><![CDATA[<h2 id="PostgreSQL"><a href="#PostgreSQL" class="headerlink" title="PostgreSQL"></a>PostgreSQL</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><ul>
@@ -47,43 +214,6 @@
 ]]></content>
       <tags>
         <tag>PostgreSQL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>积分中心迁移上云</title>
-    <url>/blog/2020/03/05/Integration-Center-to-cloud/</url>
-    <content><![CDATA[<p>准备工作</p>
-<table>
-<thead>
-<tr>
-<th>项目信息</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>项目名称</td>
-<td></td>
-</tr>
-<tr>
-<td>机房位置</td>
-<td></td>
-</tr>
-<tr>
-<td>本地数据库</td>
-<td></td>
-</tr>
-<tr>
-<td>数据量</td>
-<td></td>
-</tr>
-<tr>
-<td>版本</td>
-<td></td>
-</tr>
-</tbody></table>
-]]></content>
-      <tags>
-        <tag>MySQL</tag>
       </tags>
   </entry>
   <entry>
@@ -533,6 +663,8 @@
 
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">第一列</span><br><span class="line">Mem           # 内存的使用信息</span><br><span class="line">Swap          # 交换空间的使用信息</span><br><span class="line">第一行</span><br><span class="line">total         # 服务器内存总大小</span><br><span class="line">used          # 已经使用了多少内存</span><br><span class="line">free          # 未被任何应用使用的真实空闲内存</span><br><span class="line">shared        # 多个进程共享的内存总额</span><br><span class="line">buff/cache    # 磁盘缓冲/缓存使用的物理内存的大小</span><br><span class="line">available     # 还可以被应用程序使用的物理内存的大小</span><br></pre></td></tr></table></figure>
 
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <h4 id="free-与-available"><a href="#free-与-available" class="headerlink" title="free 与 available"></a>free 与 available</h4><ul>
 <li><p><code>free</code> : 真正尚未被使用的物理内存的大小</p>
 </li>
@@ -609,9 +741,10 @@
       </tags>
   </entry>
   <entry>
-    <title>CentOS安装MySQL</title>
+    <title></title>
     <url>/blog/2019/12/27/CentOS-MySQL-Download/</url>
-    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>Linux</code> 上安装软件常用方式：</p>
+    <content><![CDATA[<p>title: CentOS安装MySQL<br>date: 2019-12-27 17:25:18<br>tags: [MySQL]</p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>Linux</code> 上安装软件常用方式：</p>
 <ul>
 <li>源码编译</li>
 <li>压缩包解压（一般为 <code>tar.gz</code>）</li>
@@ -643,6 +776,21 @@
 <li>删除 <code>MySQL</code></li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">shell&gt; rpm -e --nodeps xxx</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>清除余项</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">shell&gt; whereis mysql</span><br><span class="line">mysql: /usr/lib64/mysql /usr/share/mysql</span><br><span class="line">#删除上面的文件夹</span><br><span class="line">rm -rf /usr/lib64/mysql</span><br><span class="line">rm -rf /usr/share/mysql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>删除配置</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rm –rf /usr/my.cnf</span><br><span class="line">rm -rf /root/.mysql_sercret</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>剩余配置检查</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">chkconfig --list | grep -i mysql</span><br><span class="line">chkconfig --del mysqld</span><br><span class="line">#根据以上列表删除，如：mysqld</span><br></pre></td></tr></table></figure>
 
 <h2 id="YUM方式"><a href="#YUM方式" class="headerlink" title="YUM方式"></a>YUM方式</h2><h3 id="添加-MySQL-YUM-Repository"><a href="#添加-MySQL-YUM-Repository" class="headerlink" title="添加 MySQL YUM Repository"></a>添加 MySQL YUM Repository</h3><p><code>CentOS 7</code> 开始，<code>Mariadb</code> 成为 <code>YUM</code> 源种默认的数据库安装包，如果想安装官方 <code>MySQL</code> 版本需适用 <code>MySQL</code> 提供的 <code>YUM</code> 源。</p>
 <ul>
@@ -699,9 +847,6 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">shell&gt; systemctl enable mysqld</span><br><span class="line">shell&gt; systemctl daemon-reload</span><br></pre></td></tr></table></figure>
 
 ]]></content>
-      <tags>
-        <tag>MySQL</tag>
-      </tags>
   </entry>
   <entry>
     <title>Explain(下)</title>
@@ -2683,7 +2828,16 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">10.159.39.80 -&gt; 10.199.96.192</span><br><span class="line">文件大小：227G</span><br><span class="line">备份时间：32min</span><br><span class="line">传输时间：35min</span><br><span class="line">恢复时间：26min</span><br></pre></td></tr></table></figure>
 
 <h3 id="搭建主从关系"><a href="#搭建主从关系" class="headerlink" title="搭建主从关系"></a>搭建主从关系</h3><p>从库，建立复制关系</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">[root@GPCMS-DB-M</span> <span class="string">backup]#</span> <span class="string">cat</span> <span class="string">xtrabackup_binlog_info</span></span><br><span class="line"><span class="string">mysql-binlog.000297</span>	<span class="number">900834433</span></span><br><span class="line"></span><br><span class="line"><span class="string">CHANGE</span> <span class="string">MASTER</span> <span class="string">TO</span> <span class="string">MASTER_HOST='10.133.7.18',</span></span><br><span class="line"><span class="string">MASTER_USER='repl',</span></span><br><span class="line"><span class="string">MASTER_PASSWORD='Changeme_123',</span></span><br><span class="line"><span class="string">MASTER_PORT=3306,</span></span><br><span class="line"><span class="string">MASTER_LOG_FILE='mysql-binlog.000297',</span> <span class="string">MASTER_LOG_POS=900834433,</span></span><br><span class="line"><span class="string">MASTER_CONNECT_RETRY=10;</span></span><br><span class="line"></span><br><span class="line"><span class="string">MySQL</span> <span class="string">[(none)]&gt;</span> <span class="string">start</span> <span class="string">slave;</span></span><br><span class="line"><span class="string">Query</span> <span class="string">OK,</span> <span class="number">0</span> <span class="string">rows</span> <span class="string">affected</span> <span class="string">(0.00</span> <span class="string">sec)</span></span><br></pre></td></tr></table></figure>]]></content>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">[root@GPCMS-DB-M</span> <span class="string">backup]#</span> <span class="string">cat</span> <span class="string">xtrabackup_binlog_info</span></span><br><span class="line"><span class="string">mysql-binlog.000297</span>	<span class="number">900834433</span></span><br><span class="line"></span><br><span class="line"><span class="string">CHANGE</span> <span class="string">MASTER</span> <span class="string">TO</span> <span class="string">MASTER_HOST='10.133.7.18',</span></span><br><span class="line"><span class="string">MASTER_USER='repl',</span></span><br><span class="line"><span class="string">MASTER_PASSWORD='Changeme_123',</span></span><br><span class="line"><span class="string">MASTER_PORT=3306,</span></span><br><span class="line"><span class="string">MASTER_LOG_FILE='mysql-binlog.000297',</span> <span class="string">MASTER_LOG_POS=900834433,</span></span><br><span class="line"><span class="string">MASTER_CONNECT_RETRY=10;</span></span><br><span class="line"></span><br><span class="line"><span class="string">MySQL</span> <span class="string">[(none)]&gt;</span> <span class="string">start</span> <span class="string">slave;</span></span><br><span class="line"><span class="string">Query</span> <span class="string">OK,</span> <span class="number">0</span> <span class="string">rows</span> <span class="string">affected</span> <span class="string">(0.00</span> <span class="string">sec)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="错误分析"><a href="#错误分析" class="headerlink" title="错误分析"></a>错误分析</h3><h4 id="案例一"><a href="#案例一" class="headerlink" title="案例一"></a>案例一</h4><p>恢复数据完成后，重启数据库失败，<code>error.log</code>:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[ERROR] Can&apos;t open the mysql.plugin table. Please run mysql_upgrade to create it.</span><br><span class="line">[ERROR] Fatal error: Can&apos;t open and lock privilege tables: Table &apos;mysql.host&apos; doesn&apos;t exist</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决</strong></p>
+<p>备份目录下缺失数据库文件目录，从<code>/data/backup</code> 或主库 <code>/data/mysql</code> 目录下将缺失的数据目录文件传输到从库相应位置。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">scp -r root@10.199.96.192:/data/mysql/link /data/mysql</span><br><span class="line">scp -r root@10.199.96.192:/data/mysql /data/mysql</span><br><span class="line">scp -r root@10.199.96.192:/data/mysql/performance_schema /data/mysql</span><br></pre></td></tr></table></figure>
+
+]]></content>
   </entry>
   <entry>
     <title>Percona XtraBackup安装实践</title>

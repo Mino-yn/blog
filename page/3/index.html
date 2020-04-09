@@ -281,6 +281,417 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/10/Linux-GLIBCXX/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/12/10/Linux-GLIBCXX/" itemprop="url">Linux · 升级GLIBCXX</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-10T10:32:21+08:00">
+                2019-12-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="报错信息"><a href="#报错信息" class="headerlink" title="报错信息"></a>报错信息</h3><p>安装软件时有时会遇到以下报错：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/lib64/libstdc++.so.6: version `GLIBCXX_3.4.15&apos; not found</span><br></pre></td></tr></table></figure>
+
+<p>出现该错误的原因是当前的 <code>GCC</code> 版本中，没有 <code>GLIBCXX_3.4.15</code> ，须要安装更高版本。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">strings /usr/lib64/libstdc++.so.6 | grep GLIBC</span><br><span class="line">GLIBCXX_3.4</span><br><span class="line">GLIBCXX_3.4.1</span><br><span class="line">GLIBCXX_3.4.2</span><br><span class="line">GLIBCXX_3.4.3</span><br><span class="line">GLIBCXX_3.4.4</span><br><span class="line">GLIBCXX_3.4.5</span><br><span class="line">GLIBCXX_3.4.6</span><br><span class="line">GLIBCXX_3.4.7</span><br><span class="line">GLIBCXX_3.4.8</span><br><span class="line">GLIBCXX_3.4.9</span><br><span class="line">GLIBCXX_3.4.10</span><br><span class="line">GLIBCXX_3.4.11</span><br><span class="line">GLIBCXX_3.4.12</span><br><span class="line">GLIBCXX_3.4.13</span><br><span class="line">GLIBC_2.2.5</span><br><span class="line">GLIBC_2.3</span><br><span class="line">GLIBC_2.4</span><br><span class="line">GLIBC_2.3.2</span><br><span class="line">GLIBCXX_FORCE_NEW</span><br><span class="line">GLIBCXX_DEBUG_MESSAGE_LENGTH</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>从其它的机器上或者网上直接下载 <code>libstdc++.so.6.0.18</code> 版本（不限本版本，这个版本可以支持）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#直接下载至/usr/lib64目录下，注意确认没有重名文件</span><br><span class="line">cd /usr/lib64/</span><br><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/libstdc%2B%2B.so.6.0.18</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chmod +x libstdc++.so.6.0.18</span><br><span class="line">mv libstdc++.so.6 libstdc++.so.6-old</span><br><span class="line">ln -sf libstdc++.so.6.0.18 libstdc++.so.6</span><br></pre></td></tr></table></figure>
+
+<p>重新查看当前 <code>GCC</code> 版本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">strings /usr/lib64/libstdc++.so.6 | grep GLIBC</span><br><span class="line">GLIBCXX_3.4</span><br><span class="line">GLIBCXX_3.4.1</span><br><span class="line">GLIBCXX_3.4.2</span><br><span class="line">GLIBCXX_3.4.3</span><br><span class="line">GLIBCXX_3.4.4</span><br><span class="line">GLIBCXX_3.4.5</span><br><span class="line">GLIBCXX_3.4.6</span><br><span class="line">GLIBCXX_3.4.7</span><br><span class="line">GLIBCXX_3.4.8</span><br><span class="line">GLIBCXX_3.4.9</span><br><span class="line">GLIBCXX_3.4.10</span><br><span class="line">GLIBCXX_3.4.11</span><br><span class="line">GLIBCXX_3.4.12</span><br><span class="line">GLIBCXX_3.4.13</span><br><span class="line">GLIBCXX_3.4.14</span><br><span class="line">GLIBCXX_3.4.15</span><br><span class="line">GLIBCXX_3.4.16</span><br><span class="line">GLIBCXX_3.4.17</span><br><span class="line">GLIBCXX_3.4.18</span><br><span class="line">GLIBCXX_3.4.19</span><br><span class="line">GLIBC_2.3</span><br><span class="line">GLIBC_2.2.5</span><br><span class="line">GLIBC_2.3.2</span><br><span class="line">GLIBCXX_FORCE_NEW</span><br><span class="line">GLIBCXX_FORCE_NEW</span><br><span class="line">GLIBCXX_DEBUG_MESSAGE_LENGTH</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/09/RDS-data-synchronization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/12/09/RDS-data-synchronization/" itemprop="url">RDS数据同步</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-09T15:20:31+08:00">
+                2019-12-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>有些项目进行测试时，需要建一个开发库的测试库，要求和生产环境的数据一样，做一个数据同步。如果原生产库和所要建的测试库都在阿里云上，可以使用 <code>RDS</code> 进行数据库克隆。</p>
+<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><ul>
+<li><p>创建测试数据库</p>
+</li>
+<li><p>为测试数据库创建读写账号</p>
+</li>
+</ul>
+<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><p>1、使用高权限用户 <code>rds</code> 登录 <code>RDS</code> 数据库。</p>
+<p>2、选择 <code>数据方案</code> -&gt; <code>数据库克隆</code></p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/RDS%20Data%20Copy0.png" alt></p>
+<p>3、选择源库-&gt;选择克隆目标库-&gt;选项-&gt;进行克隆-&gt;克隆结果</p>
+<ul>
+<li><p>选项</p>
+<p>重点对象处理：跳过重点对象</p>
+<p>时间选项：立即执行</p>
+<p>迁移附加选项：视图、存储过程、函数、触发器、事件</p>
+</li>
+</ul>
+<p>克隆结束后查看克隆结果，无执行失败的情况，则克隆成功。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/09/Database-cannot-connect/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/12/09/Database-cannot-connect/" itemprop="url">案例5 · 数据库无法连接</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-09T10:54:49+08:00">
+                2019-12-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h3><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Database%20cannot%20connection1.png" alt></p>
+<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@cosmo-hce01bak etc]# /etc/init.d/mysqld start</span><br><span class="line">Starting MySQL.sed: -e expression #1, char 14: unknown option to `s&apos;</span><br></pre></td></tr></table></figure>
+
+<p>查看配置文件 <code>my.cnf</code>，发现第14行中存在不必要的分割符/</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">my.cnf</span><br><span class="line">binlog//_format = mixed</span><br></pre></td></tr></table></figure>
+
+<p>将分隔符/删掉后重新启动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@cosmo-hce01bak etc]# /etc/init.d/mysqld start</span><br><span class="line">Starting MySQL... ERROR! The server quit without updating PID file (/home/data/mysql3306/mysql.pid).</span><br></pre></td></tr></table></figure>
+
+<p>查看错误日志</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">2019-12-09T09:01:04.701323+08:00 0 [Warning] TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_timestamp server option (see documentation for more details).</span><br><span class="line">2019-12-09T09:01:04.701428+08:00 0 [Note] --secure-file-priv is set to NULL. Operations related to importing and exporting data are disabled</span><br><span class="line">2019-12-09T09:01:04.701456+08:00 0 [Note] /usr/local/mysql3306/bin/mysqld (mysqld 5.7.23-log) starting as process 36914 ...</span><br><span class="line">2019-12-09T09:01:04.708255+08:00 0 [Note] InnoDB: PUNCH HOLE support available</span><br><span class="line">2019-12-09T09:01:04.708294+08:00 0 [Note] InnoDB: Mutexes and rw_locks use GCC atomic builtins</span><br><span class="line">2019-12-09T09:01:04.708298+08:00 0 [Note] InnoDB: Uses event mutexes</span><br><span class="line">2019-12-09T09:01:04.708309+08:00 0 [Note] InnoDB: GCC builtin __sync_synchronize() is used for memory barrier</span><br><span class="line">2019-12-09T09:01:04.708313+08:00 0 [Note] InnoDB: Compressed tables use zlib 1.2.3</span><br><span class="line">2019-12-09T09:01:04.708316+08:00 0 [Note] InnoDB: Using Linux native AIO</span><br><span class="line">2019-12-09T09:01:04.709838+08:00 0 [Note] InnoDB: Number of pools: 1</span><br><span class="line">2019-12-09T09:01:04.709926+08:00 0 [Note] InnoDB: Using CPU crc32 instructions</span><br><span class="line">2019-12-09T09:01:04.711619+08:00 0 [Note] InnoDB: Initializing buffer pool, total size = 22G, instances = 8, chunk size = 128M</span><br><span class="line">2019-12-09T09:01:06.070773+08:00 0 [Note] InnoDB: Completed initialization of buffer pool</span><br><span class="line">2019-12-09T09:01:06.359814+08:00 0 [ERROR] [FATAL] InnoDB: pthread_create returned 11</span><br><span class="line">2019-12-09 09:01:06 0x7f4b98c20780  InnoDB: Assertion failure in thread 139962662127488 in file ut0ut.cc line 942</span><br><span class="line">InnoDB: We intentionally generate a memory trap.</span><br><span class="line">InnoDB: Submit a detailed bug report to http://bugs.mysql.com.</span><br><span class="line">InnoDB: If you get repeated assertion failures or crashes, even</span><br><span class="line">InnoDB: immediately after the mysqld startup, there may be</span><br><span class="line">InnoDB: corruption in the InnoDB tablespace. Please refer to</span><br><span class="line">InnoDB: http://dev.mysql.com/doc/refman/5.7/en/forcing-innodb-recovery.html</span><br><span class="line">InnoDB: about forcing recovery.</span><br><span class="line">01:01:06 UTC - mysqld got signal 6 ;</span><br><span class="line">This could be because you hit a bug. It is also possible that this binary</span><br><span class="line">or one of the libraries it was linked against is corrupt, improperly built,</span><br><span class="line">or misconfigured. This error can also be caused by malfunctioning hardware.</span><br><span class="line">Attempting to collect some information that could help diagnose the problem.</span><br><span class="line">As this is a crash and something is definitely wrong, the information</span><br><span class="line">collection process might fail.</span><br><span class="line"></span><br><span class="line">2019-12-09T09:01:06.359861+08:00 0 [Note] InnoDB: If the mysqld execution user is authorized, page cleaner thread priority can be changed. See the man page of setpriority().</span><br><span class="line">key_buffer_size=67108864</span><br><span class="line">read_buffer_size=2097152</span><br><span class="line">max_used_connections=0</span><br><span class="line">max_threads=4000</span><br><span class="line">thread_count=0</span><br><span class="line">connection_count=0</span><br><span class="line">It is possible that mysqld could use up to</span><br><span class="line">key_buffer_size + (read_buffer_size + sort_buffer_size)*max_threads = 16503036 K  bytes of memory</span><br><span class="line">Hope that&apos;s ok; if not, decrease some variables in the equation.</span><br><span class="line"></span><br><span class="line">Thread pointer: 0x0</span><br><span class="line">Attempting backtrace. You can use the following information to find out</span><br><span class="line">where mysqld died. If you see no messages after this, something went</span><br><span class="line">terribly wrong...</span><br><span class="line">stack_bottom = 0 thread_stack 0x30000</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(my_print_stacktrace+0x35)[0xf4e5e5]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(handle_fatal_signal+0x4a4)[0x7d1b64]</span><br><span class="line">/lib64/libpthread.so.0(+0xf5d0)[0x7f4b988005d0]</span><br><span class="line">/lib64/libc.so.6(gsignal+0x37)[0x7f4b971e9207]</span><br><span class="line">/lib64/libc.so.6(abort+0x148)[0x7f4b971ea8f8]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(_Z18ut_print_timestampP8_IO_FILE+0x0)[0x7c0f4e]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(_ZN2ib5fatalD1Ev+0xb3)[0x11ab913]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(_Z21os_thread_create_funcPFPvS_ES_Pm+0x277)[0x10c1f97]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(_Z34innobase_start_or_create_for_mysqlv+0x1acc)[0x1162e8c]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld[0x1044c3a]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(_Z24ha_initialize_handlertonP13st_plugin_int+0x51)[0x81d5b1]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld[0xd3be16]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(_Z40plugin_register_builtin_and_init_core_sePiPPc+0x3e4)[0xd3cff4]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld[0x7c8047]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld(_Z11mysqld_mainiPPc+0x92f)[0x7cb63f]</span><br><span class="line">/lib64/libc.so.6(__libc_start_main+0xf5)[0x7f4b971d53d5]</span><br><span class="line">/usr/local/mysql3306/bin/mysqld[0x7c1cb9]</span><br><span class="line">The manual page at http://dev.mysql.com/doc/mysql/en/crashing.html contains</span><br><span class="line">information that should help you find out what is causing the crash.</span><br></pre></td></tr></table></figure>
+
+<p>free指令查看内存：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@cosmo-hce01bak data]# free</span><br><span class="line">              total        used        free      shared  buff/cache   available</span><br><span class="line">Mem:       32656552      747216    22193532      157684     9715804    31254364</span><br><span class="line">Swap:      10485756           0    10485756</span><br></pre></td></tr></table></figure>
+
+<p>配置文件中配置的 <code>MySQL</code> 内存大小为 <code>22GB</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innodb_buffer_pool_size = 22528M      #23068672KB</span><br></pre></td></tr></table></figure>
+
+<p>剩余的内存空间少于22GB，将配置文件中 <code>innodb_buffer_pool_size</code> 参数改小后启动MySQL，启动成功。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@cosmo-hce01bak data]# /etc/init.d/mysqld start</span><br><span class="line">Starting MySQL...... SUCCESS!</span><br><span class="line">[root@cosmo-hce01bak data]# ps -ef|grep mysqld</span><br><span class="line">root      67122      1  0 10:20 pts/1    00:00:00 /bin/sh /usr/local/mysql3306/bin/mysqld_safe --datadir=/home/data/mysql3306/data --pid-file=/home/data/mysql3306/mysql.pid</span><br><span class="line">mysql     68120  67122 99 10:20 pts/1    00:00:23 /usr/local/mysql3306/bin/mysqld --basedir=/usr/local/mysql3306 --datadir=/home/data/mysql3306/data --plugin-dir=/usr/local/mysql3306/lib/plugin --user=mysql --log-error=err.log --open-files-limit=65536 --pid-file=/home/data/mysql3306/mysql.pid --socket=/home/data/mysql3306/mysql.sock --port=3306</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/06/MySQL-Explain1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1668,429 +2079,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/14/linux-firewall/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/11/14/linux-firewall/" itemprop="url">CentOS 6与 CentOS 7防火墙设置与端口打开</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-14T14:22:03+08:00">
-                2019-11-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><code>CentOS</code> 升级到7后，内置防火墙从 <code>iptables</code> 变为 <code>firewalled</code> 不同操作系统设置的方式不同。</p>
-<ul>
-<li>查看系统版本</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lsb_release -a             #可列出所有版本信息</span><br><span class="line">cat /etc/redhat-release    #只适合Redhat系的Linux</span><br><span class="line">cat /etc/issue             #适用于所有的Linux发行版</span><br></pre></td></tr></table></figure>
-
-<h3 id="CentOS-6"><a href="#CentOS-6" class="headerlink" title="CentOS 6"></a>CentOS 6</h3><ul>
-<li>打开/关闭/重启防火墙</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">chkconfig iptables on       # 开启防火墙</span><br><span class="line">chkconfig iptables off      # 关闭防火墙</span><br><span class="line">service iptables start      # 开启防火墙</span><br><span class="line">service iptables stop       # 关闭防火墙</span><br><span class="line">service iptables restarted  # 重启防火墙</span><br><span class="line">iptables -F                 # 清除防火墙规则</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>打开端口</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/sbin/iptables -I INPUT -p tcp --dport 22 -j ACCEPT   # 打开22端口</span><br><span class="line">/sbin/iptables -I INPUT -p tcp --dport 3306 -j ACCEPT # 打开3306端口</span><br><span class="line">/etc/rc.d/init.d/iptables save   # 保存防火墙</span><br><span class="line">/etc/init.d/iptables restart     # 重启防火墙</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查看打开的端口</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/iptables status</span><br></pre></td></tr></table></figure>
-
-<h3 id="CentOS-7"><a href="#CentOS-7" class="headerlink" title="CentOS 7"></a>CentOS 7</h3><ul>
-<li>打开/关闭/重启防火墙</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start firewalld  # 启用防火墙systemctl stop firewalld   # 停止防火墙systemctl status firewalld # 查看状态</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>打开端口</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=80/tcp # 永久生效再加上--permanentfirewall-cmd --reload                        # 更新防火墙规则</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查看打开的端口</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --list-ports</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/13/hexo-search/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/11/13/hexo-search/" itemprop="url">hexo博客添加搜索功能</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-13T09:08:21+08:00">
-                2019-11-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>文档慢慢变多时，标签和分类已经无法提供太大的作用，为了更加准确的定位到自己想看的文章，需要添加一个搜索功能。</p>
-<h4 id="安装插件"><a href="#安装插件" class="headerlink" title="安装插件"></a>安装插件</h4><p>在自己博客文件夹根目录（我的为<code>blog</code>）下点击右键选择 <code>Git Bash Here</code>安装插件。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-generator-searchdb --save</span><br></pre></td></tr></table></figure>
-
-<h4 id="修改站点配置文件"><a href="#修改站点配置文件" class="headerlink" title="修改站点配置文件"></a>修改站点配置文件</h4><p><code>blog</code> 下的 <code>_config.yaml</code> 文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">search:</span><br><span class="line">    path: search.xml</span><br><span class="line">    field: post</span><br><span class="line">    format: html</span><br><span class="line">    limit: 10000</span><br></pre></td></tr></table></figure>
-
-<p>注：每个冒号后需加空格</p>
-<h4 id="修改主题配置文件"><a href="#修改主题配置文件" class="headerlink" title="修改主题配置文件"></a>修改主题配置文件</h4><p><code>/blog/themes/next</code> 下的 <code>_config.yml</code> 文件，修改 <code>local_search</code> 为 <code>true</code>。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">local_search:</span><br><span class="line">    enable: true</span><br></pre></td></tr></table></figure>
-
-<h4 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h4><p>清除缓存后，生成部署网站</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g -d</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/11/Script-Download/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/11/11/Script-Download/" itemprop="url">脚本下载汇总</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-11T09:55:42+08:00">
-                2019-11-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://mino-yn.github.io/blog/2019/09/11/Xtrabackup/"><strong>XtraBackup 安装</strong></a></p>
-<p><code>install_xtrabackup.sh</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/install_xtrabackup.sh</span><br></pre></td></tr></table></figure>
-
-<p><a href="https://mino-yn.github.io/blog/2019/09/06/Percona%20Toolkit/"><strong>Percona Toolkit 安装</strong></a></p>
-<p><code>install_pt.sh</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/install_pt.sh</span><br></pre></td></tr></table></figure>
-
-<p><a href="https://mino-yn.github.io/blog/2019/08/23/ssh%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88%E5%8D%95%E5%90%91%EF%BC%89/"><strong>初始化+SSH免密</strong></a></p>
-<p><code>sshFreeLogin.sh</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/sshFreeLogin.sh</span><br></pre></td></tr></table></figure>
-
-<p><a href="https://mino-yn.github.io/blog/2019/09/24/mysql-DatabaseName/"><strong>修改数据库名</strong></a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><a class="page-number" href="/blog/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/blog/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/8/">8</a><a class="extend next" rel="next" href="/blog/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><a class="page-number" href="/blog/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/blog/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/9/">9</a><a class="extend next" rel="next" href="/blog/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2136,7 +2129,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">78</span>
+                  <span class="site-state-item-count">81</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2149,7 +2142,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/blog/tags/index.html">
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

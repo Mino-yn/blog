@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="MySQL,">
+  <meta name="keywords" content="Hexo, NexT">
 
 
 
@@ -79,18 +79,17 @@
 
 
 
-<meta name="description" content="简介Linux 上安装软件常用方式：  源码编译 压缩包解压（一般为 tar.gz） 编译好的安装包（RPM、DPKG等） 在线安装（YUM、APT等）  便捷性： YUM &amp;gt; RPM &amp;gt; tar.gz &amp;gt; 源码 通用性: 源码 &amp;gt; tar.gz &amp;gt; RPM &amp;gt; YUM 如：使用压缩包解压的方式安装，虽然需要自己额外进行一些配置工作，但掌握方法后各个平台都基本适">
-<meta name="keywords" content="MySQL">
+<meta name="description" content="title: CentOS安装MySQLdate: 2019-12-27 17:25:18tags: [MySQL] 简介Linux 上安装软件常用方式：  源码编译 压缩包解压（一般为 tar.gz） 编译好的安装包（RPM、DPKG等） 在线安装（YUM、APT等）  便捷性： YUM &amp;gt; RPM &amp;gt; tar.gz &amp;gt; 源码 通用性: 源码 &amp;gt; tar.gz &amp;gt;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CentOS安装MySQL">
+<meta property="og:title" content="Mino&#39;s blog">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2019/12/27/CentOS-MySQL-Download/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="简介Linux 上安装软件常用方式：  源码编译 压缩包解压（一般为 tar.gz） 编译好的安装包（RPM、DPKG等） 在线安装（YUM、APT等）  便捷性： YUM &amp;gt; RPM &amp;gt; tar.gz &amp;gt; 源码 通用性: 源码 &amp;gt; tar.gz &amp;gt; RPM &amp;gt; YUM 如：使用压缩包解压的方式安装，虽然需要自己额外进行一些配置工作，但掌握方法后各个平台都基本适">
+<meta property="og:description" content="title: CentOS安装MySQLdate: 2019-12-27 17:25:18tags: [MySQL] 简介Linux 上安装软件常用方式：  源码编译 压缩包解压（一般为 tar.gz） 编译好的安装包（RPM、DPKG等） 在线安装（YUM、APT等）  便捷性： YUM &amp;gt; RPM &amp;gt; tar.gz &amp;gt; 源码 通用性: 源码 &amp;gt; tar.gz &amp;gt;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-12-31T01:26:46.193Z">
+<meta property="og:updated_time" content="2020-03-24T03:32:17.465Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CentOS安装MySQL">
-<meta name="twitter:description" content="简介Linux 上安装软件常用方式：  源码编译 压缩包解压（一般为 tar.gz） 编译好的安装包（RPM、DPKG等） 在线安装（YUM、APT等）  便捷性： YUM &amp;gt; RPM &amp;gt; tar.gz &amp;gt; 源码 通用性: 源码 &amp;gt; tar.gz &amp;gt; RPM &amp;gt; YUM 如：使用压缩包解压的方式安装，虽然需要自己额外进行一些配置工作，但掌握方法后各个平台都基本适">
+<meta name="twitter:title" content="Mino&#39;s blog">
+<meta name="twitter:description" content="title: CentOS安装MySQLdate: 2019-12-27 17:25:18tags: [MySQL] 简介Linux 上安装软件常用方式：  源码编译 压缩包解压（一般为 tar.gz） 编译好的安装包（RPM、DPKG等） 在线安装（YUM、APT等）  便捷性： YUM &amp;gt; RPM &amp;gt; tar.gz &amp;gt; 源码 通用性: 源码 &amp;gt; tar.gz &amp;gt;">
 
 
 
@@ -126,7 +125,7 @@
 
 
 
-  <title>CentOS安装MySQL | Mino's blog</title>
+  <title> | Mino's blog</title>
   
 
 
@@ -302,7 +301,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">CentOS安装MySQL</h1>
+          <h1 class="post-title" itemprop="name headline"></h1>
         
 
         <div class="post-meta">
@@ -352,7 +351,8 @@
       
 
       
-        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>Linux</code> 上安装软件常用方式：</p>
+        <p>title: CentOS安装MySQL<br>date: 2019-12-27 17:25:18<br>tags: [MySQL]</p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>Linux</code> 上安装软件常用方式：</p>
 <ul>
 <li>源码编译</li>
 <li>压缩包解压（一般为 <code>tar.gz</code>）</li>
@@ -384,6 +384,21 @@
 <li>删除 <code>MySQL</code></li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -e --nodeps xxx</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>清除余项</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; whereis mysql</span><br><span class="line">mysql: /usr/lib64/mysql /usr/share/mysql</span><br><span class="line">#删除上面的文件夹</span><br><span class="line">rm -rf /usr/lib64/mysql</span><br><span class="line">rm -rf /usr/share/mysql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>删除配置</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm –rf /usr/my.cnf</span><br><span class="line">rm -rf /root/.mysql_sercret</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>剩余配置检查</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chkconfig --list | grep -i mysql</span><br><span class="line">chkconfig --del mysqld</span><br><span class="line">#根据以上列表删除，如：mysqld</span><br></pre></td></tr></table></figure>
 
 <h2 id="YUM方式"><a href="#YUM方式" class="headerlink" title="YUM方式"></a>YUM方式</h2><h3 id="添加-MySQL-YUM-Repository"><a href="#添加-MySQL-YUM-Repository" class="headerlink" title="添加 MySQL YUM Repository"></a>添加 MySQL YUM Repository</h3><p><code>CentOS 7</code> 开始，<code>Mariadb</code> 成为 <code>YUM</code> 源种默认的数据库安装包，如果想安装官方 <code>MySQL</code> 版本需适用 <code>MySQL</code> 提供的 <code>YUM</code> 源。</p>
 <ul>
@@ -453,12 +468,6 @@
     
 
     <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/blog/tags/MySQL/" rel="tag"># MySQL</a>
-          
-        </div>
       
 
       
@@ -558,7 +567,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">78</span>
+                  <span class="site-state-item-count">81</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -571,7 +580,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/blog/tags/index.html">
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
