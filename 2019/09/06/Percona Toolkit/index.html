@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="Mino&#39;s blog">
 <meta property="og:description" content="简介Percona Toolkit包含多种用于 MySQL 数据库管理的工具，是一组高级命令行工具的集合，使用 Perl 语言编写和执行。 通过使用Percona Toolkit可以查看当前服务的摘要信息，磁盘检测，分析慢查询日志，查找重复索引，实现表同步等等 安装下载解压安装包1234wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/percona">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-05T08:41:33.202Z">
+<meta property="og:updated_time" content="2020-04-22T08:58:40.608Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL运维工具Percona Toolkit">
 <meta name="twitter:description" content="简介Percona Toolkit包含多种用于 MySQL 数据库管理的工具，是一组高级命令行工具的集合，使用 Perl 语言编写和执行。 通过使用Percona Toolkit可以查看当前服务的摘要信息，磁盘检测，分析慢查询日志，查找重复索引，实现表同步等等 安装下载解压安装包1234wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/percona">
@@ -517,6 +517,22 @@
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#将10.138.228.231的matomo数据库下matomo_log_link_visit_action表的数据按条件归档matomo_log_link_visit_action_history表中</span><br><span class="line">pt-archiver --source h=10.138.228.231,P=3306,u=sre,p=&apos;xxx&apos;,D=matomo,t=matomo_log_link_visit_action --charset=utf8 --dest h=10.138.228.231,P=3306,u=sre,p=&apos;xxx&apos;,D=matomo,t=matomo_log_link_visit_action_history --where &quot;server_time &lt; &apos;2019-01-01&apos;&quot; --limit 1000 --commit-each --bulk-insert --no-version-check</span><br><span class="line"></span><br><span class="line"># h=10.138.228.231               -- 数据库实例地址</span><br><span class="line"># P=3306                         -- 数据库实例端口</span><br><span class="line"># u=sre                          -- 数据库实例用户</span><br><span class="line"># p=xxx                          -- 数据库实例用户密码</span><br><span class="line"># D=matomo                       -- 数据库实例数据库</span><br><span class="line"># t=matomo_log_link_visit_action -- 数据库实例表名称</span><br><span class="line"></span><br><span class="line"># --source                       -- 指定要被归档的数据源</span><br><span class="line"># --charset=utf8                 -- 使用的字符集，需与表字符集一致</span><br><span class="line"># --file                         -- 指定目标操作系统文件名</span><br><span class="line"># --dest                         -- 指定归档到的目标表</span><br><span class="line"># --where &quot;id &gt; 3008&quot;            -- 指定 where 过滤条件，过滤出要归档的数据</span><br><span class="line"># --limit 1000                   -- 每条语句读取和归档的数据行数，默认是 1</span><br><span class="line"># --commit-each                  -- 每次获取和归档数据后，commit提交</span><br><span class="line"># --no-version-check             -- 不做版本检查</span><br><span class="line"># --bulk-insert                  -- 批量插入数据，会自动启用 --bulk-delete --commit-each，每次插入行数通过--limit 选项指定</span><br><span class="line"># --statistics                   -- 显示 pt-archiver 本次操作的统计信息。</span><br></pre></td></tr></table></figure>
 
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><h3 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h3><p><code>yum</code> 安装插件报错： [Errno 12]  TimeOut</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@cosmoim-d-sdgt src]# yum -y install perl-DBD-MySQL</span><br><span class="line">Loaded plugins: fastestmirror</span><br><span class="line">http://10.138.46.240/yum/centos/7/os/x86_64/repodata/repomd.xml: [Errno 12] Timeout on http://10.138.46.240/yum/centos/7/os/x86_64/repodata/repomd.xml: (28, &apos;Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds&apos;)</span><br><span class="line">Trying other mirror.</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决方式"><a href="#解决方式" class="headerlink" title="解决方式"></a>解决方式</h3><p><strong>CentOS 重新配置阿里 Yum 源</strong></p>
+<p><strong>备份当前 Yum 源</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup</span><br></pre></td></tr></table></figure>
+
+<p><strong>下载阿里 Yum 源</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># CentOS 6</span><br><span class="line">$ wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo</span><br><span class="line"># CentOS 7</span><br><span class="line">$ wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo</span><br></pre></td></tr></table></figure>
+
+<p><strong>清理</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yum clean all</span><br></pre></td></tr></table></figure>
+
+<p><strong>更新缓存</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yum makecache</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -630,7 +646,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-count">87</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -676,7 +692,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载解压安装包"><span class="nav-number">2.1.</span> <span class="nav-text">下载解压安装包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开始安装"><span class="nav-number">2.2.</span> <span class="nav-text">开始安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装提示所需要的安装包"><span class="nav-number">2.3.</span> <span class="nav-text">安装提示所需要的安装包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工具汇总"><span class="nav-number">2.4.</span> <span class="nav-text">工具汇总</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践"><span class="nav-number">3.</span> <span class="nav-text">实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pt-archiver"><span class="nav-number">3.1.</span> <span class="nav-text">pt-archiver</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载解压安装包"><span class="nav-number">2.1.</span> <span class="nav-text">下载解压安装包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开始安装"><span class="nav-number">2.2.</span> <span class="nav-text">开始安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装提示所需要的安装包"><span class="nav-number">2.3.</span> <span class="nav-text">安装提示所需要的安装包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工具汇总"><span class="nav-number">2.4.</span> <span class="nav-text">工具汇总</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践"><span class="nav-number">3.</span> <span class="nav-text">实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pt-archiver"><span class="nav-number">3.1.</span> <span class="nav-text">pt-archiver</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">4.</span> <span class="nav-text">问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题一"><span class="nav-number">4.1.</span> <span class="nav-text">问题一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决方式"><span class="nav-number">4.2.</span> <span class="nav-text">解决方式</span></a></li></ol></li></ol></div>
             
 
           </div>

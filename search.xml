@@ -1,6 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>控制台监控</title>
+    <url>/blog/2020/05/13/Console-Monitor/</url>
+    <content><![CDATA[<h3 id="本地-MySQL-接入控制台监控"><a href="#本地-MySQL-接入控制台监控" class="headerlink" title="本地 MySQL 接入控制台监控"></a>本地 <code>MySQL</code> 接入控制台监控</h3><ul>
+<li>安装 <code>mysqld_exporter</code> </li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 下载安装包</span></span><br><span class="line"><span class="string">cd</span> <span class="string">/data</span></span><br><span class="line"><span class="string">wget</span> <span class="attr">https://mino-yn.oss-cn-qingdao.aliyuncs.com/mysqld_exporter-0.12.1.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">tar</span> <span class="bullet">-xzf</span> <span class="string">mysqld_exporter-0.12.1.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">cd</span> <span class="string">mysqld_exporter-0.12.1.linux-amd64</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 编辑配置文件</span></span><br><span class="line"><span class="string">vi</span> <span class="string">.my.cnf</span></span><br><span class="line"><span class="string">[client]</span></span><br><span class="line"><span class="string">user=hdm</span></span><br><span class="line"><span class="string">password=Hdm@123!</span></span><br><span class="line"><span class="string">host=10.133.0.51</span></span><br><span class="line"><span class="string">port=3306</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动</span></span><br><span class="line"><span class="string">./mysqld_exporter</span> <span class="bullet">--config.my-cnf=/data/mysqld_exporter-0.12.1.linux-amd64/.my.cnf</span> <span class="string">&amp;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 检测</span></span><br><span class="line"><span class="string">ps</span> <span class="bullet">-ef</span> <span class="string">| grep mysqld_exporter</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 打开防火墙端口：9104</span></span><br><span class="line"><span class="string">firewall-cmd --zone=public --add-port=9104/tcp --permanent</span></span><br><span class="line"><span class="string">firewall-cmd --reload  </span></span><br><span class="line"><span class="string">firewall-cmd --zone=public --list-ports</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 测试</span></span><br><span class="line"><span class="string">10.133.0.51:9104</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>注册 <code>consul</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 注册</span><br><span class="line">PUT http://10.138.16.192:8500/v1/agent/service/register</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;:&quot;mysql_10.133.0.51_3306&quot;,</span><br><span class="line">    &quot;name&quot;:&quot;mysql&quot;,</span><br><span class="line">    &quot;address&quot;:&quot;10.133.0.51&quot;,</span><br><span class="line">    &quot;port&quot;:9104,</span><br><span class="line">    &quot;tags&quot;:[</span><br><span class="line">        &quot;cluster=QD&quot;,</span><br><span class="line">        &quot;project=TDDS&quot;,</span><br><span class="line">        &quot;instance=10.133.0.51:3306&quot;,</span><br><span class="line">        &quot;host=10.133.0.51&quot;,</span><br><span class="line">        &quot;port=3306&quot;,</span><br><span class="line">        &quot;env=prd&quot;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 查看</span><br><span class="line">GET http://10.138.16.192:8500/v1/catalog/service/mysql</span><br><span class="line"></span><br><span class="line"># 注销</span><br><span class="line">PUT http://10.138.16.192:8500/v1/agent/service/deregister/mysql_10.133.0.51_3306</span><br><span class="line"></span><br><span class="line"># Prometheus</span><br><span class="line">http://10.138.16.192:9099/targets</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>获取 CPU、内存、硬盘信息</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cat /proc/cpuinfo | grep &quot;cores&quot;|uniq</span><br><span class="line">free -g</span><br><span class="line">fdisk -l | grep Disk</span><br><span class="line">8核 * 32G * 600GB</span><br></pre></td></tr></table></figure>
+
+]]></content>
+  </entry>
+  <entry>
+    <title>character set</title>
+    <url>/blog/2020/04/30/character-set/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>keepalived</title>
+    <url>/blog/2020/04/30/keepalived/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>PV UV IP</title>
+    <url>/blog/2020/04/23/PV-UV-IP/</url>
+    <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>PV、UV、IP是在运营和网站管理中常用的概念</p>
+<h4 id="PV"><a href="#PV" class="headerlink" title="PV"></a>PV</h4><p>页面浏览量：用户实际浏览过的网页数量</p>
+<p>访问量，即页面浏览量或点击量，衡量网站用户访问的网页数量；在一定统计周期内用户每打开或刷新一个页面就记录1次，多次打开或刷新同一页面则浏览量累计</p>
+<h4 id="UV"><a href="#UV" class="headerlink" title="UV"></a>UV</h4><p>独立访客，统计1天内访问某站点的用户数；访问网站的一台电脑客户端为一个访客，可理解成访问某网站的电脑数量。</p>
+<h4 id="IP"><a href="#IP" class="headerlink" title="IP"></a>IP</h4><p>独立IP数，1天内多少个独立的IP浏览了页面，即统计不同的IP浏览用户数量。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>aliyun hdm</title>
+    <url>/blog/2020/04/20/aliyun-hdm/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>IaaS PaaS SaaS</title>
+    <url>/blog/2020/04/09/IaaS-PaaS-SaaS/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
     <title>MySQL · 积分中心数据库迁移上云</title>
     <url>/blog/2020/04/02/mysql-POINT-cloud/</url>
     <content><![CDATA[<p>背景</p>
@@ -49,7 +99,27 @@
 </tr>
 <tr>
 <td>公网IP</td>
-<td></td>
+<td>124.250.27.24</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>阿里云 RDS</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>实例</td>
+<td>rm-2ze12yaraeqa2q8dk.mysql.rds.aliyuncs.com:3306</td>
+</tr>
+<tr>
+<td>版本</td>
+<td>MySQL 5.7</td>
+</tr>
+<tr>
+<td>用户名</td>
+<td>rds</td>
 </tr>
 </tbody></table>
 <p><strong>说明</strong>：用户中心数据库迁移上云时，开通了 <code>10.163.19.14</code> 服务器的公网IP。在 <code>10.163.19.14</code> 上搭建<code>10.199.96.192</code>  的从库的方式，通过 <code>10.163.19.14</code>  中转的方式迁移上云。</p>
@@ -67,17 +137,42 @@
 </tr>
 <tr>
 <td align="left">传输</td>
-<td align="left">——</td>
+<td align="left">17 h 20 min</td>
 </tr>
 <tr>
 <td align="left">恢复</td>
-<td align="left">——</td>
+<td align="left">45 min</td>
 </tr>
 <tr>
-<td align="left">DTS迁移</td>
-<td align="left"></td>
+<td align="left">DTS 迁移</td>
+<td align="left">6 h</td>
 </tr>
 </tbody></table>
+<h3 id="实施"><a href="#实施" class="headerlink" title="实施"></a>实施</h3><ul>
+<li>全量备份</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=sre --password=&apos;xx&apos; --no-timestamp /data/backup</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>传输</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">scp -r root@10.199.96.192:/data/backup/*  /data/backup  &amp;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>全量恢复</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqladmin -uroot -p&apos;xx&apos; shutdown</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --apply-log /data/backup</span><br><span class="line">mv mysql mysql_bak</span><br><span class="line">mkdir mysql</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --copy-back /data/backup</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>重启 <code>MySQL</code> 服务</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">chown -R mysql:mysql mysql</span><br><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>配置主从复制</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment">#主库创建repl_14用户</span></span><br><span class="line"><span class="string">GRANT</span> <span class="string">REPLICATION</span> <span class="string">SLAVE,</span> <span class="string">REPLICATION</span> <span class="string">CLIENT</span> <span class="string">ON</span> <span class="string">*.*</span> <span class="string">TO</span> <span class="string">'repl_14'</span><span class="string">@'10.163.19.%'</span> <span class="string">IDENTIFIED</span> <span class="string">BY</span> <span class="string">'Changeme_123'</span><span class="string">;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取Master binlog位置</span></span><br><span class="line"><span class="string">cat</span> <span class="string">xtrabackup_binlog_info</span></span><br><span class="line"><span class="string">mysql-bin.000048</span>        <span class="number">1924065</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#配置复制</span></span><br><span class="line"><span class="string">CHANGE</span> <span class="string">MASTER</span> <span class="string">TO</span></span><br><span class="line"><span class="string">MASTER_HOST='10.199.96.192',</span></span><br><span class="line"><span class="string">MASTER_USER='repl_14',</span></span><br><span class="line"><span class="string">MASTER_PASSWORD='Changeme_123',</span></span><br><span class="line"><span class="string">MASTER_PORT=3306,</span></span><br><span class="line"><span class="string">MASTER_LOG_FILE='mysql-bin.000048',</span></span><br><span class="line"><span class="string">MASTER_LOG_POS=1924065;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#启动同步</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">start</span> <span class="string">slave;</span></span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <tags>
         <tag>MySQL</tag>
@@ -2710,9 +2805,9 @@
 ]]></content>
   </entry>
   <entry>
-    <title>案例3 · 主从复制中断</title>
+    <title>MySQL主从复制中断</title>
     <url>/blog/2019/09/20/case3-build-slave/</url>
-    <content><![CDATA[<h2 id="binlog日志缺失"><a href="#binlog日志缺失" class="headerlink" title="binlog日志缺失"></a>binlog日志缺失</h2><h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/build-slave.png" alt></p>
+    <content><![CDATA[<h1 id="案例一"><a href="#案例一" class="headerlink" title="案例一"></a>案例一</h1><h2 id="binlog日志缺失"><a href="#binlog日志缺失" class="headerlink" title="binlog日志缺失"></a>binlog日志缺失</h2><h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/build-slave.png" alt></p>
 <p><strong>登录从库查看主从状态</strong></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State:</span><br><span class="line">                  Master_Host: 10.135.22.70</span><br><span class="line">                  Master_User: repluser</span><br><span class="line">                  Master_Port: 3308</span><br><span class="line">                Connect_Retry: 10</span><br><span class="line">              Master_Log_File: mysql-bin.001935</span><br><span class="line">          Read_Master_Log_Pos: 6587</span><br><span class="line">               Relay_Log_File: relay-log.001487</span><br><span class="line">                Relay_Log_Pos: 4</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.001935</span><br><span class="line">             Slave_IO_Running: No</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB:</span><br><span class="line">          Replicate_Ignore_DB:</span><br><span class="line">           Replicate_Do_Table:</span><br><span class="line">       Replicate_Ignore_Table:</span><br><span class="line">      Replicate_Wild_Do_Table:</span><br><span class="line">  Replicate_Wild_Ignore_Table: test.%</span><br><span class="line">                   Last_Errno: 0</span><br><span class="line">                   Last_Error:</span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 6587</span><br><span class="line">              Relay_Log_Space: 107</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File:</span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File:</span><br><span class="line">           Master_SSL_CA_Path:</span><br><span class="line">              Master_SSL_Cert:</span><br><span class="line">            Master_SSL_Cipher:</span><br><span class="line">               Master_SSL_Key:</span><br><span class="line">        Seconds_Behind_Master: NULL</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">                Last_IO_Errno: 1236</span><br><span class="line">                Last_IO_Error: Got fatal error 1236 from master when reading data from binary log: &apos;Could not find first log file name in binary log index file&apos;</span><br><span class="line">               Last_SQL_Errno: 0</span><br><span class="line">               Last_SQL_Error:</span><br><span class="line">  Replicate_Ignore_Server_Ids:</span><br><span class="line">             Master_Server_Id: 1</span><br></pre></td></tr></table></figure>
 
@@ -2739,7 +2834,7 @@
 <p>6、建立复制关系</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cat xtrabackup_binlog_info</span><br><span class="line">mysql-binlog.000297	900834433</span><br><span class="line"></span><br><span class="line"># 配置同步</span><br><span class="line">CHANGE MASTER TO </span><br><span class="line">MASTER_HOST=&apos;10.135.22.70&apos;,</span><br><span class="line">MASTER_USER=&apos;repl&apos;,</span><br><span class="line">MASTER_PASSWORD=&apos;Changeme_123&apos;,</span><br><span class="line">MASTER_PORT=3308,</span><br><span class="line">MASTER_LOG_FILE=&apos;mysql-binlog.000297&apos;, </span><br><span class="line">MASTER_LOG_POS=900834433,</span><br><span class="line">MASTER_CONNECT_RETRY=10;</span><br><span class="line"></span><br><span class="line"># 开启同步</span><br><span class="line">mysql&gt; start slave;</span><br><span class="line"></span><br><span class="line"># 主库检查参数</span><br><span class="line">mysql&gt; show master status;</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| mysql-bin.001958 | 32629730 |              |                  |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line"></span><br><span class="line"># 从库检查参数</span><br><span class="line">show slave status\G</span><br><span class="line">Slave_IO_Running: Yes</span><br><span class="line">Slave_SQL_Running: Yes</span><br></pre></td></tr></table></figure>
 
-<h2 id="主库空间问题，日志被截断"><a href="#主库空间问题，日志被截断" class="headerlink" title="主库空间问题，日志被截断"></a>主库空间问题，日志被截断</h2><h3 id="问题现象-1"><a href="#问题现象-1" class="headerlink" title="问题现象"></a>问题现象</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: </span><br><span class="line">                  Master_Host: 10.138.22.10</span><br><span class="line">                  Master_User: repluser</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-bin.006130</span><br><span class="line">          Read_Master_Log_Pos: 733347710</span><br><span class="line">               Relay_Log_File: dzspdb2-relay-bin.014727</span><br><span class="line">                Relay_Log_Pos: 253</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.006130</span><br><span class="line">             Slave_IO_Running: No</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB: </span><br><span class="line">                           .....</span><br><span class="line">        Seconds_Behind_Master: NULL</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">                Last_IO_Errno: 1236</span><br><span class="line">                Last_IO_Error: Got fatal error 1236 from master when reading data from binary log: &apos;binlog truncated in the middle of event; consider out of disk space on master; the first event &apos;mysql-bin.006130&apos; at 733347710, the last event read from &apos;./mysql-bin.006130&apos; at 733347710, the last byte read from &apos;./mysql-bin.006130&apos; at 733347840.&apos;</span><br><span class="line">               Last_SQL_Errno: 0</span><br><span class="line">               Last_SQL_Error:</span><br></pre></td></tr></table></figure>
+<h1 id="案例二"><a href="#案例二" class="headerlink" title="案例二"></a>案例二</h1><h2 id="主库空间问题，日志被截断"><a href="#主库空间问题，日志被截断" class="headerlink" title="主库空间问题，日志被截断"></a>主库空间问题，日志被截断</h2><h3 id="问题现象-1"><a href="#问题现象-1" class="headerlink" title="问题现象"></a>问题现象</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: </span><br><span class="line">                  Master_Host: 10.138.22.10</span><br><span class="line">                  Master_User: repluser</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-bin.006130</span><br><span class="line">          Read_Master_Log_Pos: 733347710</span><br><span class="line">               Relay_Log_File: dzspdb2-relay-bin.014727</span><br><span class="line">                Relay_Log_Pos: 253</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.006130</span><br><span class="line">             Slave_IO_Running: No</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB: </span><br><span class="line">                           .....</span><br><span class="line">        Seconds_Behind_Master: NULL</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">                Last_IO_Errno: 1236</span><br><span class="line">                Last_IO_Error: Got fatal error 1236 from master when reading data from binary log: &apos;binlog truncated in the middle of event; consider out of disk space on master; the first event &apos;mysql-bin.006130&apos; at 733347710, the last event read from &apos;./mysql-bin.006130&apos; at 733347710, the last byte read from &apos;./mysql-bin.006130&apos; at 733347840.&apos;</span><br><span class="line">               Last_SQL_Errno: 0</span><br><span class="line">               Last_SQL_Error:</span><br></pre></td></tr></table></figure>
 
 <h3 id="原因分析-1"><a href="#原因分析-1" class="headerlink" title="原因分析"></a>原因分析</h3><p>该错误和主库的空间和 <code>sync_binlog</code> 配置有关，当主库 <code>sync_binlog = N</code> 不等于 1 且磁盘空间满时，MySQL 每写 N 次 <code>binlog</code>，系统才会同步到磁盘，但是由于存储日志的磁盘空间满而导致 MySQL 没有将日志完全写入磁盘，<code>binlog event</code> 被截断，从库读取该 <code>binlog</code> 时就会报错 <code>binlog truncated in the middle of event</code>。</p>
 <ul>
@@ -2747,7 +2842,16 @@
 <li>当 <code>sync_binlog = N（N&gt; 0）</code>时，<code>MySQL</code> 在每写 <code>n</code> 次二进制日志二进制日志时，会使用 <code>fdatasync ()</code> 函数将它的写二进制日志二进制日志同步到磁盘中去。</li>
 </ul>
 <h3 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a>解决方法</h3><p>在从库重新指向到主库下一个可用的 <code>binlog</code> 并且从初始化的位置开始：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">stop</span> <span class="string">slave;</span></span><br><span class="line"><span class="string">change</span> <span class="string">master</span> <span class="string">to</span> <span class="string">master_log_file</span> <span class="string">=</span> <span class="string">'mysql-bin.006131'</span><span class="string">,</span> <span class="string">master_log_pos</span> <span class="string">=</span> <span class="number">4</span><span class="string">;</span></span><br><span class="line"><span class="string">start</span> <span class="string">slave;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 感觉这样会丢失数据，导致主从数据不一致</span></span><br><span class="line"><span class="string">stop</span> <span class="string">slave;</span></span><br><span class="line"><span class="string">change</span> <span class="string">master</span> <span class="string">to</span> <span class="string">master_log_file</span> <span class="string">=</span> <span class="string">'mysql-bin.006131'</span><span class="string">,</span> <span class="string">master_log_pos</span> <span class="string">=</span> <span class="number">4</span><span class="string">;</span></span><br><span class="line"><span class="string">start</span> <span class="string">slave;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="案例三"><a href="#案例三" class="headerlink" title="案例三"></a>案例三</h1><h2 id="主键重复"><a href="#主键重复" class="headerlink" title="主键重复"></a>主键重复</h2><h3 id="问题现象-2"><a href="#问题现象-2" class="headerlink" title="问题现象"></a>问题现象</h3><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/case3-build-slave1.png" alt></p>
+<p><strong>登录从库查看主从状态</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.0.51</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-binlog.001183</span><br><span class="line">          Read_Master_Log_Pos: 762712466</span><br><span class="line">               Relay_Log_File: relay-log.004137</span><br><span class="line">                Relay_Log_Pos: 50480930</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.001178</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: No</span><br><span class="line">              Replicate_Do_DB:</span><br><span class="line">          Replicate_Ignore_DB:</span><br><span class="line">           Replicate_Do_Table:</span><br><span class="line">       Replicate_Ignore_Table:</span><br><span class="line">      Replicate_Wild_Do_Table:</span><br><span class="line">  Replicate_Wild_Ignore_Table:</span><br><span class="line">                   Last_Errno: 1062</span><br><span class="line">                   Last_Error: Could not execute Write_rows event on table tdm.d_etl_odsbcc_v_price_intbl_month; Duplicate entry &apos;463281&apos; for key &apos;PRIMARY&apos;, Error_code: 1062; handler error HA_ERR_FOUND_DUPP_KEY; the event&apos;s master log mysql-binlog.001178, end_log_pos 50489140</span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 50480711</span><br><span class="line">              Relay_Log_Space: 7255396983</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File:</span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File:</span><br><span class="line">           Master_SSL_CA_Path:</span><br><span class="line">              Master_SSL_Cert:</span><br><span class="line">            Master_SSL_Cipher:</span><br><span class="line">               Master_SSL_Key:</span><br><span class="line">        Seconds_Behind_Master: NULL</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">                Last_IO_Errno: 0</span><br><span class="line">                Last_IO_Error:</span><br><span class="line">               Last_SQL_Errno: 1062</span><br><span class="line">               Last_SQL_Error: Could not execute Write_rows event on table tdm.d_etl_odsbcc_v_price_intbl_month; Duplicate entry &apos;463281&apos; for key &apos;PRIMARY&apos;, Error_code: 1062; handler error HA_ERR_FOUND_DUPP_KEY; the event&apos;s master log mysql-binlog.001178, end_log_pos 50489140</span><br><span class="line">  Replicate_Ignore_Server_Ids:</span><br><span class="line">             Master_Server_Id: 3306100</span><br><span class="line">                  Master_UUID: e1db90f2-fce1-11e8-86d2-005056b1d631</span><br><span class="line">             Master_Info_File: /data/mysql/master.info</span><br><span class="line">                    SQL_Delay: 0</span><br><span class="line">          SQL_Remaining_Delay: NULL</span><br><span class="line">      Slave_SQL_Running_State:</span><br><span class="line">           Master_Retry_Count: 86400</span><br><span class="line">                  Master_Bind:</span><br><span class="line">      Last_IO_Error_Timestamp:</span><br><span class="line">     Last_SQL_Error_Timestamp: 200511 14:59:03</span><br><span class="line">               Master_SSL_Crl:</span><br><span class="line">           Master_SSL_Crlpath:</span><br><span class="line">           Retrieved_Gtid_Set:</span><br><span class="line">            Executed_Gtid_Set:</span><br><span class="line">                Auto_Position: 0</span><br><span class="line">         Replicate_Rewrite_DB:</span><br><span class="line">                 Channel_Name:</span><br><span class="line">           Master_TLS_Version:</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="原因分析-2"><a href="#原因分析-2" class="headerlink" title="原因分析"></a>原因分析</h3><p>报错信息显示从库读取 <code>binlog</code> 日志执行写入操作时，写入的数据与从库中原有的数据主键重复。查看表 <code>tdm.d_etl_odsbcc_v_price_intbl_month</code> 发现主从该表中从某主键号开始存在大量数据 不一致现象。推测：可能由于之前处理主从延迟现象操作不当导致。</p>
+<h3 id="解决方法-2"><a href="#解决方法-2" class="headerlink" title="解决方法"></a>解决方法</h3><p>1、确认从库是否有写入数据</p>
+<p>2、若从库无写入数据，出错表的数据量不算太大，可以考虑将从库的表重导。</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 后台跳过错误日志使主从先保持同步</span></span><br><span class="line"><span class="string">stop</span> <span class="string">slave</span></span><br><span class="line"><span class="string">nohup</span> <span class="string">pt-slave-restart</span> <span class="bullet">-usre</span> <span class="bullet">-p'sre@@p$i'</span>  <span class="string">&gt; myout.file 2&gt;&amp;1 &amp;</span></span><br><span class="line"><span class="string">start slave</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#取消后台跳过 停止主从同步</span></span><br><span class="line"><span class="string">ps -ef|grep pt-slave;</span></span><br><span class="line"><span class="string">stop slave </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#删除从库对应表 重新导表</span></span><br><span class="line"><span class="string">#删除从库表</span></span><br><span class="line"><span class="string">#备份主库表</span></span><br><span class="line"><span class="string">/usr/local/mysql/bin/mysqldump -h 10.133.0.51 --single-transaction  -S /data/mysql/mysql.sock -uroot  -p'root123' tmd d_etl_odsbcc_v_price_intbl_month &gt;d_etl_odsbcc_v_price_intbl_month.sql</span></span><br><span class="line"><span class="string">#恢复</span></span><br><span class="line"><span class="string">/usr/local/mysql/bin/mysql -h 10.133.0.51  -P3306 -uroot -p'root123' tmd &lt; d_etl_odsbcc_v_price_intbl_month.sql</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#重启主从，确认数据一致性</span></span><br><span class="line"><span class="string">start slave</span></span><br><span class="line"><span class="string">SELECT COUNT(*) FROM tdm.d_etl_odsbcc_v_price_intbl_month</span></span><br><span class="line"><span class="string">SELECT * FROM  tdm.d_etl_odsbcc_v_price_intbl_month WHERE id = 529293</span></span><br></pre></td></tr></table></figure>
 
 ]]></content>
       <tags>
@@ -2901,7 +3005,7 @@
 <h3 id="问题三"><a href="#问题三" class="headerlink" title="问题三"></a>问题三</h3><h4 id="问题现象-2"><a href="#问题现象-2" class="headerlink" title="问题现象"></a>问题现象</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@hop02 src]# rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpmwarning: percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEYerror: Failed dependencies:	libc.so.6(GLIBC_2.14)(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64	libstdc++.so.6(GLIBCXX_3.4.15)(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br></pre></td></tr></table></figure>
 
 <h4 id="解决方法："><a href="#解决方法：" class="headerlink" title="解决方法："></a><strong>解决方法</strong>：</h4><p>查看操作系统版本，<code>CentOS 6</code> 下载 <code>el6</code> 的安装包即可。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cat /etc/redhat-releaseCentOS release 6.5 (Final)$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-xtrabackup-24-2.4.12-1.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">cat</span> <span class="string">/etc/redhat-release</span></span><br><span class="line"><span class="string">CentOS</span> <span class="string">release</span> <span class="number">6.5</span> <span class="string">(Final)</span></span><br><span class="line"><span class="string">$</span> <span class="string">wget</span> <span class="attr">http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-xtrabackup-24-2.4.12-1.el6.x86_64.rpm</span></span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>Tips：不要轻易在真实生产环境中直接安装，因为升级的过程中比较容易出现系统出错。</p>
@@ -3219,6 +3323,22 @@
 <li>归档到不同实例下的表（<strong>tips</strong>：归档操作前，目标表要存在）</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#将10.138.228.231的matomo数据库下matomo_log_link_visit_action表的数据按条件归档matomo_log_link_visit_action_history表中</span><br><span class="line">pt-archiver --source h=10.138.228.231,P=3306,u=sre,p=&apos;xxx&apos;,D=matomo,t=matomo_log_link_visit_action --charset=utf8 --dest h=10.138.228.231,P=3306,u=sre,p=&apos;xxx&apos;,D=matomo,t=matomo_log_link_visit_action_history --where &quot;server_time &lt; &apos;2019-01-01&apos;&quot; --limit 1000 --commit-each --bulk-insert --no-version-check</span><br><span class="line"></span><br><span class="line"># h=10.138.228.231               -- 数据库实例地址</span><br><span class="line"># P=3306                         -- 数据库实例端口</span><br><span class="line"># u=sre                          -- 数据库实例用户</span><br><span class="line"># p=xxx                          -- 数据库实例用户密码</span><br><span class="line"># D=matomo                       -- 数据库实例数据库</span><br><span class="line"># t=matomo_log_link_visit_action -- 数据库实例表名称</span><br><span class="line"></span><br><span class="line"># --source                       -- 指定要被归档的数据源</span><br><span class="line"># --charset=utf8                 -- 使用的字符集，需与表字符集一致</span><br><span class="line"># --file                         -- 指定目标操作系统文件名</span><br><span class="line"># --dest                         -- 指定归档到的目标表</span><br><span class="line"># --where &quot;id &gt; 3008&quot;            -- 指定 where 过滤条件，过滤出要归档的数据</span><br><span class="line"># --limit 1000                   -- 每条语句读取和归档的数据行数，默认是 1</span><br><span class="line"># --commit-each                  -- 每次获取和归档数据后，commit提交</span><br><span class="line"># --no-version-check             -- 不做版本检查</span><br><span class="line"># --bulk-insert                  -- 批量插入数据，会自动启用 --bulk-delete --commit-each，每次插入行数通过--limit 选项指定</span><br><span class="line"># --statistics                   -- 显示 pt-archiver 本次操作的统计信息。</span><br></pre></td></tr></table></figure>
+
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><h3 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h3><p><code>yum</code> 安装插件报错： [Errno 12]  TimeOut</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@cosmoim-d-sdgt src]# yum -y install perl-DBD-MySQL</span><br><span class="line">Loaded plugins: fastestmirror</span><br><span class="line">http://10.138.46.240/yum/centos/7/os/x86_64/repodata/repomd.xml: [Errno 12] Timeout on http://10.138.46.240/yum/centos/7/os/x86_64/repodata/repomd.xml: (28, &apos;Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds&apos;)</span><br><span class="line">Trying other mirror.</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决方式"><a href="#解决方式" class="headerlink" title="解决方式"></a>解决方式</h3><p><strong>CentOS 重新配置阿里 Yum 源</strong></p>
+<p><strong>备份当前 Yum 源</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup</span><br></pre></td></tr></table></figure>
+
+<p><strong>下载阿里 Yum 源</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># CentOS 6</span><br><span class="line">$ wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo</span><br><span class="line"># CentOS 7</span><br><span class="line">$ wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo</span><br></pre></td></tr></table></figure>
+
+<p><strong>清理</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yum clean all</span><br></pre></td></tr></table></figure>
+
+<p><strong>更新缓存</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yum makecache</span><br></pre></td></tr></table></figure>
 
 ]]></content>
   </entry>
