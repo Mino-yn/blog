@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="查看系统版本 123lsb_release -a             #可列出所有版本信息cat /etc/redhat-release    #只适合Redhat系的Linuxcat /etc/issue             #适用于所有的Linux发行版  CentOS 612345678# 设置服务自启动chkconfig --add mysqld          # 添加服务ch">
+<meta name="description" content="背景HDY 数据库所在服务器到期，需要腾出磁盘空间，进行数据库备份迁移，查看文件大小，发现有一个非常大的err日志文件 326GB, 为腾空间，决定将其删除。 过程12rm -rf hop01.errdf -h  删除后查看磁盘空间，发现空间未释放。应该有程序还在操作这个文件，指针未释放 1234# 查看后发现 mysqld 进程在占用这个文件，所以文件无法被删除[root@hop01 ~]# l">
 <meta name="keywords" content="Linux">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CentOS 6与CentOS 7启停服务">
-<meta property="og:url" content="https://mino-yn.github.io/blog/2019/11/15/linux-service/index.html">
+<meta property="og:title" content="删除大文件，磁盘空间未释放">
+<meta property="og:url" content="https://mino-yn.github.io/blog/2020/05/18/Delete-large-file/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="查看系统版本 123lsb_release -a             #可列出所有版本信息cat /etc/redhat-release    #只适合Redhat系的Linuxcat /etc/issue             #适用于所有的Linux发行版  CentOS 612345678# 设置服务自启动chkconfig --add mysqld          # 添加服务ch">
+<meta property="og:description" content="背景HDY 数据库所在服务器到期，需要腾出磁盘空间，进行数据库备份迁移，查看文件大小，发现有一个非常大的err日志文件 326GB, 为腾空间，决定将其删除。 过程12rm -rf hop01.errdf -h  删除后查看磁盘空间，发现空间未释放。应该有程序还在操作这个文件，指针未释放 1234# 查看后发现 mysqld 进程在占用这个文件，所以文件无法被删除[root@hop01 ~]# l">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-15T05:59:41.111Z">
+<meta property="og:updated_time" content="2020-05-18T03:02:18.232Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CentOS 6与CentOS 7启停服务">
-<meta name="twitter:description" content="查看系统版本 123lsb_release -a             #可列出所有版本信息cat /etc/redhat-release    #只适合Redhat系的Linuxcat /etc/issue             #适用于所有的Linux发行版  CentOS 612345678# 设置服务自启动chkconfig --add mysqld          # 添加服务ch">
+<meta name="twitter:title" content="删除大文件，磁盘空间未释放">
+<meta name="twitter:description" content="背景HDY 数据库所在服务器到期，需要腾出磁盘空间，进行数据库备份迁移，查看文件大小，发现有一个非常大的err日志文件 326GB, 为腾空间，决定将其删除。 过程12rm -rf hop01.errdf -h  删除后查看磁盘空间，发现空间未释放。应该有程序还在操作这个文件，指针未释放 1234# 查看后发现 mysqld 进程在占用这个文件，所以文件无法被删除[root@hop01 ~]# l">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://mino-yn.github.io/blog/2019/11/15/linux-service/">
+  <link rel="canonical" href="https://mino-yn.github.io/blog/2020/05/18/Delete-large-file/">
 
 
 
 
 
-  <title>CentOS 6与CentOS 7启停服务 | Mino's blog</title>
+  <title>删除大文件，磁盘空间未释放 | Mino's blog</title>
   
 
 
@@ -285,7 +285,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/15/linux-service/">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/05/18/Delete-large-file/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="mino-yn">
@@ -302,7 +302,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">CentOS 6与CentOS 7启停服务</h1>
+          <h1 class="post-title" itemprop="name headline">删除大文件，磁盘空间未释放</h1>
         
 
         <div class="post-meta">
@@ -314,8 +314,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-15T13:48:29+08:00">
-                2019-11-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-18T10:38:13+08:00">
+                2020-05-18
               </time>
             
 
@@ -352,13 +352,24 @@
       
 
       
-        <p>查看系统版本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lsb_release -a             #可列出所有版本信息</span><br><span class="line">cat /etc/redhat-release    #只适合Redhat系的Linux</span><br><span class="line">cat /etc/issue             #适用于所有的Linux发行版</span><br></pre></td></tr></table></figure>
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><code>HDY</code> 数据库所在服务器到期，需要腾出磁盘空间，进行数据库备份迁移，查看文件大小，发现有一个非常大的err日志文件 <code>326GB</code>, 为腾空间，决定将其删除。</p>
+<h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm -rf hop01.err</span><br><span class="line">df -h</span><br></pre></td></tr></table></figure>
 
-<h3 id="CentOS-6"><a href="#CentOS-6" class="headerlink" title="CentOS 6"></a>CentOS 6</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 设置服务自启动</span><br><span class="line">chkconfig --add mysqld          # 添加服务</span><br><span class="line">chkconfig mysqld on             # 开机自启服务</span><br><span class="line">chkconfig mysqld off            # 关闭开机自启</span><br><span class="line">chkconfig --list | grep mysqld  # 查看</span><br><span class="line"></span><br><span class="line"># 查看状态、启动、停止、重启</span><br><span class="line">service mysqld status/start/stop/restart</span><br></pre></td></tr></table></figure>
+<p>删除后查看磁盘空间，发现空间未释放。应该有程序还在操作这个文件，指针未释放</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看后发现 mysqld 进程在占用这个文件，所以文件无法被删除</span></span><br><span class="line"><span class="string">[root@hop01</span> <span class="string">~]#</span> <span class="string">lsof</span> <span class="string">| grep deleted | grep err</span></span><br><span class="line"><span class="string">mysqld    24979     mysql    1w      REG              253,1 349262635660   22420100 /home/mysql/mysql-5.5.27-linux2.6-x86_64/data/hop01.err (deleted)</span></span><br><span class="line"><span class="string">mysqld    24979     mysql    2w      REG              253,1 349262635660   22420100 /home/mysql/mysql-5.5.27-linux2.6-x86_64/data/hop01.err (deleted)</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="CentOS-7"><a href="#CentOS-7" class="headerlink" title="CentOS 7"></a>CentOS 7</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable mysqld.service  # 开机自启服务</span><br><span class="line">systemctl disable mysqld.service # 关闭开机自启</span><br><span class="line"></span><br><span class="line"># 查看状态、启动、停止、重启</span><br><span class="line">systemctl status/start/stop/restart mysqld.service</span><br></pre></td></tr></table></figure>
+<p>删除进程</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 注意此时删除的是mysqld进程</span></span><br><span class="line"><span class="string">kill</span> <span class="number">24979</span></span><br><span class="line"><span class="comment"># 删除进程后果然告警，数据库连不上了，还好是从库，赶紧重启一下</span></span><br><span class="line"> <span class="string">mysqld_safe</span> <span class="bullet">--defaults-file=/etc/my.cnf</span> <span class="bullet">--user=mysql</span> <span class="string">&amp;</span></span><br><span class="line"><span class="comment"># 重启数据库后再次查看磁盘空间，空间已释放了</span></span><br><span class="line"> <span class="string">df</span> <span class="bullet">-h</span></span><br><span class="line"><span class="comment"># 确认一下，数据库可以连接，主从都没有问题</span></span><br><span class="line"><span class="string">show</span> <span class="string">slave</span> <span class="string">status</span></span><br><span class="line"><span class="comment"># 查看数据目录，已经有新的 hop01.err 文件了，大小为5.1K</span></span><br></pre></td></tr></table></figure>
 
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li><p><strong>方法一</strong></p>
+<p>在删除之前 先清空文件，再删除文件 这样能快速释放磁盘空间。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 该方法还未实验过</span></span><br><span class="line"><span class="string">echo</span> <span class="string">""</span> <span class="string">&gt; xxx.log</span></span><br><span class="line"><span class="string">rm -rf xxx.log</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>方法二</strong></p>
+<p>若文件已删除，但磁盘空间未被释放，很可能是此时这个文件被别的进程所占用，kill 掉占用文件的进程号即可解决。注意：<strong>kill 进程之前，确认一下删除的是什么进程，防止删除了重要的进程，避免不必要的麻烦</strong></p>
+</li>
+</ul>
 
       
     </div>
@@ -389,8 +400,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2019/11/14/MySQL-troubleshooting-step/" rel="next" title="MySQL故障排查">
-                <i class="fa fa-chevron-left"></i> MySQL故障排查
+              <a href="/blog/2020/05/13/Console-Monitor/" rel="next" title="控制台监控">
+                <i class="fa fa-chevron-left"></i> 控制台监控
               </a>
             
           </div>
@@ -398,10 +409,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/blog/2019/11/15/mysql-live-session/" rel="prev" title="MySQL实时会话状态">
-                MySQL实时会话状态 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -524,7 +531,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#CentOS-6"><span class="nav-number">1.</span> <span class="nav-text">CentOS 6</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CentOS-7"><span class="nav-number">2.</span> <span class="nav-text">CentOS 7</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#过程"><span class="nav-number">2.</span> <span class="nav-text">过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>

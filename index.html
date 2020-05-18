@@ -281,6 +281,143 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/05/18/Delete-large-file/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/05/18/Delete-large-file/" itemprop="url">删除大文件，磁盘空间未释放</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-18T10:38:13+08:00">
+                2020-05-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><code>HDY</code> 数据库所在服务器到期，需要腾出磁盘空间，进行数据库备份迁移，查看文件大小，发现有一个非常大的err日志文件 <code>326GB</code>, 为腾空间，决定将其删除。</p>
+<h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm -rf hop01.err</span><br><span class="line">df -h</span><br></pre></td></tr></table></figure>
+
+<p>删除后查看磁盘空间，发现空间未释放。应该有程序还在操作这个文件，指针未释放</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看后发现 mysqld 进程在占用这个文件，所以文件无法被删除</span></span><br><span class="line"><span class="string">[root@hop01</span> <span class="string">~]#</span> <span class="string">lsof</span> <span class="string">| grep deleted | grep err</span></span><br><span class="line"><span class="string">mysqld    24979     mysql    1w      REG              253,1 349262635660   22420100 /home/mysql/mysql-5.5.27-linux2.6-x86_64/data/hop01.err (deleted)</span></span><br><span class="line"><span class="string">mysqld    24979     mysql    2w      REG              253,1 349262635660   22420100 /home/mysql/mysql-5.5.27-linux2.6-x86_64/data/hop01.err (deleted)</span></span><br></pre></td></tr></table></figure>
+
+<p>删除进程</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 注意此时删除的是mysqld进程</span></span><br><span class="line"><span class="string">kill</span> <span class="number">24979</span></span><br><span class="line"><span class="comment"># 删除进程后果然告警，数据库连不上了，还好是从库，赶紧重启一下</span></span><br><span class="line"> <span class="string">mysqld_safe</span> <span class="bullet">--defaults-file=/etc/my.cnf</span> <span class="bullet">--user=mysql</span> <span class="string">&amp;</span></span><br><span class="line"><span class="comment"># 重启数据库后再次查看磁盘空间，空间已释放了</span></span><br><span class="line"> <span class="string">df</span> <span class="bullet">-h</span></span><br><span class="line"><span class="comment"># 确认一下，数据库可以连接，主从都没有问题</span></span><br><span class="line"><span class="string">show</span> <span class="string">slave</span> <span class="string">status</span></span><br><span class="line"><span class="comment"># 查看数据目录，已经有新的 hop01.err 文件了，大小为5.1K</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li><p><strong>方法一</strong></p>
+<p>在删除之前 先清空文件，再删除文件 这样能快速释放磁盘空间。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 该方法还未实验过</span></span><br><span class="line"><span class="string">echo</span> <span class="string">""</span> <span class="string">&gt; xxx.log</span></span><br><span class="line"><span class="string">rm -rf xxx.log</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>方法二</strong></p>
+<p>若文件已删除，但磁盘空间未被释放，很可能是此时这个文件被别的进程所占用，kill 掉占用文件的进程号即可解决。注意：<strong>kill 进程之前，确认一下删除的是什么进程，防止删除了重要的进程，避免不必要的麻烦</strong></p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/05/13/Console-Monitor/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1519,145 +1656,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/03/25/Mysql-Mem/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/03/25/Mysql-Mem/" itemprop="url">服务器内存使用率</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-25T14:13:49+08:00">
-                2020-03-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Linux查看内存使用率"><a href="#Linux查看内存使用率" class="headerlink" title="Linux查看内存使用率"></a>Linux查看内存使用率</h2><ul>
-<li><code>free</code></li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看内存</span></span><br><span class="line"><span class="string">free</span>  <span class="bullet">-m</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">#计算内存使用率的命令</span></span><br><span class="line"><span class="string">free</span> <span class="bullet">-m</span> <span class="string">| sed -n '2p' | awk '&#123;print "used mem is "$3"M,total mem is "$2"M,used percent is "$3/$2*100"%"&#125;'</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>ps</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#linux 下 取进程占用内存(MEM)最高的前10个进程</span></span><br><span class="line"><span class="string">ps</span> <span class="string">aux|head</span> <span class="bullet">-1</span><span class="string">;ps</span> <span class="string">aux|grep</span> <span class="bullet">-v</span> <span class="string">PID</span> <span class="string">| sort -rn -k +4 | head  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#linux 下 取进程占用 cpu 最高的前10个进程</span></span><br><span class="line"><span class="string">ps aux|head -1;ps aux|grep -v PID|sort -rn -k +3|head</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#然后根据查到的结果，可以把没用的进程杀掉（kill + PID号）</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>日志空间的处理</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#可以看到文件中每个文件的大小</span></span><br><span class="line"><span class="string">du</span> <span class="bullet">-a</span>   </span><br><span class="line"><span class="comment">#按照文件大小排序</span></span><br><span class="line"><span class="string">du</span> <span class="bullet">-sh</span> <span class="string">*</span> <span class="string">| sort -nr</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>top</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">PID</span> <span class="string">—</span> <span class="string">进程id</span></span><br><span class="line"><span class="string">USER</span> <span class="string">—</span> <span class="string">进程所有者</span></span><br><span class="line"><span class="string">PR</span> <span class="string">—</span> <span class="string">进程优先级</span></span><br><span class="line"><span class="string">NI</span> <span class="string">—</span> <span class="string">nice值。负值表示高优先级，正值表示低优先级</span></span><br><span class="line"><span class="string">VIRT</span> <span class="string">—</span> <span class="string">进程使用的虚拟内存总量，单位kb。VIRT=SWAP+RES</span></span><br><span class="line"><span class="string">RES</span> <span class="string">—</span> <span class="string">进程使用的、未被换出的物理内存大小，单位kb。RES=CODE+DATA</span></span><br><span class="line"><span class="string">SHR</span> <span class="string">—</span> <span class="string">共享内存大小，单位kb</span></span><br><span class="line"><span class="string">S</span> <span class="string">—</span> <span class="string">进程状态。D=不可中断的睡眠状态</span> <span class="string">R=运行</span> <span class="string">S=睡眠</span> <span class="string">T=跟踪/停止</span> <span class="string">Z=僵尸进程</span></span><br><span class="line"><span class="string">%CPU</span> <span class="string">—</span> <span class="string">上次更新到现在的CPU时间占用百分比</span></span><br><span class="line"><span class="string">%MEM</span> <span class="string">—</span> <span class="string">进程使用的物理内存百分比</span></span><br><span class="line"><span class="string">TIME+</span> <span class="string">—</span> <span class="string">进程使用的CPU时间总计，单位1/100秒</span></span><br><span class="line"><span class="string">COMMAND</span> <span class="string">—</span> <span class="string">进程名称（命令名/命令行）</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1708,7 +1706,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">87</span>
+                  <span class="site-state-item-count">88</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

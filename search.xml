@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>删除大文件，磁盘空间未释放</title>
+    <url>/blog/2020/05/18/Delete-large-file/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><code>HDY</code> 数据库所在服务器到期，需要腾出磁盘空间，进行数据库备份迁移，查看文件大小，发现有一个非常大的err日志文件 <code>326GB</code>, 为腾空间，决定将其删除。</p>
+<h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rm -rf hop01.err</span><br><span class="line">df -h</span><br></pre></td></tr></table></figure>
+
+<p>删除后查看磁盘空间，发现空间未释放。应该有程序还在操作这个文件，指针未释放</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看后发现 mysqld 进程在占用这个文件，所以文件无法被删除</span></span><br><span class="line"><span class="string">[root@hop01</span> <span class="string">~]#</span> <span class="string">lsof</span> <span class="string">| grep deleted | grep err</span></span><br><span class="line"><span class="string">mysqld    24979     mysql    1w      REG              253,1 349262635660   22420100 /home/mysql/mysql-5.5.27-linux2.6-x86_64/data/hop01.err (deleted)</span></span><br><span class="line"><span class="string">mysqld    24979     mysql    2w      REG              253,1 349262635660   22420100 /home/mysql/mysql-5.5.27-linux2.6-x86_64/data/hop01.err (deleted)</span></span><br></pre></td></tr></table></figure>
+
+<p>删除进程</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 注意此时删除的是mysqld进程</span></span><br><span class="line"><span class="string">kill</span> <span class="number">24979</span></span><br><span class="line"><span class="comment"># 删除进程后果然告警，数据库连不上了，还好是从库，赶紧重启一下</span></span><br><span class="line"> <span class="string">mysqld_safe</span> <span class="bullet">--defaults-file=/etc/my.cnf</span> <span class="bullet">--user=mysql</span> <span class="string">&amp;</span></span><br><span class="line"><span class="comment"># 重启数据库后再次查看磁盘空间，空间已释放了</span></span><br><span class="line"> <span class="string">df</span> <span class="bullet">-h</span></span><br><span class="line"><span class="comment"># 确认一下，数据库可以连接，主从都没有问题</span></span><br><span class="line"><span class="string">show</span> <span class="string">slave</span> <span class="string">status</span></span><br><span class="line"><span class="comment"># 查看数据目录，已经有新的 hop01.err 文件了，大小为5.1K</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li><p><strong>方法一</strong></p>
+<p>在删除之前 先清空文件，再删除文件 这样能快速释放磁盘空间。</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 该方法还未实验过</span></span><br><span class="line"><span class="string">echo</span> <span class="string">""</span> <span class="string">&gt; xxx.log</span></span><br><span class="line"><span class="string">rm -rf xxx.log</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>方法二</strong></p>
+<p>若文件已删除，但磁盘空间未被释放，很可能是此时这个文件被别的进程所占用，kill 掉占用文件的进程号即可解决。注意：<strong>kill 进程之前，确认一下删除的是什么进程，防止删除了重要的进程，避免不必要的麻烦</strong></p>
+</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>控制台监控</title>
     <url>/blog/2020/05/13/Console-Monitor/</url>
     <content><![CDATA[<h3 id="本地-MySQL-接入控制台监控"><a href="#本地-MySQL-接入控制台监控" class="headerlink" title="本地 MySQL 接入控制台监控"></a>本地 <code>MySQL</code> 接入控制台监控</h3><ul>
