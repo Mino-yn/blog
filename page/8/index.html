@@ -281,6 +281,472 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/06/Percona Toolkit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/06/Percona Toolkit/" itemprop="url">MySQL运维工具Percona Toolkit</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-06T14:51:10+08:00">
+                2019-09-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Percona Toolkit包含多种用于 MySQL 数据库管理的工具，是一组高级命令行工具的集合，使用 Perl 语言编写和执行。</p>
+<p>通过使用Percona Toolkit可以查看当前服务的摘要信息，磁盘检测，分析慢查询日志，查找重复索引，实现表同步等等</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><h3 id="下载解压安装包"><a href="#下载解压安装包" class="headerlink" title="下载解压安装包"></a>下载解压安装包</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/percona-toolkit-3.0.13-el7-x86_64-bundle.tar</span><br><span class="line"># tar xvf percona-toolkit-3.0.13-el7-x86_64-bundle.tar</span><br><span class="line">- percona-toolkit-3.0.13-1.el7.x86_64.rpm</span><br><span class="line">- percona-toolkit-debuginfo-3.0.13-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<h3 id="开始安装"><a href="#开始安装" class="headerlink" title="开始安装"></a>开始安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># rpm -ivh percona-toolkit-3.0.13-1.el7.x86_64.rpm</span><br><span class="line">warning: percona-toolkit-3.0.13-1.el7.x86_64.rpm: Header V4 RSA/SHA256 Signature, key ID 8507efa5: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">	perl(DBD::mysql) &gt;= 1.0 is needed by percona-toolkit-3.0.13-1.el7.x86_64</span><br><span class="line">	perl(IO::Socket::SSL) is needed by percona-toolkit-3.0.13-1.el7.x86_64</span><br><span class="line">	perl(Digest::MD5) is needed by percona-toolkit-3.0.13-1.el7.x86_64</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装提示所需要的安装包"><a href="#安装提示所需要的安装包" class="headerlink" title="安装提示所需要的安装包"></a>安装提示所需要的安装包</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># yum -y install perl-DBD-MySQL</span><br><span class="line"># yum -y install perl-Digest-MD5</span><br><span class="line"># yum -y install perl-IO-Socket-SSL</span><br><span class="line"># yum -y install perl-TermReadKey</span><br><span class="line"># rpm -ivh percona-toolkit-3.0.13-1.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line">通过下面的命令确认是否安装成功：</span><br><span class="line"># pt-archiver --help</span><br><span class="line"># pt-table-checksum --help</span><br><span class="line">Usage: pt-archiver [OPTIONS] --source DSN --where WHERE     #命令提示可以正常显示，则说明pt工具已经正常安装和使用了。</span><br></pre></td></tr></table></figure>
+
+<h3 id="工具汇总"><a href="#工具汇总" class="headerlink" title="工具汇总"></a>工具汇总</h3><table>
+<thead>
+<tr>
+<th align="left">工具命令</th>
+<th align="left">工具作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">pt-align</td>
+<td align="left">对齐其他工具的输出</td>
+</tr>
+<tr>
+<td align="left"><strong>pt-archiver</strong></td>
+<td align="left">将表数据归档到另一个表或文件中</td>
+</tr>
+<tr>
+<td align="left">pt-config-diff</td>
+<td align="left">比较配置文件和参数</td>
+</tr>
+<tr>
+<td align="left">pt-deadlock-logger</td>
+<td align="left">提取和记录mysql死锁信息</td>
+</tr>
+<tr>
+<td align="left">pt-diskstats</td>
+<td align="left">查看系统磁盘状态</td>
+</tr>
+<tr>
+<td align="left">pt-duplicate-key-checker</td>
+<td align="left">列出并删除重复的索引和外键</td>
+</tr>
+<tr>
+<td align="left">pt-fifo-split</td>
+<td align="left">模拟切割文件并输出</td>
+</tr>
+<tr>
+<td align="left">pt-find</td>
+<td align="left">查找表并执行命令</td>
+</tr>
+<tr>
+<td align="left">pt-fingerprint</td>
+<td align="left">将查询转成密文</td>
+</tr>
+<tr>
+<td align="left">pt-fk-error-logger</td>
+<td align="left">提取和记录外键信息</td>
+</tr>
+<tr>
+<td align="left">pt-heartbeat</td>
+<td align="left">监控mysql复制延迟</td>
+</tr>
+<tr>
+<td align="left">pt-index-usage</td>
+<td align="left">分析日志中索引使用情况，并出报告</td>
+</tr>
+<tr>
+<td align="left">pt-ioprofile</td>
+<td align="left">查询进程IO并打印一个IO活动表</td>
+</tr>
+<tr>
+<td align="left">pt-kill</td>
+<td align="left">Kill掉符合条件的sql</td>
+</tr>
+<tr>
+<td align="left">pt-mext</td>
+<td align="left">并行查看status样本信息</td>
+</tr>
+<tr>
+<td align="left">pt-mongodb-query-digest</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">pt-mongodb-summary</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">pt-mysql-summary</td>
+<td align="left">对mysql配置和status进行汇总</td>
+</tr>
+<tr>
+<td align="left">pt-online-schema-change</td>
+<td align="left">在线修改表结构</td>
+</tr>
+<tr>
+<td align="left">pt-pmp</td>
+<td align="left">为查询结果跟踪，并汇总跟踪结果</td>
+</tr>
+<tr>
+<td align="left">pt-query-digest</td>
+<td align="left">分析查询日志，并产生报告</td>
+</tr>
+<tr>
+<td align="left">pt-secure-collect</td>
+<td align="left">收集、打包、加密数据</td>
+</tr>
+<tr>
+<td align="left">pt-show-grants</td>
+<td align="left">规范化和打印权限</td>
+</tr>
+<tr>
+<td align="left">pt-sift</td>
+<td align="left">浏览由pt-stalk创建的文件</td>
+</tr>
+<tr>
+<td align="left">pt-slave-delay</td>
+<td align="left">设定从落后主的时间</td>
+</tr>
+<tr>
+<td align="left">pt-slave-find</td>
+<td align="left">查找和打印所有mysql复制层级关系</td>
+</tr>
+<tr>
+<td align="left">pt-slave-restart</td>
+<td align="left">监控salve错误，并尝试重启salve</td>
+</tr>
+<tr>
+<td align="left">pt-stalk</td>
+<td align="left">出现问题时，收集诊断数据</td>
+</tr>
+<tr>
+<td align="left">pt-summary</td>
+<td align="left">收集和显示系统概况</td>
+</tr>
+<tr>
+<td align="left">pt-table-checksum</td>
+<td align="left">校验主从复制一致性</td>
+</tr>
+<tr>
+<td align="left">pt-table-sync</td>
+<td align="left">高效同步表数据</td>
+</tr>
+<tr>
+<td align="left">pt-table-usage</td>
+<td align="left">分析日志中查询并分析表使用情况</td>
+</tr>
+<tr>
+<td align="left">pt-upgrade</td>
+<td align="left">在多个服务器上执行查询，并比较不同</td>
+</tr>
+<tr>
+<td align="left">pt-variable-advisor</td>
+<td align="left">分析参数，并提出建议</td>
+</tr>
+<tr>
+<td align="left">pt-visual-explain</td>
+<td align="left">格式化执行计划</td>
+</tr>
+</tbody></table>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><h3 id="pt-archiver"><a href="#pt-archiver" class="headerlink" title="pt-archiver"></a>pt-archiver</h3><p>pt-archiver 是 Percona 官方提供的归档工具，用于归档大型表中的记录到另一个表或文件。</p>
+<p>将数据根据条件进行归档可以减少数据量。</p>
+<p><strong>功能描述</strong></p>
+<ul>
+<li>归档到操作系统文件</li>
+<li>归档到同实例不同库下的表（<strong>tips</strong>：归档操作前，目标表要存在）</li>
+<li>归档到不同实例下的表（<strong>tips</strong>：归档操作前，目标表要存在）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#将10.138.228.231的matomo数据库下matomo_log_link_visit_action表的数据按条件归档matomo_log_link_visit_action_history表中</span><br><span class="line">pt-archiver --source h=10.138.228.231,P=3306,u=sre,p=&apos;xxx&apos;,D=matomo,t=matomo_log_link_visit_action --charset=utf8 --dest h=10.138.228.231,P=3306,u=sre,p=&apos;xxx&apos;,D=matomo,t=matomo_log_link_visit_action_history --where &quot;server_time &lt; &apos;2019-01-01&apos;&quot; --limit 1000 --commit-each --bulk-insert --no-version-check</span><br><span class="line"></span><br><span class="line"># h=10.138.228.231               -- 数据库实例地址</span><br><span class="line"># P=3306                         -- 数据库实例端口</span><br><span class="line"># u=sre                          -- 数据库实例用户</span><br><span class="line"># p=xxx                          -- 数据库实例用户密码</span><br><span class="line"># D=matomo                       -- 数据库实例数据库</span><br><span class="line"># t=matomo_log_link_visit_action -- 数据库实例表名称</span><br><span class="line"></span><br><span class="line"># --source                       -- 指定要被归档的数据源</span><br><span class="line"># --charset=utf8                 -- 使用的字符集，需与表字符集一致</span><br><span class="line"># --file                         -- 指定目标操作系统文件名</span><br><span class="line"># --dest                         -- 指定归档到的目标表</span><br><span class="line"># --where &quot;id &gt; 3008&quot;            -- 指定 where 过滤条件，过滤出要归档的数据</span><br><span class="line"># --limit 1000                   -- 每条语句读取和归档的数据行数，默认是 1</span><br><span class="line"># --commit-each                  -- 每次获取和归档数据后，commit提交</span><br><span class="line"># --no-version-check             -- 不做版本检查</span><br><span class="line"># --bulk-insert                  -- 批量插入数据，会自动启用 --bulk-delete --commit-each，每次插入行数通过--limit 选项指定</span><br><span class="line"># --statistics                   -- 显示 pt-archiver 本次操作的统计信息。</span><br></pre></td></tr></table></figure>
+
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><h3 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h3><p><code>yum</code> 安装插件报错： [Errno 12]  TimeOut</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@cosmoim-d-sdgt src]# yum -y install perl-DBD-MySQL</span><br><span class="line">Loaded plugins: fastestmirror</span><br><span class="line">http://10.138.46.240/yum/centos/7/os/x86_64/repodata/repomd.xml: [Errno 12] Timeout on http://10.138.46.240/yum/centos/7/os/x86_64/repodata/repomd.xml: (28, &apos;Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds&apos;)</span><br><span class="line">Trying other mirror.</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决方式"><a href="#解决方式" class="headerlink" title="解决方式"></a>解决方式</h3><p><strong>CentOS 重新配置阿里 Yum 源</strong></p>
+<p><strong>备份当前 Yum 源</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup</span><br></pre></td></tr></table></figure>
+
+<p><strong>下载阿里 Yum 源</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># CentOS 6</span><br><span class="line">$ wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo</span><br><span class="line"># CentOS 7</span><br><span class="line">$ wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo</span><br></pre></td></tr></table></figure>
+
+<p><strong>清理</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yum clean all</span><br></pre></td></tr></table></figure>
+
+<p><strong>更新缓存</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yum makecache</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/02/MySQL-Transaction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/02/MySQL-Transaction/" itemprop="url">事务</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-02T13:17:46+08:00">
+                2019-09-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="什么是事务"><a href="#什么是事务" class="headerlink" title="什么是事务"></a>什么是事务</h2><p>事务是一组DML（insert、delete、update）语句的集合，是逻辑上的一组操作。MySQL数据库InnoDB存储引擎支持事务，MyISAM不支持。MySQL的事务默认是自提交式的</p>
+<h2 id="事务的特性"><a href="#事务的特性" class="headerlink" title="事务的特性"></a>事务的特性</h2><h3 id="原子性"><a href="#原子性" class="headerlink" title="原子性"></a>原子性</h3><p>原子性是指事务中包含的<strong>操作要么全部成功，要么全部失败回滚</strong>。事务的操作如果成功就必须要完全应用到数据库，如果操作失败则不能对数据库有任何影响。保证数据库是一致的。</p>
+<h3 id="一致性"><a href="#一致性" class="headerlink" title="一致性"></a>一致性</h3><p>一致性指事务前后<strong>数据的完整性</strong>必须保持一致。一致性关注数据的可见性，中间状态的数据对外部不可见，只有最初状态和最终状态的数据对外可见。</p>
+<h3 id="隔离性"><a href="#隔离性" class="headerlink" title="隔离性"></a>隔离性</h3><p>隔离性是当多个用户并发访问数据库时，比如操作同一张表时，数据库为每一个用户开启的事务，不能被其他事务的操作所干扰，多个并发事务之间要相互隔离。</p>
+<p>即要达到这么一种效果：对于任意两个并发的事务T1和T2，在事务T1看来，T2要么在T1开始之前就已经结束，要么在T1结束之后才开始，这样每个事务都感觉不到有其他事务在并发地执行。</p>
+<h3 id="持久性"><a href="#持久性" class="headerlink" title="持久性"></a>持久性</h3><p>持久性指一个事务一旦被提交了，其对数据的修改就是<strong>永久</strong>的，即使系统发生故障也不会丢失提交事务的操作。</p>
+<h2 id="事务的隔离级别"><a href="#事务的隔离级别" class="headerlink" title="事务的隔离级别"></a>事务的隔离级别</h2><p>数据库的隔离级别有四种，由低到高分别为Read uncommitted(读未提交)、Read committed(读已提交)、Repeatable read(可重复读)、Serializable(序列化)，用来限定事务内外的哪些改变是可见的，哪些是不可见的。</p>
+<p>注意：大多数数据库默认的事务隔离级别是<strong>Read committed</strong>，比如Sql Server , Oracle。但<strong>Mysql</strong>的默认隔离级别是<strong>Repeatable read。</strong></p>
+<p>MySQL通过 show variables like ‘%tx_isolation%’ 命令查看当前数据库的隔离级别。</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/MySQL-Transaction1.png" alt></p>
+<h3 id="读未提交（Read-uncommitted）"><a href="#读未提交（Read-uncommitted）" class="headerlink" title="读未提交（Read uncommitted）"></a>读未提交（Read uncommitted）</h3><p>一个事务可以读取到其他事务未提交的数据变化，这种读取其他会话还未提交的事务，叫作<strong>脏读</strong>现象。</p>
+<p><strong>举例：</strong></p>
+<p>小A的工资是3000,但是发工资时,老板按错了数字,按成了30000元（老板事务）,但是事务还没有提交,就在这个时候,小A去查询了工资（小A事务开启）,以为涨工资了非常开心,但老板发现不对,及时回滚数据,再重新改成3000进行提交。</p>
+<p><strong>分析：</strong>小A最终获得的工资仍为3000，其看到的是老板还未提交事务时的数据，这是<strong>脏读现象</strong>。</p>
+<p><strong>解决方案：读已提交能解决脏读问题。</strong></p>
+<h3 id="读已提交（Read-committed）"><a href="#读已提交（Read-committed）" class="headerlink" title="读已提交（Read committed）"></a>读已提交（Read committed）</h3><p>一个事务要等另一个事务提交后才可以读取数据，这种读取也叫做<strong>不可重复读。</strong></p>
+<p><strong>举例：</strong></p>
+<p>小A去商场购物(卡余额3000元),当他准备进行买单时(小A事务开启),收费系统检测到小A的卡主有3000元可以支付,就在这时,小A的女朋友需要把钱全部转出去充当家用,并提交(女朋友事务在小A前),当收费系统准备扣款时,再检测卡里的金额，发现已经没钱了,结果小A购物失败….</p>
+<p><strong>分析：</strong>事务A对数据进行更新操作时,事务B的读操作需要等待事务A更新操作提交完成后,才能读取数据,可以解决脏读问题。但是在本场景中,在收费系统这一个事务范围,两次相同的查询,却获取到了不同的结果,这就是不可重复读(两次执行一样查询,结果却不同)。</p>
+<p><strong>解决方案</strong>：<strong>可重复读能解决不可重复读问题。</strong></p>
+<h3 id="可重复读（Repeatable-read）"><a href="#可重复读（Repeatable-read）" class="headerlink" title="可重复读（Repeatable read）"></a>可重复读（Repeatable read）</h3><p>在事务开启进行读数据时<strong>,不允许修改</strong>操作。</p>
+<p><strong>举例：</strong></p>
+<p>小A去购物(卡里余额3000元),当他准备买单时(事务开启,不允许其他事务更新操作),收费系统检测他卡中余额3000元,他的女朋友又想转出这3000元作为家用,但是转出失败(无法更新修改)，收费系统扣款成功,小A顺利完成了购物。</p>
+<p><strong>分析：</strong>可重复读能够<strong>解决不可重读</strong>问题,但是可重复读对应的是修改(Update)操作,还是可能<strong>中途会出现插入(Insert)操作,</strong>会产生出<strong>幻读</strong>问题.</p>
+<p><strong>举例：</strong></p>
+<p>小A去查询消费记录(事务开启),发现消费了1000元,卡中还剩2000元，这时老板发工资了，新增了3000元(老板事务insert了一条记录并提交)，小A打印消费清单时(事务提交)，发现清单上的余额是5000元,跟之前的查询的记录不对,这就是幻读.</p>
+<p><strong>幻读：</strong>指的是一个事务在读取某个范围内的记录时，另外一个事务又在该范围内插入了新的记录，当之前的事务再次读取该范围的记录时，会产生幻行(phantom row)</p>
+<h3 id="序列化（Serializable）"><a href="#序列化（Serializable）" class="headerlink" title="序列化（Serializable）"></a>序列化（Serializable）</h3><p>Serializable 是<strong>最高的事务隔离级别</strong>，每个读数据行加表级共享锁，每次写数据时加表级排他锁。</p>
+<p>在该级别下，事务串行化顺序执行，可以避免脏读、不可重复读与幻读。但是这种事务隔离级别效率低下，比较耗数据库性能，一般不使用。</p>
+<h2 id="事务操作命令"><a href="#事务操作命令" class="headerlink" title="事务操作命令"></a>事务操作命令</h2><p><strong>1. 查看数据库引擎是否支持事务</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show engines;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/MySQL-Transaction2.png" alt></p>
+<p><strong>2.查看Mysql默认储存引擎</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show variables like &apos;%storage_engine%&apos;;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/MySQL-Transaction3.png" alt></p>
+<p><strong>3.创建事务</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//开启事务</span><br><span class="line">start transaction;          //两者等价</span><br><span class="line">begin;</span><br></pre></td></tr></table></figure>
+
+<p><strong>4.提交事务</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//提交</span><br><span class="line">commit                      //二者等价</span><br><span class="line">commit work</span><br><span class="line"></span><br><span class="line">//提交后开启一个新事务</span><br><span class="line">commit and chain</span><br></pre></td></tr></table></figure>
+
+<p><strong>5.回滚事务</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//回滚</span><br><span class="line">rollback;                   //两者等价</span><br><span class="line">rollback work;</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/29/my-cnf/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1598,497 +2064,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/16/Function/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/08/16/Function/" itemprop="url">MySQL函数</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-16T09:40:53+08:00">
-                2019-08-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="第10章-创建计算字段"><a href="#第10章-创建计算字段" class="headerlink" title="第10章 创建计算字段"></a>第10章 创建计算字段</h2><p>什么是计算字段。如何创建字段以及如何从应用程序中使用别名引用它们</p>
-<h3 id="计算字段"><a href="#计算字段" class="headerlink" title="计算字段"></a>计算字段</h3><p>计算字段并<strong>不实际存在</strong>于数据表中，而是运行时在SELECT语句内创建的。当存储在数据库表中的数据不是应用程序所需要的格式，可以通过计算字段直接从<strong>数据库</strong>中检索出转换、计算或格式化过的数据。</p>
-<p><strong>字段</strong>：基本与列的意思相同，但数据库列一般称为列，术语字段通常用在计算字段的连接上。</p>
-<p>注：仅数据库知道SELECT语句中哪些列是实际的表列，哪些列是计算字段。客户机的角度，计算字段的数据是以与其他列的数据相同的方式返回。</p>
-<h3 id="拼接字段"><a href="#拼接字段" class="headerlink" title="拼接字段"></a>拼接字段</h3><p><strong>拼接：</strong>将值联结到一起构成单个值，MySQL使用Concat()函数来拼接两个列。</p>
-<p>生成一个供应商报表将vendors表中的供应商名和位置信息以 name(location) 的格式列出。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT Concat(vend_name,&apos; (&apos;,vend_country,&apos;)&apos;)</span><br><span class="line">From vendors</span><br><span class="line">ORDER BY vend_name;</span><br></pre></td></tr></table></figure>
-
-<p><strong>RTrim()</strong>：可以删除串右侧多余的空格进行数据整理。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT Concat(RTrim(vend_name),&apos; (&apos;,RTrim(vend_country),&apos;)&apos;)</span><br><span class="line">From vendors</span><br><span class="line">ORDER BY vend_name;</span><br></pre></td></tr></table></figure>
-
-<p><strong>LTrim()</strong> :  去掉串左边的空格。</p>
-<p><strong>Trim()</strong>: 去掉串两边的空格。</p>
-<h3 id="使用别名"><a href="#使用别名" class="headerlink" title="使用别名"></a>使用别名</h3><p>由于客户机无法引用未命名的列，未命名的新计算列不能应用于客户机应用中。为解决此问题，SQL支持别名。</p>
-<p><strong>别名(alias)：</strong>一个字段或值的替换名，别名用<strong>AS</strong>关键字赋予。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT Concat(RTrim(vend_name),&apos; (&apos;,RTrim(vend_country),&apos;)&apos;) AS vend_title</span><br><span class="line">From vendors</span><br><span class="line">ORDER BY vend_name;</span><br></pre></td></tr></table></figure>
-
-<p>+———————————+<br>| vend_title                       |<br>+———————————+<br>| ACME (USA)                   |<br>| Anvils R Us (USA)          |<br>| Furball Inc. (USA)          |<br>| Jet Set (England)            |<br>| Jouets Et Ours (France)|<br>| LT Supplies (USA)          |<br>+———————————-+</p>
-<h3 id="执行算术计算"><a href="#执行算术计算" class="headerlink" title="执行算术计算"></a>执行算术计算</h3><p>计算字段的另一常见用途是对检索出的数据进行算术计算。</p>
-<p>orders表包含收到的所有订单，orderitems表包含每个订单中的各项商品，检索订单号2005中的所有物品，并对各物品的价格进行汇总。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_id,quantity,item_price,quantity*item_price AS expanded_price</span><br><span class="line">FROM orderitems</span><br><span class="line">WHERE order_num =20005;</span><br></pre></td></tr></table></figure>
-
-<p><strong>测试计算：</strong>SELECT可以通过省略from子句对函数进行简单的测试与试验，如：</p>
-<p>SELECT 3*2 :  返回6</p>
-<p>SELECT Trim(‘abc’):  返回abc</p>
-<p>SELECT Now():  利用 Now() 函数返回当前日期和时间。 </p>
-<h2 id="第11章-使用数据处理函数"><a href="#第11章-使用数据处理函数" class="headerlink" title="第11章 使用数据处理函数"></a>第11章 使用数据处理函数</h2><p>介绍什么是函数，如何使用SQL的数据处理函数，着重介绍了日期处理函数</p>
-<p><strong>关于函数</strong>：SQL支持利用函数处理数据，函数一般是在数据上执行的，方便数据的转换和处理。函数没有SQL的可移植性强，使用函数应做好代码注释，以便自己或他人能确切知道所编写SQL代码的含义。</p>
-<h3 id="使用函数"><a href="#使用函数" class="headerlink" title="使用函数"></a>使用函数</h3><p>多数SQL支持一下类型的函数</p>
-<ul>
-<li>用于<strong>处理文本串</strong>（如：删除或填充值，转换值为大写或小写）的文本函数</li>
-<li>用于在<strong>数值数据上进行算术操作</strong>（如：返回绝对值，进行代数运算）的数值函数。</li>
-<li>用于<strong>处理日期和时间值</strong>并从这些值中提取特定成分（如：返回两个日期之差，检查日期有效性等）的日期和时间函数。</li>
-<li><strong>返回DBMS正使用的特殊信息</strong>（如：返回用户登录信息，检查版本细节）的系统函数。</li>
-</ul>
-<h3 id="文本处理函数"><a href="#文本处理函数" class="headerlink" title="文本处理函数"></a>文本处理函数</h3><p><strong>常用的文本处理函数</strong>:</p>
-<p>left( ) :返回串左边字符                               Right()：返回串右边的字符             </p>
-<p>length()：返回串的长度                             Soundex():返回串的SOUNDEX值</p>
-<p>Locate()：找出串的一个子串                    SubString():返回子串的字符</p>
-<p>Lower()：将串转换为小写                         Upper():将串转换为大写</p>
-<p>LTrim()：去掉串左边的空格                       RTrim():去掉串右边的空格</p>
-<p>Soundex：将任何文本串转换为描述其语音表示的字母数字模式的算法，SOUNDEX考虑了类似的发音字符和音节，使得对串进行发音比较而不是字母比较。</p>
-<p>customers表中顾客Coyote Inc.的联系名为Y. Lie被错误输入为Y. Lee，通过其联系名对该顾客进行搜索。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT cust_name,cust_contact</span><br><span class="line">FROM customers</span><br><span class="line">WHERE Soundex(cust_contact) = Soundex(&apos;Y Lie&apos;);</span><br></pre></td></tr></table></figure>
-
-<p>+——————-+——————–+<br>| cust_name   | cust_contact |<br>+——————-+——————–+<br>| Coyote Inc.   | Y Lee              |<br>+——————-+—— ————-+</p>
-<h3 id="日期和时间处理函数"><a href="#日期和时间处理函数" class="headerlink" title="日期和时间处理函数"></a>日期和时间处理函数</h3><p>日期和时间采用相应的数据类型和特殊的格式存储，实现快速有效的排序和过滤，并节省物理存储空间。、</p>
-<p><strong>MySQL首选的日期格式：yyyy-mm-dd</strong></p>
-<p><strong>常用日期和时间处理函数：</strong></p>
-<p>AddDate(): 增加一个日期（天、周等）                               DayOfWeek(): 对于一个日期，返回对应的星期几</p>
-<p>AddTime(): 增加一个时间（时、分等）                               Hour(): 返回一个时间的小时部分</p>
-<p>CurDate(): 返回当前日期                                                       Minute(): 返回一个时间的分钟部分</p>
-<p>CurTime(): 返回当前时间                                                       Month(): 返回一个日期的月份部分</p>
-<p>Date(): 返回日期时间的日期部分                                           Now(): 返回当前日期和时间</p>
-<p>DateDiff(): 计算两个日期之差                                                Second(): 返回一个时间的秒部分</p>
-<p>Date_Add(): 高度灵活的日期运算函数                                  Time(): 返回一个日期时间的时间部分</p>
-<p>Date_Format(): 返回一个格式化的日期或时间串                 Year(): 返回一个日期的年份部分</p>
-<p>Day(): 返回一个日期的天数部分</p>
-<p>检索出2005年9月下的所有订单：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT cust_id,order_num</span><br><span class="line">FROM orders</span><br><span class="line">WHERE Date(order_date) BETWEEN &apos;2005-09-01&apos; AND &apos;2005-09-30&apos;;</span><br></pre></td></tr></table></figure>
-
-<h3 id="数值处理函数"><a href="#数值处理函数" class="headerlink" title="数值处理函数"></a>数值处理函数</h3><p>数值处理函数仅处理数值数据，一般主要用于代数、三角或几何运算。</p>
-<p><strong>常用数值处理函数:</strong></p>
-<p>Abs(): 返回一个数的绝对值                         Rand(): 返回一个随机数</p>
-<p>Cos(): 返回一个角度的余弦                          Sin(): 返回一个角度的正弦</p>
-<p>Exp(): 返回一个数的指数值                          Sqrt(): 返回一个数的平方根</p>
-<p>Mod(): 返回除操作的余数                            Tan(): 返回一个角度的正切</p>
-<p>Pi(): 返回圆周率</p>
-<h2 id="第12章-汇总数据"><a href="#第12章-汇总数据" class="headerlink" title="第12章 汇总数据"></a>第12章 汇总数据</h2><h3 id="聚集函数"><a href="#聚集函数" class="headerlink" title="聚集函数"></a>聚集函数</h3><p><strong>聚集函数：</strong>运行在行组上，计算和返回单个值的函数，用于需要汇总数据而无需将其实际检索出来的情况，如：</p>
-<ul>
-<li><p>确定表中函数（或满足每个条件或包含某个特定值的行数）。</p>
-</li>
-<li><p>获得表中行组的和。</p>
-</li>
-<li><p>找出表列（或所有行或某些特定的行）的最大值、最小值和平均值。</p>
-</li>
-</ul>
-<p>上述例子都需要对表中的数据（而不是实际数据本身）汇总。因此，因此返回实际表数据是对时间和处理资源的一种浪费，MySQL支持一系列的聚集函数，可以用多种方法进行使用以返回所需的结果，这些函数是高效设计的，返回结果比在客户机应用程序中计算要快得多。</p>
-<p><strong>SQL聚集函数</strong></p>
-<p>AVG( ) : 返回某列的平均值                             MIN( ) : 返回某列的最小值</p>
-<p>COUNT( ) : 返回某列的行数                           SUM( ) : 返回某列值之和</p>
-<p>MAX( ) : 返回某列的最大值</p>
-<h4 id="AVG-函数"><a href="#AVG-函数" class="headerlink" title="AVG ( ) 函数"></a>AVG ( ) 函数</h4><p>AVG（）通过对表中行数计数并计算特定列值之和，求得该列的平均值。AVG（）可用来返回所有列的平均值，也可以用来返回特定列或行的平均值。AVG（）函数忽略列值为NULL的行。</p>
-<p>返回products表中所有产品的平均价格：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT AVG(prod_price) AS avg_price</span><br><span class="line">FROM products;</span><br></pre></td></tr></table></figure>
-
-<p>+—————–+<br>| avg_price   |<br>+—————–+<br>| 16.133571 |<br>+—————–+</p>
-<h4 id="COUNT-函数"><a href="#COUNT-函数" class="headerlink" title="COUNT ( ) 函数"></a>COUNT ( ) 函数</h4><p>count ( ) 函数的两种使用方式：</p>
-<ul>
-<li>使用COUNT(*)对表中行的数目进行计数，不管表列中包含的是空值（NULL）还是非空值。</li>
-<li>使用COUNT(column)对特定的列中具有的行进行计数，忽略NULL值。</li>
-</ul>
-<p>返回customers表中客户的总数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT COUNT(*) AS num_cust</span><br><span class="line">FROM customers;</span><br></pre></td></tr></table></figure>
-
-<p>+—————-+<br>| num_cust |<br>+—————-+<br>|        5         |<br>+—————-+</p>
-<p>只对具有电子邮件地址的客户计数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT COUNT(cust_email) AS num_cust</span><br><span class="line">FROM customers;</span><br></pre></td></tr></table></figure>
-
-<p>+—————-+<br>| num_cust  |<br>+—————-+<br>|        3          |<br>+—————-+</p>
-<h4 id="MAX-函数-MIN-函数"><a href="#MAX-函数-MIN-函数" class="headerlink" title="MAX ( )函数,MIN( )函数"></a>MAX ( )函数,MIN( )函数</h4><p>MAX( )返回指定列中的最大值，MIN( )返回指定列的最小值，MIX( )和MAX( )都要求指定列名。</p>
-<p>返回products表中最贵的物品价格</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT MAX(prod_price) AS max_price</span><br><span class="line">FROM products;</span><br></pre></td></tr></table></figure>
-
-<p>+—————-+<br>| max_price |<br>+—————-+<br>|     55.00     |<br>+—————-+</p>
-<p><strong>对非数值数据使用MAX()、MIN()</strong></p>
-<p>MySQL允许使用MAX( )、MIN( )、返回任意列的最大值和最小值，包括返回文本列的最大值与最小值。在用于文本数据时，若数据按照相应的列排序，MAX( )返回最后一行，MIN()返回最前面的行。</p>
-<p><strong>NULL值</strong>：MIN( )、MAX( )函数忽略列值为NULL的行。</p>
-<h4 id="SUM-）函数"><a href="#SUM-）函数" class="headerlink" title="SUM( ）函数"></a>SUM( ）函数</h4><p>sum( )用来返回制定列值的和(总计），</p>
-<p><strong>NULL值：</strong>SUM( ) 函数忽略列值为NULL的行。</p>
-<p>合计order_num = 20005的每项物品的item_price*quantity，得出总的订单金额。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT SUM(item_price*quantity) AS total_price</span><br><span class="line">FROM orderitems</span><br><span class="line">WHERE order_num = 20005;</span><br></pre></td></tr></table></figure>
-
-<p>+—————–+<br>| total_price |<br>+—————–+<br>|      149.87   |<br>+—————–+</p>
-<p>利用标准的算术操作符，所有的聚集函数都可用来执行多个列上的计算。</p>
-<h4 id="聚集不同的值"><a href="#聚集不同的值" class="headerlink" title="聚集不同的值"></a>聚集不同的值</h4><p>对以上聚集函数可进行如下使用：</p>
-<ul>
-<li>对所有的行执行计算，指定ALL参数或不给参数（ALL为默认参数）。</li>
-<li>只包含不同的值，用DISTINCT参数,DISTINCT必须使用列名，因此只能用于COUNT(DISTINCT),不能用于COUNT（*）。</li>
-</ul>
-<p>返回特定供应商提供的产品的平均价格</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT AVG(DISTINCT prod_price) AS avg_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id = 1003;</span><br></pre></td></tr></table></figure>
-
-<h4 id="组合聚集函数"><a href="#组合聚集函数" class="headerlink" title="组合聚集函数"></a>组合聚集函数</h4><p>SELECT可以根据需要包含多个聚集函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SELECT COUNT(*) AS num_items,</span><br><span class="line">       MIN(prod_price) AS price_min,</span><br><span class="line">       MAX(prod_price) AS price_max,</span><br><span class="line">       AVG(prod_price) AS price_avg</span><br><span class="line">FROM products;</span><br></pre></td></tr></table></figure>
-
-<p>+——————+—————+—————–+—————+<br>| num_items | price_min | price_max | price_avg |<br>+——————+—————+—————–+—————+<br>|        14         |      2.50      |     55.00      | 16.133571 |<br>+——————+—————+—————–+—————+</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/15/Data-filtering/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/08/15/Data-filtering/" itemprop="url">数据过滤</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-15T10:25:41+08:00">
-                2019-08-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="第6章-过滤数据"><a href="#第6章-过滤数据" class="headerlink" title="第6章 过滤数据"></a>第6章 过滤数据</h2><p>使用SELECT语句的WHERE子句指定搜索条件</p>
-<p><strong>检查单个值</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_name,prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_price =2.50;</span><br></pre></td></tr></table></figure>
-
-<p><strong>范围值检查</strong></p>
-<p>检查某个范围的值，可使用BETWEEN操作符，需要范围的开始值和结束值两个值。如：检索价格在5美元和10美元间的所有产品：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_name,prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_price BETWEEN 5 AND 10;</span><br></pre></td></tr></table></figure>
-
-<p><strong>空值检查</strong></p>
-<p>NULL:无值，不包含值，与字段包含0、空字符串或仅仅包含空格不同。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT cust_id</span><br><span class="line">FROM customers</span><br><span class="line">WHERE cust_email IS NULL;</span><br></pre></td></tr></table></figure>
-
-<p><strong>NULL与不匹配</strong>：由于未知（NULL）具有特殊的含义，所以在匹配过滤或不匹配过滤时不返回它们，因此在过滤数据时，需验证返回数据给出的被过滤列具有NULL行。</p>
-<p><strong>WHERE位置</strong>：同时使用 ORDER BY 和 WHERE,ORDER BY 位于WHERE 之后。</p>
-<p><img src="/blog/blog/2019/08/15/Data-filtering/Data-filtering%5C3.png" alt="WHERE子句操作符"></p>
-<h2 id="第7章-数据过滤"><a href="#第7章-数据过滤" class="headerlink" title="第7章 数据过滤"></a>第7章 数据过滤</h2><h3 id="组合WHERE子句"><a href="#组合WHERE子句" class="headerlink" title="组合WHERE子句"></a>组合WHERE子句</h3><p><strong>AND操作符</strong> </p>
-<p>指示检索满足<strong>所有</strong>给定条件的行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_id,prod_price,prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id = 1003 AND prod_price &lt;= 10;</span><br></pre></td></tr></table></figure>
-
-<p><strong>OR操作符</strong></p>
-<p>指示检索匹配<strong>任一</strong>条件的行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_name,prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id = 1002 OR ven_id = 1003;</span><br></pre></td></tr></table></figure>
-
-<p><strong>计算次序</strong></p>
-<p>优先级：( )&gt;AND&gt;OR</p>
-<p>在使用具有AND和OR操作符的WHERE子句时，应使用圆括号明确的分组操作符，不要过分依赖默认计算次序。</p>
-<p>列出价格为10美元（含）以上且由1002或1003制造的所有产品:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_name,prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE (vend_id = 1002 OR vend_id = 1003) AND prod_price &gt;=10</span><br></pre></td></tr></table></figure>
-
-<h3 id="IN操作符"><a href="#IN操作符" class="headerlink" title="IN操作符"></a>IN操作符</h3><p>在WHERE子句中用来指定要匹配值的清单的关键字，功能与OR相当。</p>
-<p>检索供应商1002和1003制造的所有产品</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_name,prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id IN (1002,1003)</span><br><span class="line">ORDER BY prod_name;</span><br></pre></td></tr></table></figure>
-
-<p><strong>优点：</strong></p>
-<p>1、使用长的合法选项清单时，IN操作符语法更清楚直观。</p>
-<p>2、计算的次序更容易管理。</p>
-<p>3、一般比OR操作符清单执行更快。</p>
-<p>4、最大优点是<strong>IN可以包含其他的SELECT语句</strong>，使得能够更动态地建立WHERE子句。</p>
-<h3 id="NOT操作符"><a href="#NOT操作符" class="headerlink" title="NOT操作符"></a>NOT操作符</h3><p>否定其之后所跟的任何条件</p>
-<p>列出除1002和1003之外的所有供应商制造的产品：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_name,prod_price</span><br><span class="line">FROM products</span><br><span class="line">WHERE vend_id NOT IN (1002,1003)</span><br><span class="line">ORDER BY prod_name;</span><br></pre></td></tr></table></figure>
-
-<p>注：MySQL支持使用NOT对IN、BETWEEN和EXISTS子句取反。</p>
-<h2 id="第8章-用通配符过滤"><a href="#第8章-用通配符过滤" class="headerlink" title="第8章 用通配符过滤"></a>第8章 用通配符过滤</h2><p>介绍什么是通配符，以及怎样使用LIKE操作符进行通配搜索，以便对数据进行复杂过滤。</p>
-<h3 id="LIKE操作符"><a href="#LIKE操作符" class="headerlink" title="LIKE操作符"></a>LIKE操作符</h3><p>为在搜索子句中使用通配符，必须使用LIKE操作符，LIKE指示MySQL后跟的搜索模式利用通配符匹配而不是直接相等匹配进行比较。</p>
-<p><strong>通配符</strong>：用来匹配值的一部分的特殊字符。</p>
-<p><strong>搜索模式</strong>：由字面值、通配符或两者组合构成的搜索条件。</p>
-<h4 id="百分号（-）通配符"><a href="#百分号（-）通配符" class="headerlink" title="百分号（%）通配符"></a>百分号（%）通配符</h4><p>%表示任何字符出现<strong>任意次数（包括0次）</strong>，是最常使用的通配符。</p>
-<p>找出所有以词jet起头的产品：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_id,prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_name LIKE &apos;jet%&apos;;</span><br></pre></td></tr></table></figure>
-
-<p>注：1、根据MySQL的配置方式不同，搜索可能是区分大小写的，若区分大小写则’jet%’与’JET%’得到的结果将不同。</p>
-<p>​        2、<strong>%通配符不能匹配NULL</strong>，即使是 WHERE prod_name LIKE  ‘%’也不能匹配值NULL作为产品名的行。</p>
-<h4 id="下划线（-）通配符"><a href="#下划线（-）通配符" class="headerlink" title="下划线（_）通配符"></a>下划线（_）通配符</h4><p>下划线的用途与%一样，但_总是匹配<strong>一个字符</strong>，不能多也不能少。</p>
-<h4 id="使用通配符的技巧"><a href="#使用通配符的技巧" class="headerlink" title="使用通配符的技巧"></a>使用通配符的技巧</h4><p>通配符搜索的处理一般比前面讨论的其他搜索所花的时间更长，使用通配符需要注意：</p>
-<ul>
-<li><p>不要过度使用通配符，若其他操作符能达到相同的目的，优先使用其他操作符。</p>
-</li>
-<li><p>使用通配符时，除非绝对有必要，不要将其用在搜索模式的开始处，通配符位于搜索模式开始处，搜索速度最慢。</p>
-</li>
-<li><p>注意通配符位置，放错地方得不到想要的结果。</p>
-</li>
-</ul>
-<h2 id="第9章用正则表达式进行搜索"><a href="#第9章用正则表达式进行搜索" class="headerlink" title="第9章用正则表达式进行搜索"></a>第9章用正则表达式进行搜索</h2><p>正则表达式用来匹配文本的特殊的串（字符集合），将一个正则表达式与一个文本串进行比较。MySQL用WHERE子句对正则表达式提供了初步的支持，允许指定正则表达式过滤SELECT检索出的数据，但MySQL仅支持多数正则表达式实现的一个很小的子集。</p>
-<h3 id="基本字符匹配"><a href="#基本字符匹配" class="headerlink" title="基本字符匹配"></a>基本字符匹配</h3><p>检索列prod_name包含文本1000的所有行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_name REGEXP &apos;1000&apos;</span><br><span class="line">ORDER BY prod_name;</span><br></pre></td></tr></table></figure>
-
-<p>+——————–+<br>| prod_name    |<br>+———————+<br>| JetPack 1000 |<br>+———————+</p>
-<p><strong>REGEXP</strong>后所跟的东西作为正则表达式处理。</p>
-<p><strong>LIKE 与 REGEXP</strong></p>
-<p>将上述语句中的REGEXP替换为LIKE:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_name LIKE &apos;1000&apos;</span><br><span class="line">ORDER BY prod_name;</span><br></pre></td></tr></table></figure>
-
-<p>执行该语句发现，替换为LIKE后该语句不返回数据，而替换前的REGEXP语句返回一行。</p>
-<ul>
-<li><p><strong>LIKE</strong>对<strong>列整体</strong>进行匹配，如果被匹配的文本在列值中出现，LIKE将不会找到他，相应的列不会被返回（除非使用通配符）。</p>
-</li>
-<li><p><strong>REGEXP</strong>在<strong>列值内</strong>进行匹配，如果被匹配的文本在列值中出现，REGEXP将会找到它，相应的行被返回。REGEXP可以通过使用^和$定位符来匹配整个列值。</p>
-</li>
-</ul>
-<p>MySQL正则表达式匹配不区分大小写，为区分大小写可使用BINARY关键字，如：WHERE prod_name REGEXP BINARY ‘JetPack .000’。</p>
-<h3 id="进行OR匹配"><a href="#进行OR匹配" class="headerlink" title="进行OR匹配"></a>进行OR匹配</h3><p>使用 | 从功能上类似于SELECT语句中使用OR语句，多个OR条件可以并入单个正则表达式。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_name REGEXP &apos;1000|2000|3000&apos;</span><br></pre></td></tr></table></figure>
-
-<h3 id="匹配几个字符之一"><a href="#匹配几个字符之一" class="headerlink" title="匹配几个字符之一"></a>匹配几个字符之一</h3><p>匹配特定的字符可以通过指定一组用 [ ] 括起来的字符来完成,如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_name REGEXP &apos;[123] Ton&apos;</span><br><span class="line">ORDER BY prod_name;</span><br></pre></td></tr></table></figure>
-
-<p>+——————–+<br>| prod_name   |<br>+——————–+<br>| 1 ton anvil     |<br>| 2 ton anvil     |<br>+——————–+</p>
-<p>使用了正则表达式[123] Ton,[123]定义一组字符，代表匹配1或2或3，[ ]是另一种形式的OR语句，[123] Ton为[1|2|3] Ton的缩写，我们需要使用 [ ] 来定义OR语句查找什么。</p>
-<p>在集合开始处放置^,可以否定一个字符集，即匹配除指定字符外的任何东西。[^123]：匹配除了字符123外的任何东西。</p>
-<h3 id="匹配范围"><a href="#匹配范围" class="headerlink" title="匹配范围"></a>匹配范围</h3><p>为了简化类似[0123456789]这种集合，可使用-来定义一个范围如：</p>
-<p>[1-3] : 匹配1或2或3</p>
-<p>[a-z] :  匹配任意字母字符</p>
-<h3 id="匹配特殊字符"><a href="#匹配特殊字符" class="headerlink" title="匹配特殊字符"></a>匹配特殊字符</h3><p>为了匹配特殊字符，必须使用\\ 为前导，\\- 表示查找 - ，\\. 表示查找 . 。</p>
-<p>匹配特殊字符 .  。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT vend_name</span><br><span class="line">FROM vendors</span><br><span class="line">WHERE vend_name REGEXP &apos;\\.&apos;</span><br><span class="line">ORDER BY vend_name;</span><br></pre></td></tr></table></figure>
-
-<p>\\也用来引用元字符（具有特殊含义的字符）</p>
-<p><img src="/blog/blog/2019/08/15/Data-filtering/Data-filtering%5C1.png" alt></p>
-<p>多数正则表达式实现使用单个 \ 转义特殊字符，以便能使用这些字符本身，但MySQL要求使用两个反斜杠（MySQL自己解释一个，正则表达式库解释另一个）。</p>
-<h3 id="匹配字符类"><a href="#匹配字符类" class="headerlink" title="匹配字符类"></a>匹配字符类</h3><p>一个字符类定义一组字符，为了方便工作，可以使用预定义的字符集。</p>
-<p><img src="/blog/blog/2019/08/15/Data-filtering/Data-filtering%5C2.png" alt></p>
-<h3 id="匹配多个实例"><a href="#匹配多个实例" class="headerlink" title="匹配多个实例"></a>匹配多个实例</h3><p>可以用正则表达式重复元字符实现多个实例的匹配</p>
-<p><img src="/blog/blog/2019/08/15/Data-filtering/Data-filtering%5C4.png" alt></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT prod_name</span><br><span class="line">FROM products</span><br><span class="line">WHERE prod_name REGEXP &apos;\\([0-9] sticks?\\)&apos;</span><br><span class="line">ORDER BY prod_name;</span><br></pre></td></tr></table></figure>
-
-<p>+——————–+<br>| prod_name    |<br>+———————+<br>| TNT (1 stick)   |<br>| TNT (5 sticks) |<br>+———————+</p>
-<p>正则表达式：\\([0-9] sticks?\\) ：</p>
-<ul>
-<li><p>\\(   匹配（</p>
-</li>
-<li><p>[0-9]   匹配任意数字</p>
-</li>
-<li><p>sticks？匹配stick和sticks （s后的？使s可选，因为？匹配它前面的任何字符0次或1次出现，没有？，匹配stick和sticks会非常困难）</p>
-</li>
-<li><p>\\)  匹配   ）</p>
-</li>
-</ul>
-<p>匹配连在一起的4位数字：[[:digit:]]{4}</p>
-<h3 id="定位符"><a href="#定位符" class="headerlink" title="定位符"></a>定位符</h3><p>为了匹配特定位置的文本，需要使用定位符</p>
-<p><img src="/blog/blog/2019/08/15/Data-filtering/C:%5CUsers%5C19028862%5Cblog%5Csource_posts%5CData-filtering%5C5.png" alt></p>
-<p><strong>^ 的双重用途</strong>：在集合中（用 [ ] 定义），^用来否定该集合，否则用来指串的开始处。</p>
-<p>[0-9\\.]：在文本的任意位置对数字或 小数点进行查找匹配。</p>
-<p>^[0-9\\.]: 匹配以小数点或者数字开始的字符串。</p>
-<p><strong>简单的正则表达式测试</strong>：可以在不使用数据库表的情况下用SELECT来测试正则表达式。REGEXP检查返回0（没有匹配）或1（匹配）。如：</p>
-<p>SELECT ‘hello’ REGEXP  ‘[0-9]’  : 返回0（因为文本hello 中没有数字）</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2139,7 +2114,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">88</span>
+                  <span class="site-state-item-count">90</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
