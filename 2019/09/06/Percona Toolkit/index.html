@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="Mino&#39;s blog">
 <meta property="og:description" content="简介Percona Toolkit包含多种用于 MySQL 数据库管理的工具，是一组高级命令行工具的集合，使用 Perl 语言编写和执行。 通过使用Percona Toolkit可以查看当前服务的摘要信息，磁盘检测，分析慢查询日志，查找重复索引，实现表同步等等 安装下载解压安装包1234wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/percona">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-04-22T08:58:40.608Z">
+<meta property="og:updated_time" content="2020-06-30T06:12:40.179Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL运维工具Percona Toolkit">
 <meta name="twitter:description" content="简介Percona Toolkit包含多种用于 MySQL 数据库管理的工具，是一组高级命令行工具的集合，使用 Perl 语言编写和执行。 通过使用Percona Toolkit可以查看当前服务的摘要信息，磁盘检测，分析慢查询日志，查找重复索引，实现表同步等等 安装下载解压安装包1234wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/percona">
@@ -520,7 +520,7 @@
 <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><h3 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h3><p><code>yum</code> 安装插件报错： [Errno 12]  TimeOut</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@cosmoim-d-sdgt src]# yum -y install perl-DBD-MySQL</span><br><span class="line">Loaded plugins: fastestmirror</span><br><span class="line">http://10.138.46.240/yum/centos/7/os/x86_64/repodata/repomd.xml: [Errno 12] Timeout on http://10.138.46.240/yum/centos/7/os/x86_64/repodata/repomd.xml: (28, &apos;Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds&apos;)</span><br><span class="line">Trying other mirror.</span><br></pre></td></tr></table></figure>
 
-<h3 id="解决方式"><a href="#解决方式" class="headerlink" title="解决方式"></a>解决方式</h3><p><strong>CentOS 重新配置阿里 Yum 源</strong></p>
+<h4 id="解决方式"><a href="#解决方式" class="headerlink" title="解决方式"></a>解决方式</h4><p><strong>CentOS 重新配置阿里 Yum 源</strong></p>
 <p><strong>备份当前 Yum 源</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup</span><br></pre></td></tr></table></figure>
 
@@ -532,6 +532,16 @@
 
 <p><strong>更新缓存</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yum makecache</span><br></pre></td></tr></table></figure>
+
+<h3 id="问题二"><a href="#问题二" class="headerlink" title="问题二"></a>问题二</h3><p><code>yum</code> 安装插件报错： [Errno -1] Metadata file does not match checksum</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost src]# yum -y install perl-IO-Socket-SSL</span><br><span class="line">已加载插件：fastestmirror, langpacks</span><br><span class="line">Determining fastest mirrors</span><br><span class="line"> * base: mirrors.aliyun.com</span><br><span class="line"> * extras: mirrors.aliyun.com</span><br><span class="line"> * updates: mirrors.aliyun.com</span><br><span class="line">base                                                                                                                                                 | 3.6 kB  00:00:00</span><br><span class="line">extras                                                                                                                                               | 2.9 kB  00:00:00</span><br><span class="line">updates                                                                                                                                              | 2.9 kB  00:00:00</span><br><span class="line">extras/7/x86_64/primary_db     FAILED</span><br><span class="line">http://mirrors.aliyun.com/centos/7/extras/x86_64/repodata/42c5d8fe33ef3f1ab94d1ae257bc56201267d8af60132e3d778e586693e50a8f-primary.sqlite.bz2: [Errno -1] Metadata file does not match checksum</span><br></pre></td></tr></table></figure>
+
+<h4 id="解决方式-1"><a href="#解决方式-1" class="headerlink" title="解决方式"></a>解决方式</h4><p>1、执行 <code>yum clean all</code></p>
+<p>2、 <code>/etc/yum.conf</code> 文件中添加一行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http_caching=none</span><br></pre></td></tr></table></figure>
+
+<p>3、移动 <code>/var/cache/yum/x86_64/7</code> 目录下的内容</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">mv</span> <span class="number">7</span> <span class="number">7.</span><span class="string">bak</span></span><br><span class="line"><span class="string">yum</span> <span class="string">install</span> <span class="bullet">-y</span> <span class="string">wget</span></span><br><span class="line"><span class="comment"># 重新安装插件</span></span><br><span class="line"><span class="string">yum</span> <span class="bullet">-y</span> <span class="string">install</span> <span class="string">perl-TermReadKey</span></span><br><span class="line"><span class="string">yum</span> <span class="bullet">-y</span> <span class="string">install</span> <span class="string">perl-IO-Socket-SSL</span></span><br></pre></td></tr></table></figure>
 
 
       
@@ -646,7 +656,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-count">91</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -692,7 +702,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载解压安装包"><span class="nav-number">2.1.</span> <span class="nav-text">下载解压安装包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开始安装"><span class="nav-number">2.2.</span> <span class="nav-text">开始安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装提示所需要的安装包"><span class="nav-number">2.3.</span> <span class="nav-text">安装提示所需要的安装包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工具汇总"><span class="nav-number">2.4.</span> <span class="nav-text">工具汇总</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践"><span class="nav-number">3.</span> <span class="nav-text">实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pt-archiver"><span class="nav-number">3.1.</span> <span class="nav-text">pt-archiver</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">4.</span> <span class="nav-text">问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题一"><span class="nav-number">4.1.</span> <span class="nav-text">问题一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决方式"><span class="nav-number">4.2.</span> <span class="nav-text">解决方式</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载解压安装包"><span class="nav-number">2.1.</span> <span class="nav-text">下载解压安装包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开始安装"><span class="nav-number">2.2.</span> <span class="nav-text">开始安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装提示所需要的安装包"><span class="nav-number">2.3.</span> <span class="nav-text">安装提示所需要的安装包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工具汇总"><span class="nav-number">2.4.</span> <span class="nav-text">工具汇总</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践"><span class="nav-number">3.</span> <span class="nav-text">实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pt-archiver"><span class="nav-number">3.1.</span> <span class="nav-text">pt-archiver</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">4.</span> <span class="nav-text">问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题一"><span class="nav-number">4.1.</span> <span class="nav-text">问题一</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方式"><span class="nav-number">4.1.1.</span> <span class="nav-text">解决方式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题二"><span class="nav-number">4.2.</span> <span class="nav-text">问题二</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方式-1"><span class="nav-number">4.2.1.</span> <span class="nav-text">解决方式</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>

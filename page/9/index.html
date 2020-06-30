@@ -281,6 +281,151 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/23/mysqldump-数据迁移/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/08/23/mysqldump-数据迁移/" itemprop="url">mysqldump 数据迁移</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-23T09:12:00+08:00">
+                2019-08-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="mysqldump的备份与恢复"><a href="#mysqldump的备份与恢复" class="headerlink" title="mysqldump的备份与恢复"></a>mysqldump的备份与恢复</h2><p>mysqldump是MySQL数据库中自带的命令工具，是基础的一款备份工具。我们可以通过 /usr/local/mysql/bin/mysqldump -help 命令来查看其命令的使用说明</p>
+<p>这里使用mysqldump实现MySQL的数据迁移</p>
+<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><p>1、连接原服务器和新服务器的数据库，分别查看两个数据库的版本信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select version() from dual;</span><br></pre></td></tr></table></figure>
+
+<p>2、需要查看需要进行备份的数据库库名和大小</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show databases;</span><br></pre></td></tr></table></figure>
+
+<h3 id="备份数据库"><a href="#备份数据库" class="headerlink" title="备份数据库"></a>备份数据库</h3><p>1、登录原服务器，使用mysqldump对需要还原的数据库进行备份</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#备份单个库</span><br><span class="line">/usr/local/mysqlcosmo/bin/mysqldump  --single-transaction  -S /tmp/mysql-cosmodb.sock -uroot  -p&apos;root123&apos; cosmodb &gt;cosmodb.sql   </span><br><span class="line"></span><br><span class="line">#备份全库</span><br><span class="line">/usr/local/mysqlcosmo/bin/mysqldump  --single-transaction  -S /tmp/mysql-cosmodb.sock -uroot  -p&apos;root123&apos; -A &gt;all.sql   </span><br><span class="line"></span><br><span class="line">#备份单表，db1是库名 t为想备份的表名</span><br><span class="line">usr/local/mysqlcosmo/bin/mysqldump  --single-transaction  -S /tmp/mysql-cosmodb.sock -uroot  -p&apos;root123&apos; db1 t &gt;t.sql</span><br></pre></td></tr></table></figure>
+
+<p>2、将备份文件传送至新的服务器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp cosmodb.sql haieradmin@10.138.232.85:/tmp</span><br></pre></td></tr></table></figure>
+
+<p>​    若两台服务器间未配置互信，且不知道服务器密码，需先配置互信，或新建用户设置密码。</p>
+<h3 id="还原数据库"><a href="#还原数据库" class="headerlink" title="还原数据库"></a>还原数据库</h3><p>1、查看新数据库中是否有同名的数据库，防止直接还原时将该库覆盖。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show databases;</span><br></pre></td></tr></table></figure>
+
+<p>2、若没有可以新建一个数据库将数据还原至该库中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create database cosmodb;</span><br></pre></td></tr></table></figure>
+
+<p>3、将数据还原至新服务器的cosmodb库中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#恢复单个库</span><br><span class="line">mysql -uroot -p&apos;root123&apos; cosmodb &lt; cosmodb.sql  </span><br><span class="line"></span><br><span class="line">#恢复全库</span><br><span class="line">mysql -uroot -p&apos;root123&apos; cosmodb &lt; all.sql  </span><br><span class="line"></span><br><span class="line">#恢复db1库下的表t</span><br><span class="line">mysql -uroot -p&apos;root123&apos; db1 &lt; t.sql</span><br></pre></td></tr></table></figure>
+
+<h3 id="导出存储过程-amp-事件"><a href="#导出存储过程-amp-事件" class="headerlink" title="导出存储过程&amp;事件"></a>导出存储过程&amp;事件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#只导出存储过程和函数(不导出结构和数据，要同时导出结构的话，需要同时使用-d)</span><br><span class="line">mysqldump -R -ndt dbname -u root -p &gt; routines.sql</span><br><span class="line"></span><br><span class="line">#只导出事件</span><br><span class="line">mysqldump -E -ndt dbname -u root -p &gt; events.sql</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/16/Function/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1891,143 +2036,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/05/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/08/05/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-05T14:08:27+08:00">
-                2019-08-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/8/">8</a><span class="page-number current">9</span>
+    <a class="extend prev" rel="prev" href="/blog/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/blog/page/10/">10</a><a class="extend next" rel="next" href="/blog/page/10/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2073,7 +2086,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-count">91</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

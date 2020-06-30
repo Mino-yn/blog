@@ -281,6 +281,139 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/10/Linux-GLIBCXX/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/12/10/Linux-GLIBCXX/" itemprop="url">Linux · 升级GLIBCXX</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-10T10:32:21+08:00">
+                2019-12-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="报错信息"><a href="#报错信息" class="headerlink" title="报错信息"></a>报错信息</h3><p>安装软件时有时会遇到以下报错：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/lib64/libstdc++.so.6: version `GLIBCXX_3.4.15&apos; not found</span><br></pre></td></tr></table></figure>
+
+<p>出现该错误的原因是当前的 <code>GCC</code> 版本中，没有 <code>GLIBCXX_3.4.15</code> ，须要安装更高版本。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">strings /usr/lib64/libstdc++.so.6 | grep GLIBC</span><br><span class="line">GLIBCXX_3.4</span><br><span class="line">GLIBCXX_3.4.1</span><br><span class="line">GLIBCXX_3.4.2</span><br><span class="line">GLIBCXX_3.4.3</span><br><span class="line">GLIBCXX_3.4.4</span><br><span class="line">GLIBCXX_3.4.5</span><br><span class="line">GLIBCXX_3.4.6</span><br><span class="line">GLIBCXX_3.4.7</span><br><span class="line">GLIBCXX_3.4.8</span><br><span class="line">GLIBCXX_3.4.9</span><br><span class="line">GLIBCXX_3.4.10</span><br><span class="line">GLIBCXX_3.4.11</span><br><span class="line">GLIBCXX_3.4.12</span><br><span class="line">GLIBCXX_3.4.13</span><br><span class="line">GLIBC_2.2.5</span><br><span class="line">GLIBC_2.3</span><br><span class="line">GLIBC_2.4</span><br><span class="line">GLIBC_2.3.2</span><br><span class="line">GLIBCXX_FORCE_NEW</span><br><span class="line">GLIBCXX_DEBUG_MESSAGE_LENGTH</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>从其它的机器上或者网上直接下载 <code>libstdc++.so.6.0.18</code> 版本（不限本版本，这个版本可以支持）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#直接下载至/usr/lib64目录下，注意确认没有重名文件</span><br><span class="line">cd /usr/lib64/</span><br><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/libstdc%2B%2B.so.6.0.18</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chmod +x libstdc++.so.6.0.18</span><br><span class="line">mv libstdc++.so.6 libstdc++.so.6-old</span><br><span class="line">ln -sf libstdc++.so.6.0.18 libstdc++.so.6</span><br></pre></td></tr></table></figure>
+
+<p>重新查看当前 <code>GCC</code> 版本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">strings /usr/lib64/libstdc++.so.6 | grep GLIBC</span><br><span class="line">GLIBCXX_3.4</span><br><span class="line">GLIBCXX_3.4.1</span><br><span class="line">GLIBCXX_3.4.2</span><br><span class="line">GLIBCXX_3.4.3</span><br><span class="line">GLIBCXX_3.4.4</span><br><span class="line">GLIBCXX_3.4.5</span><br><span class="line">GLIBCXX_3.4.6</span><br><span class="line">GLIBCXX_3.4.7</span><br><span class="line">GLIBCXX_3.4.8</span><br><span class="line">GLIBCXX_3.4.9</span><br><span class="line">GLIBCXX_3.4.10</span><br><span class="line">GLIBCXX_3.4.11</span><br><span class="line">GLIBCXX_3.4.12</span><br><span class="line">GLIBCXX_3.4.13</span><br><span class="line">GLIBCXX_3.4.14</span><br><span class="line">GLIBCXX_3.4.15</span><br><span class="line">GLIBCXX_3.4.16</span><br><span class="line">GLIBCXX_3.4.17</span><br><span class="line">GLIBCXX_3.4.18</span><br><span class="line">GLIBCXX_3.4.19</span><br><span class="line">GLIBC_2.3</span><br><span class="line">GLIBC_2.2.5</span><br><span class="line">GLIBC_2.3.2</span><br><span class="line">GLIBCXX_FORCE_NEW</span><br><span class="line">GLIBCXX_FORCE_NEW</span><br><span class="line">GLIBCXX_DEBUG_MESSAGE_LENGTH</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/09/RDS-data-synchronization/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1946,164 +2079,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/14/linux-firewall/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/11/14/linux-firewall/" itemprop="url">CentOS 6与 CentOS 7防火墙设置与端口打开</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-14T14:22:03+08:00">
-                2019-11-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><code>CentOS</code> 升级到7后，内置防火墙从 <code>iptables</code> 变为 <code>firewalled</code> 不同操作系统设置的方式不同。</p>
-<ul>
-<li>查看系统版本</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lsb_release -a             #可列出所有版本信息</span><br><span class="line">cat /etc/redhat-release    #只适合Redhat系的Linux</span><br><span class="line">cat /etc/issue             #适用于所有的Linux发行版</span><br></pre></td></tr></table></figure>
-
-<h3 id="CentOS-6"><a href="#CentOS-6" class="headerlink" title="CentOS 6"></a>CentOS 6</h3><ul>
-<li>打开/关闭/重启防火墙</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">chkconfig iptables on       # 开启防火墙</span><br><span class="line">chkconfig iptables off      # 关闭防火墙</span><br><span class="line">service iptables start      # 开启防火墙</span><br><span class="line">service iptables stop       # 关闭防火墙</span><br><span class="line">service iptables restarted  # 重启防火墙</span><br><span class="line">iptables -F                 # 清除防火墙规则</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>打开端口</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/sbin/iptables -I INPUT -p tcp --dport 22 -j ACCEPT   # 打开22端口</span><br><span class="line">/sbin/iptables -I INPUT -p tcp --dport 3306 -j ACCEPT # 打开3306端口</span><br><span class="line">/etc/rc.d/init.d/iptables save   # 保存防火墙</span><br><span class="line">/etc/init.d/iptables restart     # 重启防火墙</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查看打开的端口</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/iptables status</span><br></pre></td></tr></table></figure>
-
-<h3 id="CentOS-7"><a href="#CentOS-7" class="headerlink" title="CentOS 7"></a>CentOS 7</h3><ul>
-<li>打开/关闭/重启防火墙</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start firewalld  # 启用防火墙systemctl stop firewalld   # 停止防火墙systemctl status firewalld # 查看状态</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>打开端口</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=80/tcp # 永久生效再加上--permanentfirewall-cmd --reload                        # 更新防火墙规则</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查看打开的端口</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --list-ports</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/blog/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/9/">9</a><a class="extend next" rel="next" href="/blog/page/5/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/blog/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/10/">10</a><a class="extend next" rel="next" href="/blog/page/5/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2149,7 +2129,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-count">91</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
