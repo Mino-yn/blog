@@ -1,6 +1,205 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>CentOS 7 安装 Python pip</title>
+    <url>/blog/2020/07/09/centos7-pip/</url>
+    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CentOS 7.x` 默认安装的版本为 `python 2.7.5`，默认是没有安装 `pip</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p><strong>yum 安装</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yum -y install epel-release</span><br><span class="line">$ yum -y install python-pip</span><br></pre></td></tr></table></figure>
+
+<p><strong>脚本安装</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py</span><br><span class="line">$ python get-pip.py</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL · 误操作场景下数据快速恢复</title>
+    <url>/blog/2020/07/09/mysql-rollback/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a><strong>背景</strong></h2><p>线上核心任务，<code>delete/update</code> 操作错误，<strong>如何快速恢复？</strong></p>
+<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><ul>
+<li><strong>备份恢复</strong>：先用全量备份恢复实例，再利用增量 <code>binlog</code> 备份恢复到误操作之前的状态，<strong>费时费力！</strong></li>
+<li><strong>第三方工具</strong>：<a href="https://github.com/danfengcao/binlog2sql" target="_blank" rel="noopener">binlog2sql</a>（支持 <code>DML Delete/Update</code> 等语句回滚，不支持 <code>DDL Drop</code> 等语句回滚）</li>
+</ul>
+<h2 id="binlog2sql-工具实战"><a href="#binlog2sql-工具实战" class="headerlink" title="binlog2sql 工具实战"></a>binlog2sql 工具实战</h2><h3 id="支持"><a href="#支持" class="headerlink" title="支持"></a>支持</h3><ul>
+<li>MySQL 5.6/5.7</li>
+<li>Delete、Update</li>
+</ul>
+<h3 id="要求"><a href="#要求" class="headerlink" title="要求"></a>要求</h3><ul>
+<li><strong>MySQL 配置要求</strong></li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">[mysqld]</span></span><br><span class="line"><span class="string">server_id</span> <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">log_bin</span> <span class="string">=</span> <span class="string">/data/mysql/mysql-bin.log</span></span><br><span class="line"><span class="string">binlog_format</span> <span class="string">=</span> <span class="string">row</span></span><br><span class="line"><span class="string">binlog_row_image</span> <span class="string">=</span> <span class="string">full</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &apos;server_id&apos;;</span><br><span class="line">+---------------+---------+</span><br><span class="line">| Variable_name | Value   |</span><br><span class="line">+---------------+---------+</span><br><span class="line">| server_id     | 3306100 |</span><br><span class="line">+---------------+---------+</span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like &apos;log_bin%&apos;;</span><br><span class="line">+---------------------------------+--------------------------------+</span><br><span class="line">| Variable_name                   | Value                          |</span><br><span class="line">+---------------------------------+--------------------------------+</span><br><span class="line">| log_bin                         | ON                             |</span><br><span class="line">| log_bin_basename                | /data/mysql/mysql-binlog       |                        </span><br><span class="line">+---------------------------------+--------------------------------+</span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like &apos;binlog_format&apos;;</span><br><span class="line">+---------------+-------+</span><br><span class="line">| Variable_name | Value |</span><br><span class="line">+---------------+-------+</span><br><span class="line">| binlog_format | ROW   |</span><br><span class="line">+---------------+-------+</span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like &apos;binlog_row_image&apos;;</span><br><span class="line">+------------------+-------+</span><br><span class="line">| Variable_name    | Value |</span><br><span class="line">+------------------+-------+</span><br><span class="line">| binlog_row_image | FULL  |</span><br><span class="line">+------------------+-------+</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>MySQL 权限要求**：<code>SELECT</code>、<code>REPLICATION SLAVE</code>、<code>REPLICATION CLIENT</code></li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">mysql&gt;</span> <span class="string">show</span> <span class="string">grants</span> <span class="string">for</span> <span class="string">'cosmo_t'</span><span class="string">\G</span></span><br><span class="line"><span class="string">***************************</span> <span class="number">1.</span> <span class="string">row</span> <span class="string">***************************</span></span><br><span class="line"><span class="string">Grants</span> <span class="string">for</span> <span class="string">cosmo_t@%:</span> <span class="string">GRANT</span> <span class="string">SELECT,</span> <span class="string">INSERT,</span> <span class="string">UPDATE,</span> <span class="string">DELETE,</span> <span class="string">CREATE,</span> <span class="string">DROP,</span> <span class="string">RELOAD,</span> <span class="string">SHUTDOWN,</span> <span class="string">PROCESS,</span> <span class="string">FILE,</span> <span class="string">REFERENCES,</span> <span class="string">INDEX,</span> <span class="string">ALTER,</span> <span class="string">SHOW</span> <span class="string">DATABASES,</span> <span class="string">SUPER,</span> <span class="string">CREATE</span> <span class="string">TEMPORARY</span> <span class="string">TABLES,</span> <span class="string">LOCK</span> <span class="string">TABLES,</span> <span class="string">EXECUTE,</span> <span class="string">REPLICATION</span> <span class="string">SLAVE,</span> <span class="string">REPLICATION</span> <span class="string">CLIENT,</span> <span class="string">CREATE</span> <span class="string">VIEW,</span> <span class="string">SHOW</span> <span class="string">VIEW,</span> <span class="string">CREATE</span> <span class="string">ROUTINE,</span> <span class="string">ALTER</span> <span class="string">ROUTINE,</span> <span class="string">CREATE</span> <span class="string">USER,</span> <span class="string">EVENT,</span> <span class="string">TRIGGER</span> <span class="string">ON</span> <span class="string">*.*</span> <span class="string">TO</span> <span class="string">'cosmo_t'</span><span class="string">@'%'</span></span><br><span class="line"><span class="number">1</span> <span class="string">row</span> <span class="string">in</span> <span class="string">set</span> <span class="string">(0.00</span> <span class="string">sec)</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>申请特权账号，登录服务器</strong></li>
+</ul>
+<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ul>
+<li>安装 <a href="https://huiraoo.github.io/blog/2019/10/21/centos7-pip/" target="_blank" rel="noopener">pip</a></li>
+<li>安装 <a href="https://github.com/danfengcao/binlog2sql" target="_blank" rel="noopener">binlog2sql</a></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cd /usr/local/src</span><br><span class="line">$ git clone https://github.com/danfengcao/binlog2sql.git &amp;&amp; cd binlog2sql</span><br><span class="line">$ pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>根据误操作时间，确定 <code>binlog</code> 文件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show master status;</span><br><span class="line">+---------------------+-----------+--------------+------------------+-------------------+</span><br><span class="line">| File                | Position  | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |</span><br><span class="line">+---------------------+-----------+--------------+------------------+-------------------+</span><br><span class="line">| mysql-bin.000020    | 576640842 |              |                  |                   |</span><br><span class="line">+---------------------+-----------+--------------+------------------+-------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">$ ll /data/mysql | grep mysql-bin</span><br><span class="line">-rw-r----- 1 mysql mysql 1.1G Oct 23 03:03 mysql-binlog.000224</span><br><span class="line">-rw-r----- 1 mysql mysql 1.1G Oct 24 12:25 mysql-binlog.000225</span><br><span class="line">-rw-r----- 1 mysql mysql 1.1G Oct 25 18:32 mysql-binlog.000226</span><br><span class="line">-rw-r----- 1 mysql mysql 1.1G Oct 27 00:21 mysql-binlog.000227</span><br><span class="line">-rw-r----- 1 mysql mysql 1.1G Oct 28 05:45 mysql-binlog.000228</span><br><span class="line">-rw-r----- 1 mysql mysql 1.1G Oct 29 12:32 mysql-binlog.000229</span><br><span class="line">-rw-r----- 1 mysql mysql 1.1G Oct 30 19:00 mysql-binlog.000230</span><br><span class="line">-rw-r----- 1 mysql mysql 1.1G Nov  1 16:30 mysql-binlog.000231</span><br><span class="line">-rw-r----- 1 mysql mysql 1.1G Nov  3 00:20 mysql-binlog.000232</span><br><span class="line">-rw-r----- 1 mysql mysql 1.1G Nov  4 16:47 mysql-binlog.000233</span><br><span class="line">-rw-r----- 1 mysql mysql 1.1G Nov  6 00:21 mysql-binlog.000234</span><br><span class="line">-rw-r----- 1 mysql mysql 473M Nov  6 14:48 mysql-binlog.000235</span><br><span class="line">-rw-r----- 1 mysql mysql  384 Nov  6 00:21 mysql-binlog.index</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>定位误执行 <code>SQL</code></li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">python</span> <span class="string">binlog2sql.py</span> <span class="bullet">-h'x.x.x.x'</span> <span class="bullet">-uroot</span> <span class="bullet">-p'xx'</span> <span class="bullet">-dtest</span> <span class="bullet">-temployees</span> <span class="bullet">--start-file='mysql-bin.000020'</span> <span class="bullet">--sql-type=DELETE</span> <span class="string">&gt; result.sql</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">DELETE FROM `test`.`employees` WHERE `name`='xujinliang' AND `gmt_modified`='2019-09-24 17:13:00' AND `age`=32 AND `gmt_create`='2019-09-24 17:13:00' AND `address`='山东省青岛市' AND `id`=1 LIMIT 1; #start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="string">DELETE FROM `test`.`employees` WHERE `name`='maofang' AND `gmt_modified`='2019-09-24 17:40:49' AND `age`=32 AND `gmt_create`='2019-09-24 17:32:00' AND `address`='山东省青岛市' AND `id`=2 LIMIT 1; #start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="string">DELETE FROM `test`.`employees` WHERE `name`='raohui' AND `gmt_modified`='2019-09-24 17:39:28' AND `age`=29 AND `gmt_create`='2019-09-24 17:39:28' AND `address`='陕西省西安市' AND `id`=3 LIMIT 1; #start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="string">DELETE FROM `test`.`employees` WHERE `name`='yangnan' AND `gmt_modified`='2019-09-24 17:39:52' AND `age`=22 AND `gmt_create`='2019-09-24 17:39:52' AND `address` IS NULL AND `id`=4 LIMIT 1; #start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="string">DELETE FROM `test`.`employees` WHERE `name`='yuzhiqiang' AND `gmt_modified`='2019-09-24 17:40:03' AND `age`=29 AND `gmt_create`='2019-09-24 17:40:03' AND `address` IS NULL AND `id`=5 LIMIT 1; #start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>解析出回滚 <code>SQL</code>，并检查回滚 <code>SQL</code> 是否正确</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">python</span> <span class="string">binlog2sql.py</span> <span class="bullet">-h127.0.0.1</span> <span class="bullet">-P3306</span> <span class="bullet">-uroot</span> <span class="bullet">-p'xx'</span> <span class="bullet">-dtest</span> <span class="bullet">-temployees</span> <span class="bullet">--start-file='mysql-bin.000020'</span> <span class="bullet">--start-pos=66374969</span> <span class="bullet">--end-pos=66375406</span> <span class="bullet">-B</span> <span class="string">&gt; rollback.sql</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">INSERT INTO `test`.`employees`(`name`, `gmt_modified`, `age`, `gmt_create`, `address`, `id`) VALUES ('yuzhiqiang', '2019-09-24 17:40:03', 29, '2019-09-24 17:40:03', NULL, 5); #start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="string">INSERT INTO `test`.`employees`(`name`, `gmt_modified`, `age`, `gmt_create`, `address`, `id`) VALUES ('yangnan', '2019-09-24 17:39:52', 22, '2019-09-24 17:39:52', NULL, 4); #start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="string">INSERT INTO `test`.`employees`(`name`, `gmt_modified`, `age`, `gmt_create`, `address`, `id`) VALUES ('raohui', '2019-09-24 17:39:28', 29, '2019-09-24 17:39:28', '陕西省西安市', 3); #start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="string">INSERT INTO `test`.`employees`(`name`, `gmt_modified`, `age`, `gmt_create`, `address`, `id`) VALUES ('maofang', '2019-09-24 17:40:49', 32, '2019-09-24 17:32:00', '山东省青岛市', 2); #start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="string">INSERT INTO `test`.`employees`(`name`, `gmt_modified`, `age`, `gmt_create`, `address`, `id`) VALUES ('xujinliang', '2019-09-24 17:13:00', 32, '2019-09-24 17:13:00', '山东省青岛市', 1); #start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>Tips</strong>：回滚条数可以使用 <code>%s/pattern/&amp;/g</code> 进行统计，<code>pattern</code> 是要搜索的关键字。</p>
+</blockquote>
+<ul>
+<li>确认回滚 <code>SQL</code> 正确，执行回滚语句</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">mysql</span> <span class="bullet">-h127.0.0.1</span> <span class="bullet">-P3306</span> <span class="bullet">-uroot</span> <span class="bullet">-p'xx'</span> <span class="string">&lt;</span> <span class="string">rollback.sql</span></span><br><span class="line"></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">select</span> <span class="string">*</span> <span class="string">from</span> <span class="string">employees;</span></span><br><span class="line"><span class="string">+----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line"><span class="string">| id | name       | address            | age | gmt_create          | gmt_modified        |</span></span><br><span class="line"><span class="string">+----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line"><span class="string">|  1 | xujinliang | 山东省青岛市         |  32 | 2019-09-24 17:13:00 | 2019-09-24 17:13:00 |</span></span><br><span class="line"><span class="string">|  2 | maofang    | 山东省青岛市         |  32 | 2019-09-24 17:32:00 | 2019-09-24 17:40:49 |</span></span><br><span class="line"><span class="string">|  3 | raohui     | 陕西省西安市         |  29 | 2019-09-24 17:39:28 | 2019-09-24 17:39:28 |</span></span><br><span class="line"><span class="string">|  4 | yangnan    | NULL               |  22 | 2019-09-24 17:39:52 | 2019-09-24 17:39:52 |</span></span><br><span class="line"><span class="string">|  5 | yuzhiqiang | NULL               |  29 | 2019-09-24 17:40:03 | 2019-09-24 17:40:03 |</span></span><br><span class="line"><span class="string">+----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line"><span class="string">5 rows in set (0.00 sec)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 连接配置</span></span><br><span class="line"><span class="bullet">-</span><span class="string">h</span> <span class="string">host;</span> <span class="bullet">-P</span> <span class="string">port;</span> <span class="bullet">-u</span> <span class="string">user;</span> <span class="bullet">-p</span> <span class="string">password</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 解析模式</span></span><br><span class="line"><span class="bullet">-</span><span class="string">B,</span> <span class="bullet">--flashback</span>              <span class="comment"># 生成回滚SQL</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-start-file</span>                 <span class="comment"># 起始解析文件</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-start-position/--start-pos</span> <span class="comment"># 起始解析位置</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-stop-file/--end-file</span>       <span class="comment"># 终止解析文件</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-stop-position/--end-pos</span>    <span class="comment"># 终止解析位置</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-start-datetime</span>             <span class="comment"># 起始解析时间</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-stop-datetime</span>              <span class="comment"># 终止解析时间，格式'%Y-%m-%d %H:%M:%S'</span></span><br><span class="line"><span class="bullet">-</span><span class="string">d,</span> <span class="bullet">--databases</span>              <span class="comment"># 只解析目标DB的SQL，多个库用空格隔开</span></span><br><span class="line"><span class="bullet">-</span><span class="string">t,</span> <span class="bullet">--tables</span>                 <span class="comment"># 只解析目标表的SQL，多张表用空格隔开</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-only-dml</span>                   <span class="comment"># 只解析DML，忽略DDL</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-sql-type</span>                   <span class="comment"># 只解析指定类型，支持INSERT, UPDATE, DELETE，多个类型用空格隔开</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ul>
+<li>还是先恢复再去面壁思过吧！</li>
+<li>手工执行 <code>delete</code>、<code>update</code> 语句前，先执行 <code>selete</code> 语句。</li>
+<li><code>drop</code> 或者 <code>truncate</code> 语句造成的误操作，通过备份来恢复。</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>MySQL · 优化释放表空间</title>
+    <url>/blog/2020/07/08/Optimize-table-space/</url>
+    <content><![CDATA[<h3 id="优化方法"><a href="#优化方法" class="headerlink" title="优化方法"></a>优化方法</h3><p><strong>方法一</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">optimize table table_name</span><br></pre></td></tr></table></figure>
+
+<p><strong>方法二</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">alter table table_name engine=engine_name</span><br></pre></td></tr></table></figure>
+
+<p>该方法通常用于切换表的引擎，例如 <code>MyISAM</code>转为 <code>InnoDB</code> ，但是同样适用于释放表空间，只不过切换后的引擎和原来的engine相同罢了。</p>
+<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><ol>
+<li>这两种方式都适用于我们常用的表，<code>myisam</code> 和 <code>innodb</code>。</li>
+<li>优化表的时候会锁表，数据表越大，耗时越长，因此不要在网站忙时进行表优化。</li>
+</ol>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><p><strong>优化前</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">表名</th>
+<th align="left">数据库名</th>
+<th align="left">存储引擎</th>
+<th align="right">表空间</th>
+<th align="right">表空间占比</th>
+<th align="right">索引空间</th>
+<th align="right">数据空间</th>
+<th align="right">碎片率</th>
+<th align="right">表行数</th>
+<th align="right">平均行长</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">prototype_direct_access_new</td>
+<td align="left">yangjidb</td>
+<td align="left">InnoDB</td>
+<td align="right">17.71 GB</td>
+<td align="right">3.56%</td>
+<td align="right">49.08 MB</td>
+<td align="right">2.43 GB</td>
+<td align="right">86.01%</td>
+<td align="right">296278</td>
+<td align="right">8.60 KB</td>
+</tr>
+</tbody></table>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看 prototype_direct_access_new 表数据量</span></span><br><span class="line"><span class="string">SELECT</span> <span class="string">TABLE_NAME,data_length,index_length,</span> <span class="string">concat(round(sum((data_length</span> <span class="string">+</span> <span class="string">index_length)/1024/1024/1024),2),'GB')</span> <span class="string">AS</span> <span class="string">total_size</span></span><br><span class="line">	<span class="string">FROM</span> <span class="string">information_schema.tables</span></span><br><span class="line"><span class="string">WHERE</span> <span class="string">table_schema</span> <span class="string">=</span> <span class="string">'yangjidb'</span> <span class="string">and</span> <span class="string">TABLE_NAME</span> <span class="string">=</span> <span class="string">'prototype_direct_access_new'</span><span class="string">;</span></span><br><span class="line"><span class="string">+-----------------------------+-------------+--------------+------------+</span></span><br><span class="line"><span class="string">| TABLE_NAME                  | data_length | index_length | total_size |</span></span><br><span class="line"><span class="string">+-----------------------------+-------------+--------------+------------+</span></span><br><span class="line"><span class="string">| prototype_direct_access_new |  2608824320 |     51462144 | 2.48GB     |</span></span><br><span class="line"><span class="string">+-----------------------------+-------------+--------------+------------+</span></span><br><span class="line"><span class="string"># 优化</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+  </entry>
+  <entry>
+    <title>查询活跃客户量</title>
+    <url>/blog/2020/07/06/Active-customers/</url>
+    <content><![CDATA[<h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>一个客户可能有多个子账号，需要按时间区间查询活跃客户数量、</p>
+<h4 id="数据库信息"><a href="#数据库信息" class="headerlink" title="数据库信息"></a>数据库信息</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rm-m5em8luzx5gt79ko2.mysql.rds.aliyuncs.com</span><br><span class="line">客户鉴权中心：coc    王建坤</span><br><span class="line">客户中心：customer   王亮</span><br></pre></td></tr></table></figure>
+
+<h4 id="查询"><a href="#查询" class="headerlink" title="查询"></a>查询</h4><p><strong>鉴权账号部分查询</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SELECT</span><br><span class="line">	cas_accounts.`name` AS &apos;登录名&apos;,</span><br><span class="line">	CASE cas_accounts. STATUS</span><br><span class="line">WHEN 1 THEN</span><br><span class="line">	&apos;正常&apos;</span><br><span class="line">ELSE</span><br><span class="line">	&apos;停用&apos;</span><br><span class="line">END AS &apos;账号状态&apos;,</span><br><span class="line"> cas_accounts.phone_number AS &apos;手机号&apos;,</span><br><span class="line"> cas_accounts.last_login_at AS &apos;最近登录时间&apos;,</span><br><span class="line"> cas_account_customer.customer_id AS &apos;8码&apos;,</span><br><span class="line"> CASE cas_account_customer. STATUS</span><br><span class="line">WHEN 1 THEN</span><br><span class="line">	&apos;正常&apos;</span><br><span class="line">ELSE</span><br><span class="line">	&apos;停用&apos;</span><br><span class="line">END AS &apos;客户状态&apos;,</span><br><span class="line"> CASE cas_account_customer.is_primary</span><br><span class="line">WHEN 1 THEN</span><br><span class="line">	&apos;主账号&apos;</span><br><span class="line">ELSE</span><br><span class="line">	&apos;子账号&apos;</span><br><span class="line">END AS &apos;账号类型&apos;</span><br><span class="line">FROM</span><br><span class="line">	cas_accounts</span><br><span class="line">LEFT JOIN cas_account_customer ON cas_account_customer.account_id = cas_accounts.id</span><br><span class="line">WHERE</span><br><span class="line">	last_login_at != &apos;&apos;</span><br><span class="line">AND last_login_at IS NOT NULL</span><br><span class="line">AND last_login_at &gt;= &apos;2020-06-00 00:00:00&apos;</span><br></pre></td></tr></table></figure>
+
+<p>查询时间段登录过的用户账号都记录在这些数据里， customer_id 相同表示用户账号属于同一个客户。</p>
+<p>把 <code>customer_id</code> (8码) 去重得到的条数就是这段时间的活跃用户数量</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>MySQL8 · 安装or升级</title>
+    <url>/blog/2020/07/01/MySQL8-Install-or-upgrade/</url>
+    <content><![CDATA[<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>最广泛使用的3种安装方式</p>
+<ul>
+<li>软件仓库（YUM或APT）</li>
+<li>RPM 或 DEB 文件</li>
+<li>通用二进制文件</li>
+</ul>
+<h3 id="软件仓库方式"><a href="#软件仓库方式" class="headerlink" title="软件仓库方式"></a>软件仓库方式</h3><ul>
+<li>YUM（CentOS、Red Hat 、Fedora 、Oracle Linux系统）</li>
+<li>APT（Debian、Ubuntu 系统）</li>
+</ul>
+<p><strong>使用YUM仓库</strong></p>
+<p><strong>注：需要服务器可以访问公共互联网</strong></p>
+<p>1、查看 <code>Red Het</code> 或 <code>CentOS</code> 的版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cat /etc/redhat-release</span><br><span class="line">CentOS Linux release 7.7.1908 (Core)</span><br></pre></td></tr></table></figure>
+
+<p>2、将 MySQL YUM 仓库添加到系统仓库列表，可通过安装MySQL提供的RPM执行</p>
+<p>通过<code>http://dev.mysql.com/downloads/repo/yum</code>  下载 MySQL YUM 仓库，根据自身操作系统选择文件</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment">#下载MySQL源安装包</span></span><br><span class="line"><span class="string">$</span> <span class="string">cd</span> <span class="string">/usr/local/src/</span></span><br><span class="line"><span class="string">$</span> <span class="string">wget</span> <span class="attr">https://dev.mysql.com/downloads/file/?id=489467</span></span><br><span class="line"><span class="comment"># 安装MySQL源 </span></span><br><span class="line"><span class="string">$</span> <span class="string">sudo</span> <span class="string">yum</span> <span class="string">localinstall</span> <span class="bullet">-y</span> <span class="string">mysql80-community-release-el7-3.noarch.rpm</span></span><br></pre></td></tr></table></figure>
+
+<p>3、检查 MySQL 源是否安装成功</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yum repolist enabled | grep &apos;mysql.*-community.*&apos;</span><br><span class="line">mysql-connectors-community/x86_64 MySQL Connectors Community                 153</span><br><span class="line">mysql-tools-community/x86_64      MySQL Tools Community                      110</span><br><span class="line">mysql80-community/x86_64          MySQL 8.0 Community Server                 177</span><br></pre></td></tr></table></figure>
+
+<p>4、确认 <code>mysql80-community</code> 已启用：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo yum repolist all | grep mysql8</span><br><span class="line">mysql80-community/x86_64                  MySQL 8.0 Community Se enabled:    177</span><br><span class="line">mysql80-community-source                  MySQL 8.0 Community Se disabled</span><br></pre></td></tr></table></figure>
+
+<p>5、安装 <code>MySQL 8</code></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 这一步才是真正安装MySQL </span></span><br><span class="line"><span class="string">$</span> <span class="string">sudo</span> <span class="string">yum</span> <span class="string">install</span> <span class="bullet">-y</span> <span class="string">mysql-community-server</span></span><br></pre></td></tr></table></figure>
+
+<p>6、查看已安装的软件包</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ rpm -qa |grep -i &apos;mysql.*8.*&apos;</span><br></pre></td></tr></table></figure>
+
+<p>7、启动 MySQL 服务并设置开机自启动</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ systemctl start mysqld</span><br><span class="line">$ systemctl enable mysqld</span><br><span class="line">$ systemctl daemon-reload</span><br></pre></td></tr></table></figure>
+
+<p>8、查看临时密码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">grep &apos;temporary password&apos; /var/log/mysqld.log</span><br></pre></td></tr></table></figure>
+
+<p>9、登录数据库修改密码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; SET PASSWORD = &apos;Haier@123&apos;;</span><br><span class="line">mysql&gt; ALTER USER &apos;root&apos;@&apos;localhost&apos; Password EXPIRE NEVER;</span><br><span class="line">mysql&gt; flush privileges;</span><br></pre></td></tr></table></figure>
+
+<h3 id="RPM-或-DEB-文件方式"><a href="#RPM-或-DEB-文件方式" class="headerlink" title="RPM 或 DEB 文件方式"></a>RPM 或 DEB 文件方式</h3><h2 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h2><h3 id="基于YUM的系统"><a href="#基于YUM的系统" class="headerlink" title="基于YUM的系统"></a>基于YUM的系统</h3><p>1、检查已经安装了哪些包：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ systemctl stop mysqld</span><br><span class="line">$ rpm -qa | grep -i mysql-community</span><br></pre></td></tr></table></figure>
+
+<p>2、删除包</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 可能会收到其他包依赖MySQL的通知，若计划再次安装，可通过 --nodeps 选项忽略告警</span></span><br><span class="line"><span class="string">$</span> <span class="string">rpm</span> <span class="bullet">-e</span> <span class="string">&lt;package-name&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>3、卸载依赖</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看mysql的其它依赖</span></span><br><span class="line"><span class="string">$</span> <span class="string">rpm</span> <span class="bullet">-qa</span> <span class="string">| grep -i mysql</span></span><br><span class="line"><span class="string"># 卸载依赖</span></span><br><span class="line"><span class="string">yum remove mysql-xxx</span></span><br></pre></td></tr></table></figure>
+
+<p>4、删除文件目录</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看文件目录</span></span><br><span class="line"><span class="string">$</span> <span class="string">find</span> <span class="string">/</span> <span class="bullet">-name</span> <span class="string">mysql</span></span><br><span class="line"><span class="comment"># 删除文件目录</span></span><br><span class="line"><span class="string">$</span> <span class="string">rm</span> <span class="bullet">-rf</span> <span class="string">/var/lib/mysql</span></span><br><span class="line"><span class="string">$</span> <span class="string">rm</span> <span class="bullet">-rf</span> <span class="string">/var/lib/mysql/mysql</span></span><br><span class="line"><span class="string">$</span> <span class="string">rm</span> <span class="bullet">-rf</span> <span class="string">/etc/selinux/targeted/active/modules/100/mysql</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="卸载二进制文件"><a href="#卸载二进制文件" class="headerlink" title="卸载二进制文件"></a><a href="https://mino-yn.github.io/blog/2019/08/09/Download-MySQL/">卸载二进制文件</a></h3>]]></content>
+      <tags>
+        <tag>MySQL8 Cookbook</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>MySQL·存储过程</title>
     <url>/blog/2020/06/24/stored-procedure/</url>
     <content><![CDATA[<p>简介</p>
@@ -114,11 +313,6 @@
 <h4 id="UV"><a href="#UV" class="headerlink" title="UV"></a>UV</h4><p>独立访客，统计1天内访问某站点的用户数；访问网站的一台电脑客户端为一个访客，可理解成访问某网站的电脑数量。</p>
 <h4 id="IP"><a href="#IP" class="headerlink" title="IP"></a>IP</h4><p>独立IP数，1天内多少个独立的IP浏览了页面，即统计不同的IP浏览用户数量。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>aliyun hdm</title>
-    <url>/blog/2020/04/20/aliyun-hdm/</url>
-    <content><![CDATA[]]></content>
   </entry>
   <entry>
     <title>IaaS PaaS SaaS</title>
@@ -2928,7 +3122,7 @@
 <p>2、若从库无写入数据，出错表的数据量不算太大，可以考虑将从库的表重导。</p>
 <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 后台跳过错误日志使主从先保持同步</span></span><br><span class="line"><span class="string">stop</span> <span class="string">slave</span></span><br><span class="line"><span class="string">nohup</span> <span class="string">pt-slave-restart</span> <span class="bullet">-usre</span> <span class="bullet">-p'sre@@p$i'</span>  <span class="string">&gt; myout.file 2&gt;&amp;1 &amp;</span></span><br><span class="line"><span class="string">start slave</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#取消后台跳过 停止主从同步</span></span><br><span class="line"><span class="string">ps -ef|grep pt-slave;</span></span><br><span class="line"><span class="string">stop slave </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#删除从库对应表 重新导表</span></span><br><span class="line"><span class="string">#删除从库表</span></span><br><span class="line"><span class="string">#备份主库表</span></span><br><span class="line"><span class="string">/usr/local/mysql/bin/mysqldump -h 10.133.0.51 --single-transaction  -S /data/mysql/mysql.sock -uroot  -p'root123' tmd d_etl_odsbcc_v_price_intbl_month &gt;d_etl_odsbcc_v_price_intbl_month.sql</span></span><br><span class="line"><span class="string">#恢复</span></span><br><span class="line"><span class="string">/usr/local/mysql/bin/mysql -h 10.133.0.51  -P3306 -uroot -p'root123' tmd &lt; d_etl_odsbcc_v_price_intbl_month.sql</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#重启主从，确认数据一致性</span></span><br><span class="line"><span class="string">start slave</span></span><br><span class="line"><span class="string">SELECT COUNT(*) FROM tdm.d_etl_odsbcc_v_price_intbl_month</span></span><br><span class="line"><span class="string">SELECT * FROM  tdm.d_etl_odsbcc_v_price_intbl_month WHERE id = 529293</span></span><br></pre></td></tr></table></figure>
 
-<h1 id="案例4"><a href="#案例4" class="headerlink" title="案例4"></a>案例4</h1><h2 id="XA事务"><a href="#XA事务" class="headerlink" title="XA事务"></a>XA事务</h2><h3 id="问题现象-3"><a href="#问题现象-3" class="headerlink" title="问题现象"></a>问题现象</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.142.201.254</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 10</span><br><span class="line">              Master_Log_File: mysql-binlog.000508</span><br><span class="line">          Read_Master_Log_Pos: 1038523319</span><br><span class="line">               Relay_Log_File: relay-log.000037</span><br><span class="line">                Relay_Log_Pos: 834472219</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.000482</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: No</span><br><span class="line">              Replicate_Do_DB:</span><br><span class="line">          Replicate_Ignore_DB:</span><br><span class="line">           Replicate_Do_Table:</span><br><span class="line">       Replicate_Ignore_Table:</span><br><span class="line">      Replicate_Wild_Do_Table:</span><br><span class="line">  Replicate_Wild_Ignore_Table:</span><br><span class="line">                   Last_Errno: 1399</span><br><span class="line">                   Last_Error: Error &apos;XAER_RMFAIL: The command cannot be executed when global transaction is in the  ACTIVE state&apos; on query. Default database: &apos;cosmo_im_1022&apos;. Query: &apos;COMMIT&apos;</span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 834472000</span><br><span class="line">              Relay_Log_Space: 29224804607</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File:</span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File:</span><br><span class="line">           Master_SSL_CA_Path:</span><br><span class="line">              Master_SSL_Cert:</span><br><span class="line">            Master_SSL_Cipher:</span><br><span class="line">               Master_SSL_Key:</span><br><span class="line">        Seconds_Behind_Master: NULL</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">                Last_IO_Errno: 0</span><br><span class="line">                Last_IO_Error:</span><br><span class="line">               Last_SQL_Errno: 1399</span><br><span class="line">               Last_SQL_Error: Error &apos;XAER_RMFAIL: The command cannot be executed when global transaction is in the  ACTIVE state&apos; on query. Default database: &apos;cosmo_im_1022&apos;. Query: &apos;COMMIT&apos;</span><br><span class="line">  Replicate_Ignore_Server_Ids:</span><br><span class="line">             Master_Server_Id: 3306100</span><br><span class="line">                  Master_UUID: 60e42641-d8e7-11e8-885d-3e09cac54b02</span><br><span class="line">             Master_Info_File: /home/data/mysql/master.info</span><br><span class="line">                    SQL_Delay: 0</span><br><span class="line">          SQL_Remaining_Delay: NULL</span><br><span class="line">      Slave_SQL_Running_State:</span><br><span class="line">           Master_Retry_Count: 86400</span><br><span class="line">                  Master_Bind:</span><br><span class="line">      Last_IO_Error_Timestamp:</span><br><span class="line">     Last_SQL_Error_Timestamp: 200629 17:54:06</span><br><span class="line">               Master_SSL_Crl:</span><br><span class="line">           Master_SSL_Crlpath:</span><br><span class="line">           Retrieved_Gtid_Set:</span><br><span class="line">            Executed_Gtid_Set:</span><br><span class="line">                Auto_Position: 0</span><br><span class="line">         Replicate_Rewrite_DB:</span><br><span class="line">                 Channel_Name:</span><br><span class="line">           Master_TLS_Version:</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<h1 id="案例四"><a href="#案例四" class="headerlink" title="案例四"></a>案例四</h1><h2 id="XA事务"><a href="#XA事务" class="headerlink" title="XA事务"></a>XA事务</h2><h3 id="问题现象-3"><a href="#问题现象-3" class="headerlink" title="问题现象"></a>问题现象</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.142.201.254</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 10</span><br><span class="line">              Master_Log_File: mysql-binlog.000508</span><br><span class="line">          Read_Master_Log_Pos: 1038523319</span><br><span class="line">               Relay_Log_File: relay-log.000037</span><br><span class="line">                Relay_Log_Pos: 834472219</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.000482</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: No</span><br><span class="line">              Replicate_Do_DB:</span><br><span class="line">          Replicate_Ignore_DB:</span><br><span class="line">           Replicate_Do_Table:</span><br><span class="line">       Replicate_Ignore_Table:</span><br><span class="line">      Replicate_Wild_Do_Table:</span><br><span class="line">  Replicate_Wild_Ignore_Table:</span><br><span class="line">                   Last_Errno: 1399</span><br><span class="line">                   Last_Error: Error &apos;XAER_RMFAIL: The command cannot be executed when global transaction is in the  ACTIVE state&apos; on query. Default database: &apos;cosmo_im_1022&apos;. Query: &apos;COMMIT&apos;</span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 834472000</span><br><span class="line">              Relay_Log_Space: 29224804607</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File:</span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File:</span><br><span class="line">           Master_SSL_CA_Path:</span><br><span class="line">              Master_SSL_Cert:</span><br><span class="line">            Master_SSL_Cipher:</span><br><span class="line">               Master_SSL_Key:</span><br><span class="line">        Seconds_Behind_Master: NULL</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">                Last_IO_Errno: 0</span><br><span class="line">                Last_IO_Error:</span><br><span class="line">               Last_SQL_Errno: 1399</span><br><span class="line">               Last_SQL_Error: Error &apos;XAER_RMFAIL: The command cannot be executed when global transaction is in the  ACTIVE state&apos; on query. Default database: &apos;cosmo_im_1022&apos;. Query: &apos;COMMIT&apos;</span><br><span class="line">  Replicate_Ignore_Server_Ids:</span><br><span class="line">             Master_Server_Id: 3306100</span><br><span class="line">                  Master_UUID: 60e42641-d8e7-11e8-885d-3e09cac54b02</span><br><span class="line">             Master_Info_File: /home/data/mysql/master.info</span><br><span class="line">                    SQL_Delay: 0</span><br><span class="line">          SQL_Remaining_Delay: NULL</span><br><span class="line">      Slave_SQL_Running_State:</span><br><span class="line">           Master_Retry_Count: 86400</span><br><span class="line">                  Master_Bind:</span><br><span class="line">      Last_IO_Error_Timestamp:</span><br><span class="line">     Last_SQL_Error_Timestamp: 200629 17:54:06</span><br><span class="line">               Master_SSL_Crl:</span><br><span class="line">           Master_SSL_Crlpath:</span><br><span class="line">           Retrieved_Gtid_Set:</span><br><span class="line">            Executed_Gtid_Set:</span><br><span class="line">                Auto_Position: 0</span><br><span class="line">         Replicate_Rewrite_DB:</span><br><span class="line">                 Channel_Name:</span><br><span class="line">           Master_TLS_Version:</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
 
 <p>原因分析</p>
 <p>查资料怀疑和XA事务相关，解析binlog日志</p>

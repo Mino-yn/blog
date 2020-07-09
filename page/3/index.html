@@ -281,6 +281,747 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/02/28/mysql-migration-to-cloud/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/02/28/mysql-migration-to-cloud/" itemprop="url">MySQL · 海贝商城迁移上云</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-28T10:07:44+08:00">
+                2020-02-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><table>
+<thead>
+<tr>
+<th>本地数据库</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>项目名称</td>
+<td>海贝积分商城</td>
+</tr>
+<tr>
+<td>机房位置</td>
+<td>北京亦庄机房</td>
+</tr>
+<tr>
+<td>本地数据库</td>
+<td>10.159.33.219</td>
+</tr>
+<tr>
+<td>主从</td>
+<td>从库</td>
+</tr>
+<tr>
+<td>数据量</td>
+<td>127 GB</td>
+</tr>
+<tr>
+<td>版本</td>
+<td>MariaDB 10.1.18</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>阿里云ECS</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主机</td>
+<td>10.162.177.68</td>
+</tr>
+<tr>
+<td>自建MySQL</td>
+<td>MariaDB 10.1.19</td>
+</tr>
+<tr>
+<td>用户名</td>
+<td>root</td>
+</tr>
+<tr>
+<td>密码</td>
+<td>74kv6PQF$wVtlkU^</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>阿里云RDS</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>测试实例</td>
+<td>rm-2zey293xldeni7k48.mysql.rds.aliyuncs.com</td>
+</tr>
+<tr>
+<td>版本</td>
+<td>MySQL 5.6</td>
+</tr>
+<tr>
+<td>生产实例</td>
+<td>rm-2zem962y8x2rlm74v.mysql.rds.aliyuncs.com</td>
+</tr>
+<tr>
+<td>版本</td>
+<td>MySQL 5.6</td>
+</tr>
+<tr>
+<td>用户名</td>
+<td>haibei</td>
+</tr>
+</tbody></table>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">注意：</span><br><span class="line">1、无ECS登录权限，找云管理王伟成添加堡垒机权限</span><br></pre></td></tr></table></figure>
+
+<h3 id="迁移方案"><a href="#迁移方案" class="headerlink" title="迁移方案"></a>迁移方案</h3><p>本地 <code>IDC</code> 数据库  -&gt;   <code>ECS</code> 自建数据库 -&gt;阿里云 <code>RDS</code></p>
+<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>耗时</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>全备</td>
+<td>——</td>
+</tr>
+<tr>
+<td>传输</td>
+<td>——</td>
+</tr>
+<tr>
+<td>恢复</td>
+<td>——</td>
+</tr>
+<tr>
+<td>DTS迁移</td>
+<td>2 h 15 min</td>
+</tr>
+</tbody></table>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/02/19/mybatis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/02/19/mybatis/" itemprop="url">Mybatis</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-19T17:41:14+08:00">
+                2020-02-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="1、简介"><a href="#1、简介" class="headerlink" title="1、简介"></a>1、简介</h2><h3 id="1-1什么是Mybatis"><a href="#1-1什么是Mybatis" class="headerlink" title="1.1什么是Mybatis"></a>1.1什么是Mybatis</h3><ul>
+<li><code>MyBatis</code> 是一款优秀的<strong>持久层框架</strong></li>
+<li>它支持定制化<code>SQL</code>、存储过程以及高级映射</li>
+<li><code>MyBatis</code> 避免了几乎所有的 <code>JDBC</code> 代码和手动设置参数以及获取结果集。</li>
+<li><code>MyBatis</code>  可以使用简单的  <code>XML</code>  或注解来配置和映射原生类型、接口和  <code>Java</code> 的 <code>POJO</code>（Plain Old Java Objects，普通老式 Java 对象）为数据库中的记录。</li>
+<li><code>MyBatis</code> 本是 <code>apache</code> 的一个开源项目 <code>iBatis</code>，2010年这个项目由 <code>apache software foundation</code> 迁移到了<code>Google code</code> 并改名为 <code>MyBatis</code></li>
+<li>2013年11月迁移到 <code>Github</code>。</li>
+</ul>
+<p>如何获得 <code>Mybatis</code>？</p>
+<ul>
+<li><code>maven</code> 仓库</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.mybatis&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;mybatis&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;3.5.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>Github</code> ：<a href="https://github.com/mybatis/mybatis-3/releases" target="_blank" rel="noopener">https://github.com/mybatis/mybatis-3/releases</a></li>
+<li>中文文档：<a href="https://mybatis.org/mybatis-3/zh/index.html" target="_blank" rel="noopener">https://mybatis.org/mybatis-3/zh/index.html</a></li>
+</ul>
+<h3 id="1-2、持久化"><a href="#1-2、持久化" class="headerlink" title="1.2、持久化"></a>1.2、持久化</h3><p>数据持久化</p>
+<ul>
+<li>持久化就是将程序的数据在持久状态和瞬时状态转化的过程</li>
+<li>瞬时状态：内存：<strong>断电即失</strong></li>
+<li>持久状态：数据库(jdbc) ，io文件持久化</li>
+</ul>
+<p><strong>为什么需要持久化？</strong></p>
+<ul>
+<li><p>有一些对象， 不能让他丢掉。</p>
+</li>
+<li><p>内存太贵了</p>
+</li>
+</ul>
+<h3 id="1-3、持久层"><a href="#1-3、持久层" class="headerlink" title="1.3、持久层"></a>1.3、持久层</h3><p>Dao层、Service层、Controller层….</p>
+<ul>
+<li>完成持久化工作的代码块</li>
+<li>层界限十分明显</li>
+</ul>
+<h3 id="1-4、为什么需要Mybatis？"><a href="#1-4、为什么需要Mybatis？" class="headerlink" title="1.4、为什么需要Mybatis？"></a>1.4、为什么需要Mybatis？</h3><ul>
+<li><p>帮助程序员将数据存入到数据库中。</p>
+</li>
+<li><p>传统的JDBC代码太复杂了，为了简化因此出现了框架。自动化。</p>
+</li>
+<li><p>不用Mybatis也可以，但是由Mybatis更容易上手。</p>
+</li>
+<li><p>优点：</p>
+<ul>
+<li>简单易学、灵活，使用的人多。</li>
+<li>sql和代码的分离，提高了可维护性。</li>
+<li>提供映射标签，支持对象与数据库的orm字段关系映射</li>
+<li>提供对象关系映射标签，支持对象关系组建维护</li>
+<li>提供xml标签，支持编写动态sql</li>
+</ul>
+<p>后续学习：<code>Spring</code>、 <code>SpringMVC</code> 、<code>SpringBoot</code></p>
+</li>
+</ul>
+<h2 id="2、第一个Mybatis程序"><a href="#2、第一个Mybatis程序" class="headerlink" title="2、第一个Mybatis程序"></a>2、第一个Mybatis程序</h2><p>思路：搭建环境–&gt;导入Mybatis–&gt;编写代码–&gt;测试</p>
+<p>2.1、搭建数据库</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">CREATE DATABASE `Mybatis`;</span><br><span class="line">USE `Mybatis`</span><br><span class="line"></span><br><span class="line">CREATE TABLE `user`(</span><br><span class="line">	`id` INT(<span class="number">20</span>) NOT NULL PRIMARY key,</span><br><span class="line">	`name` VARCHAR(<span class="number">30</span>) DEFAULT NULL,</span><br><span class="line">	`pwd` VARCHAR(<span class="number">30</span>) DEFAULT NULL</span><br><span class="line">)ENGINE=INNODB DEFAULT CHARSET=utf8;</span><br><span class="line"></span><br><span class="line">INSERT INTO `user`(`id`,`name`,`pwd`) VALUES</span><br><span class="line">(<span class="number">1</span>,<span class="string">'狂神'</span>,<span class="string">'123456'</span>),</span><br><span class="line">(<span class="number">2</span>,<span class="string">'张三'</span>,<span class="string">'123456'</span>),</span><br><span class="line">(<span class="number">3</span>,<span class="string">'李四'</span>,<span class="string">'123456'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>新建项目</p>
+<p>1、新建一个普通 <code>maven</code> 项目</p>
+<p>2、删除src目录</p>
+<p>3、导入<code>maven</code> 依赖</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--导入依赖--&gt;</span><br><span class="line">&lt;dependencies&gt;</span><br><span class="line">    &lt;!--mysql驱动--&gt;</span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;mysql&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;</span><br><span class="line">        &lt;version&gt;5.1.47&lt;/version&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line">    &lt;!--mybatis--&gt;</span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;org.mybatis&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;mybatis&lt;/artifactId&gt;</span><br><span class="line">        &lt;version&gt;3.5.2&lt;/version&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line">    &lt;!--junit--&gt;</span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;junit&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;junit&lt;/artifactId&gt;</span><br><span class="line">        &lt;version&gt;4.12&lt;/version&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line">&lt;/dependencies&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2、创建一个模块"><a href="#2-2、创建一个模块" class="headerlink" title="2.2、创建一个模块"></a>2.2、创建一个模块</h3><ul>
+<li><p>编写 <code>mybatis</code> 的核心配置文件 ：<code>mybatis-config.xml</code></p>
+<p>连接数据库</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span> ?&gt;</span><br><span class="line">&lt;!DOCTYPE configuration</span><br><span class="line">        PUBLIC <span class="string">"-//mybatis.org//DTD Config 3.0//EN"</span></span><br><span class="line">        <span class="string">"http://mybatis.org/dtd/mybatis-3-config.dtd"</span>&gt;</span><br><span class="line">&lt;!--核心配置文件--&gt;</span><br><span class="line">&lt;configuration&gt;</span><br><span class="line"></span><br><span class="line">&lt;environments <span class="keyword">default</span>=<span class="string">"development"</span>&gt;</span><br><span class="line">    &lt;environment id=<span class="string">"development"</span>&gt;</span><br><span class="line">        &lt;transactionManager type=<span class="string">"JDBC"</span>/&gt;</span><br><span class="line">        &lt;dataSource type=<span class="string">"POOLED"</span>&gt;</span><br><span class="line">            &lt;property name=<span class="string">"driver"</span> value=<span class="string">"com.mysql.jdbc.Driver"</span>/&gt;</span><br><span class="line">            &lt;property name=<span class="string">"url"</span> value=<span class="string">"jdbc:mysql://localhost:3306/mybatis?useSSL=true&amp;amp;userUnicode=true&amp;amp;characterEncoding=TUF-8"</span>/&gt;</span><br><span class="line">            &lt;property name=<span class="string">"username"</span> value=<span class="string">"root"</span>/&gt;</span><br><span class="line">            &lt;property name=<span class="string">"password"</span> value=<span class="string">"shinee19970608"</span>/&gt;</span><br><span class="line">        &lt;/dataSource&gt;</span><br><span class="line">    &lt;/environment&gt;</span><br><span class="line">&lt;/environments&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编写 <code>mybatis</code> 工具类,能连接上数据库了</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//SqlSessionFactory 构建 sqlSession</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MybatisUtils</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//提升作用域</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> SqlSessionFactory SqlSessionFactory;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//使用Mybatis第一步：获取SqlSessionFactory对象</span></span><br><span class="line">            String resource = <span class="string">"mybatis-config.xml"</span>;</span><br><span class="line">            InputStream inputStream = Resources.getResourceAsStream(resource);</span><br><span class="line">            SqlSessionFactory sqlSessionFactory = <span class="keyword">new</span> SqlSessionFactoryBuilder().build(inputStream);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//既然有了 SqlSessionFactory，顾名思义，我们就可以从中获得 SqlSession 的实例了。</span></span><br><span class="line">    <span class="comment">// SqlSession 完全包含了面向数据库执行 SQL 命令所需的所有方法。</span></span><br><span class="line">    <span class="comment">// 可以通过 SqlSession 实例来直接执行已映射的 SQL 语句</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> SqlSession <span class="title">getSqlSession</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span>  SqlSessionFactory.openSession();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3、编写代码"><a href="#2-3、编写代码" class="headerlink" title="2.3、编写代码"></a>2.3、编写代码</h3><ul>
+<li>实体类</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> String pwd;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(<span class="keyword">int</span> id, String name, String pwd)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.pwd = pwd;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(<span class="keyword">int</span> id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getPwd</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> pwd;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPwd</span><span class="params">(String pwd)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.pwd = pwd;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"User&#123;"</span> +</span><br><span class="line">                <span class="string">"id="</span> + id +</span><br><span class="line">                <span class="string">", name='"</span> + name + <span class="string">'\''</span> +</span><br><span class="line">                <span class="string">", pwd='"</span> + pwd + <span class="string">'\''</span> +</span><br><span class="line">                <span class="string">'&#125;'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Dao接口</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserDao</span> </span>&#123;</span><br><span class="line">    <span class="function">List&lt;User&gt; <span class="title">getUserList</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>接口实现类由原来的 <code>UserDaoImpl</code> 转变为一个 <code>Mapper</code> 配置文件</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span> ?&gt;</span><br><span class="line">&lt;!DOCTYPE mapper</span><br><span class="line">        PUBLIC <span class="string">"-//mybatis.org//DTD Mapper 3.0//EN"</span></span><br><span class="line">        <span class="string">"http://mybatis.org/dtd/mybatis-3-mapper.dtd"</span>&gt;</span><br><span class="line">&lt;!--namespace=绑定一个对应的Dao/Mapper接口·--&gt;</span><br><span class="line">&lt;mapper namespace=<span class="string">"com.kuang.dao.UserDao"</span>&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!--查询语句--&gt;</span><br><span class="line">    &lt;select id=<span class="string">"getUserList"</span> resultType=<span class="string">"com.kuang.pojo.User"</span>&gt;</span><br><span class="line">        select * from mybatis.user</span><br><span class="line">    &lt;/select&gt;</span><br><span class="line">&lt;/mapper&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4、测试"><a href="#2-4、测试" class="headerlink" title="2.4、测试"></a>2.4、测试</h3><p>注意点：</p>
+<ul>
+<li>junit测试</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/02/16/Pom-xml/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/02/16/Pom-xml/" itemprop="url">IDEA· jar包导入</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-16T21:31:34+08:00">
+                2020-02-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h2><p>搭建 <code>maven</code> 工程时 <code>pom</code> 文件出现了 “Failed to read artifact descriptor for xxx:jar” 错误，原因是由于本地仓库中没有这个 <code>jar</code> 包，并且也无法从中央仓库中下载下来。查看本地仓库的对应文件夹，只有 <code>lastUpdated</code> 文件存在。</p>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>手动将 <code>jar</code> 包发布到 <code>maven</code> 本地仓库中</p>
+<p>1、下载好对应的 <code>jar</code> 包到本地</p>
+<p>2、查看该 <code>jar</code> 包的坐标</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">	 &lt;groupId&gt;mysql&lt;/groupId&gt;</span><br><span class="line">	 &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;</span><br><span class="line">     &lt;version&gt;8.0.18&lt;/version&gt;</span><br><span class="line">	 &lt;scope&gt;runtime&lt;/scope&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p>3、执行命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn install:install-file -DgroupId=mysql -DartifactId=mysql-connector-java -Dversion=8.0.18 -Dpackaging=jar -Dfile=F:\jar\mysql-connector-java-8.0.18.jar</span><br></pre></td></tr></table></figure>
+
+<p>命令的参数如下：</p>
+<ul>
+<li><code>DgroupId</code> 为 <code>jar</code> 包坐标的 <code>groupId</code> 值</li>
+<li><code>DartifactId</code> 为 <code>jar</code> 包坐标的 <code>artifactId</code> 值</li>
+<li><code>Dversion</code> 为 <code>jar</code> 包坐标的版本号</li>
+<li><code>Dpackaging</code> 为 <code>jar</code> 包的打包方式</li>
+<li><code>Dfile</code> 为 <code>jar</code> 包的本地路径</li>
+</ul>
+<p>执行可以在 <code>IDEA</code> 的 <code>maven project</code> 窗口进行执行</p>
+<p>4、重新导入所有的 <code>maven</code> 项目</p>
+<p>点击 <code>maven project</code> 窗口左上角的刷新按钮，<code>Reimport All Meven Projects</code> 。</p>
+<h2 id="问题二"><a href="#问题二" class="headerlink" title="问题二"></a>问题二</h2><p><code>maven</code> 本地仓库中存在 <code>jar</code> 包，<code>pom.xml</code> 文件未报错，但是 <code>Maven Projects</code>  中的 <code>Dependencies</code> 中有红线报错</p>
+<h3 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a>解决方法</h3><p>将 <code>pom.xml</code> 中这些出错的 <code>jar</code> 包引用先删除，刷新一次后再重新添加上</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/02/11/maven/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/02/11/maven/" itemprop="url">Maven</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-11T09:53:04+08:00">
+                2020-02-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>​    开发中常需要依赖第三方的包，包和包之间存在依赖关系，版本间还有兼容性问题，有时需要将旧包升级或降级，当项目复杂到一定程度时包管理变得非常重要。</p>
+<p><code>Maven</code> 是当前最受欢迎的Java项目管理构建自动化综合工具，主要做了两件事：</p>
+<ul>
+<li>统一开发规范与工具</li>
+<li>统一管理 <code>jar</code> 包</li>
+</ul>
+<h2 id="安装与配置"><a href="#安装与配置" class="headerlink" title="安装与配置"></a>安装与配置</h2><h3 id="下载安装包"><a href="#下载安装包" class="headerlink" title="下载安装包"></a>下载安装包</h3><p><a href="http://maven.apache.org/download.cgi" target="_blank" rel="noopener">官网下载安装包</a></p>
+<h3 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h3><p>注：安装 <code>Maven</code> 前需确保已安装 <code>JDK</code>, 如果是 <code>Maven3</code> 则需 <code>JDK1.7</code> 以上</p>
+<p>1、解压压缩包</p>
+<p>2、配置系统变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">新建环境变量</span><br><span class="line">MAVEN_HOME：E:\apache-maven-3.5.4</span><br><span class="line">添加path环境变量</span><br><span class="line">%MAVEN_HOME%\bin</span><br></pre></td></tr></table></figure>
+
+<p>3、打开 <code>cmd</code> 输入 <code>mvn -version</code> 出现 <code>maven</code> 版本信息说明配置成功</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Maven0.png" alt></p>
+<h3 id="本地仓库配置"><a href="#本地仓库配置" class="headerlink" title="本地仓库配置"></a>本地仓库配置</h3><ul>
+<li>若不配置本地仓库，会在如下默认位置存放远程下载到的包</li>
+</ul>
+<p>打开 <code>maven</code> 安装目录、 打开<code>conf</code> 目录下的  <code>settings</code> 文件</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Maven1.png" alt></p>
+<ul>
+<li>将本地仓库位置配置到 <code>E:\javaKit\mavenRes</code></li>
+</ul>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Meven2.png" alt></p>
+<h3 id="中央仓库配置"><a href="#中央仓库配置" class="headerlink" title="中央仓库配置"></a>中央仓库配置</h3><p>当构建一个Maven项目时，首先检查pom.xml文件以确定依赖包的下载位置，执行顺序如下</p>
+<ul>
+<li>从本地资源库中查找并获得依赖包，如果没有，执行第二步</li>
+<li>从 <code>Maven</code> 默认中央仓库中查找并获得依赖包（<a href="http://repo1.maven.org/maven2/），如果没有执行第3步" target="_blank" rel="noopener">http://repo1.maven.org/maven2/），如果没有执行第3步</a></li>
+<li>如果在 <code>pom.xml</code> 中定义了自定义的远程仓库，也会在这里的仓库中查找并获得依赖包，如果都没有找到，则 <code>Maven</code> 会抛出异常</li>
+</ul>
+<p>修改默认中央仓库地址</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Maven3.png" alt></p>
+<p><a href="https://www.cnblogs.com/best/p/9676515.html" target="_blank" rel="noopener">学习资料：一小时学会Maven</a></p>
+<p>创建Maven项目</p>
+<p><strong>maven项目打包</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\IdeaProjects\learing-java&gt;mvn clean package</span><br></pre></td></tr></table></figure>
+
+<p><strong>maven项目运行</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\IdeaProjects\learing-java&gt;java -cp target/untitled-1.0-SNAPSHOT.jar org.example.App</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/02/10/Spring-Boot/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1110,656 +1851,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/31/mysqldump/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/12/31/mysqldump/" itemprop="url">mysqldump</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-31T16:50:23+08:00">
-                2019-12-31
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/31/scp-backstage/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/12/31/scp-backstage/" itemprop="url">Linux下SCP后台运行传输文件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-31T15:31:30+08:00">
-                2019-12-31
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>传输一个大文件另一台服务器，当传输速率不高时有时需要传输几个小时，至十几个小时，为了避免由于其他原因导致传输的中断，需要将 <code>scp</code> 放到后台中运行。后台执行我们常用 <code>nohup command &amp;</code> 但是<code>scp</code> 需要输入密码，所以无法直接使用 <code>nohup</code> 。</p>
-<h3 id="方法一、配置互信"><a href="#方法一、配置互信" class="headerlink" title="方法一、配置互信"></a>方法一、配置互信</h3><ul>
-<li><a href="https://mino-yn.github.io/blog/2019/08/23/ssh%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88%E5%8D%95%E5%90%91%EF%BC%89/">配置互信</a></li>
-<li>后台执行 <code>scp</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#可以使用-l控制传输速度，传输过程中占用过大带宽，影响其他服务器。(100000/8/1024=12M)</span><br><span class="line">nohup scp -l 100000 test.tar root@172.172.230.211:/data &amp;</span><br></pre></td></tr></table></figure>
-
-<h3 id="方法二、bg命令转后台执行"><a href="#方法二、bg命令转后台执行" class="headerlink" title="方法二、bg命令转后台执行"></a>方法二、bg命令转后台执行</h3><ul>
-<li>运行 <code>scp</code> 命令</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup scp -P 60022 -r /TRS/back/* root@47.95.110.25:/backup</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>输入密码</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#此时输完密码进程会挂起，还是在前台执行</span><br><span class="line">nohup: ignoring input and appending output to `nohup.out&apos;</span><br><span class="line">root@47.95.110.25&apos;s password:</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>输入 <code>ctrl+z</code> 暂停程序,出现以下提示</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[1]+  Stopped                 nohup scp -P 60022 -r /TRS/back/* root@47.95.110.25:/backup</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>执行 <code>bg</code> 使进程在后台继续运行</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@hr-jf11 TRS]# bg</span><br><span class="line">[1]+ nohup scp -P 60022 -r /TRS/back/* root@47.95.110.25:/backup</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查看 <code>scp</code> 进程，进程已经在后台执行了。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep scp</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/27/CentOS-MySQL-Download/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/12/27/CentOS-MySQL-Download/" itemprop="url">未命名</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-27T17:25:18+08:00">
-                2019-12-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>title: CentOS安装MySQL<br>date: 2019-12-27 17:25:18<br>tags: [MySQL]</p>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>Linux</code> 上安装软件常用方式：</p>
-<ul>
-<li>源码编译</li>
-<li>压缩包解压（一般为 <code>tar.gz</code>）</li>
-<li>编译好的安装包（RPM、DPKG等）</li>
-<li>在线安装（YUM、APT等）</li>
-</ul>
-<p>便捷性：</p>
-<p>YUM &gt; RPM &gt; tar.gz &gt; 源码</p>
-<p>通用性:</p>
-<p>源码 &gt; tar.gz &gt; RPM &gt; YUM</p>
-<p>如：使用压缩包解压的方式安装，虽然需要自己额外进行一些配置工作，但掌握方法后各个平台都基本适用，YUM方式虽然简单，但平台和网络受限，必要时需添加一些特定的YUM源。</p>
-<h2 id="删除已安装的MySQL"><a href="#删除已安装的MySQL" class="headerlink" title="删除已安装的MySQL"></a>删除已安装的MySQL</h2><p><code>yum</code> 方式可以不删mariad除 <code>mariadb</code> ，安装的 <code>MySQL</code> 会覆盖掉之前存在的 <code>mariadb</code></p>
-<ul>
-<li>检查 <code>MariaDB</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -qa|grep mariadb</span><br><span class="line">mariadb-server-5.5.60-1.el7_5.x86_64</span><br><span class="line">mariadb-5.5.60-1.el7_5.x86_64</span><br><span class="line">mariadb-libs-5.5.60-1.el7_5.x86_64</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>删除 <code>MariDB</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -e --nodeps mariadb-server</span><br><span class="line">shell&gt; rpm -e --nodeps mariadb</span><br><span class="line">shell&gt; rpm -e --nodeps mariadb-libs</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>检查 <code>MySQL</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -qa|grep mysql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>删除 <code>MySQL</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -e --nodeps xxx</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>清除余项</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; whereis mysql</span><br><span class="line">mysql: /usr/lib64/mysql /usr/share/mysql</span><br><span class="line">#删除上面的文件夹</span><br><span class="line">rm -rf /usr/lib64/mysql</span><br><span class="line">rm -rf /usr/share/mysql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>删除配置</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm –rf /usr/my.cnf</span><br><span class="line">rm -rf /root/.mysql_sercret</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>剩余配置检查</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chkconfig --list | grep -i mysql</span><br><span class="line">chkconfig --del mysqld</span><br><span class="line">#根据以上列表删除，如：mysqld</span><br></pre></td></tr></table></figure>
-
-<h2 id="YUM方式"><a href="#YUM方式" class="headerlink" title="YUM方式"></a>YUM方式</h2><h3 id="添加-MySQL-YUM-Repository"><a href="#添加-MySQL-YUM-Repository" class="headerlink" title="添加 MySQL YUM Repository"></a>添加 MySQL YUM Repository</h3><p><code>CentOS 7</code> 开始，<code>Mariadb</code> 成为 <code>YUM</code> 源种默认的数据库安装包，如果想安装官方 <code>MySQL</code> 版本需适用 <code>MySQL</code> 提供的 <code>YUM</code> 源。</p>
-<ul>
-<li>下载 <code>MySQL</code> 源</li>
-</ul>
-<p>官网地址：<a href="https://dev.mysql.com/downloads/repo/yum/" target="_blank" rel="noopener">https://dev.mysql.com/downloads/repo/yum/</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#查看系统版本</span><br><span class="line">shell&gt; cat /etc/redhat-release</span><br><span class="line">CentOS Linux release 7.7.1908 (Core)</span><br><span class="line"></span><br><span class="line">#选择对应版本进行下载,这里为CentOS 7 </span><br><span class="line">shell&gt; wget https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>安装 <code>MySQL</code> 源</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># CentOS7当前最新的MySQL源安装</span><br><span class="line">sudo rpm -Uvh mysql80-community-release-el7-3.noarch.rpm</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>检查是否安装成功</li>
-</ul>
-<p>1、执行成功后会在 <code>/etc/yum.repos.d/</code> 目录下生成两个 <code>repo</code>  文件：<code>mysql-community.repo</code> 、<code>mysql-community-source.repo</code>。</p>
-<p>2、通过 <code>yum repolist</code> 可以看到 <code>mysql</code> 相关资源</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; yum repolist enabled | grep &quot;mysql.*-community.*&quot;</span><br><span class="line">mysql-connectors-community/x86_64 MySQL Connectors Community                 131</span><br><span class="line">mysql-tools-community/x86_64      MySQL Tools Community                      100</span><br><span class="line">mysql80-community/x86_64          MySQL 8.0 Community Server                 145</span><br></pre></td></tr></table></figure>
-
-<h3 id="选择-MySQL版本"><a href="#选择-MySQL版本" class="headerlink" title="选择 MySQL版本"></a>选择 MySQL版本</h3><p>使用 <code>MySQL Yum Repository</code> 安装 <code>MySQL</code> 默认选择当前最新的稳定版本，如果希望安装其他版本需切换一下版本。</p>
-<ul>
-<li>查看当前 <code>MySQL Yum Repository</code> 中所有的 <code>MySQL</code> 版本(每个版本在不同子仓库中)</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; yum repolist all | grep mysql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>切换版本为  <code>MySQL5.7</code></p>
-<p>方法1：使用 <code>yum-config-manager</code></p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; sudo yum-config-manager --disable mysql80-community</span><br><span class="line">shell&gt; sudo yum-config-manager --enable mysql57-community</span><br><span class="line"></span><br><span class="line"># 报错</span><br><span class="line">sudo: yum-config-manager: command not found</span><br><span class="line"># 解决</span><br><span class="line">yum -y install yum-utils</span><br></pre></td></tr></table></figure>
-
-<pre><code>方法2：直接编辑 `/etc/yum.repos.d/mysql-community.repo`</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># enabled=0禁用</span><br><span class="line">[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/$basearch/</span><br><span class="line">enabled=0</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql</span><br><span class="line"></span><br><span class="line"># enabled=1启用</span><br><span class="line">[mysql57-community]</span><br><span class="line">name=MySQL 5.7 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-5.7-community/el/7/$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>检查当前启用的 <code>MySQL</code>仓库</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; yum repolist enabled | grep mysq</span><br><span class="line">mysql-connectors-community/x86_64 MySQL Connectors Community                 131</span><br><span class="line">mysql-tools-community/x86_64      MySQL Tools Community                      100</span><br><span class="line">mysql57-community/x86_64          MySQL 5.7 Community Server                 384</span><br></pre></td></tr></table></figure>
-
-<p><em>如果同时启用了多个仓库，安装时会选择最新版本</em></p>
-<h3 id="安装MySQL"><a href="#安装MySQL" class="headerlink" title="安装MySQL"></a>安装MySQL</h3><p>该命令会安装 <code>MySQL</code> 服务器 ( <code>mysql-community-server</code> ) 及其所需的依赖、相关组件，包括 <code>mysql-community-client</code>、<code>mysql-community-common</code> 、<code>mysql-community-libs</code> 等</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; sudo yum install mysql-community-server</span><br></pre></td></tr></table></figure>
-
-<h3 id="启停MySQL"><a href="#启停MySQL" class="headerlink" title="启停MySQL"></a>启停MySQL</h3><p><strong>CentOS 7</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#启动</span><br><span class="line">sudo systemctl start mysqld.service</span><br><span class="line">#查看状态</span><br><span class="line">sudo systemctl status mysqld.service</span><br><span class="line">#停止</span><br><span class="line">sudo systemctl stop mysqld.service</span><br><span class="line">#重启</span><br><span class="line">sudo systemctl restart mysqld.service</span><br></pre></td></tr></table></figure>
-
-<p><strong>CentOS 6</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#启动</span><br><span class="line">sudo service mysqld start</span><br><span class="line">#查看状态</span><br><span class="line">sudo service mysqld status</span><br><span class="line">#停止</span><br><span class="line">sudo service mysqld stop</span><br><span class="line">#重启</span><br><span class="line">sudo service mysqld restart</span><br></pre></td></tr></table></figure>
-
-<h3 id="设置用户"><a href="#设置用户" class="headerlink" title="设置用户"></a>设置用户</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; sudo grep &apos;temporary password&apos; /var/log/mysqld.log</span><br><span class="line">shell&gt; mysql -uroot -p</span><br><span class="line">#修改root用户密码</span><br><span class="line">ALTER USER &apos;root&apos;@&apos;localhost&apos; IDENTIFIED BY &apos;XXX&apos;;</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
-
-<p>设置开机自启动</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; systemctl enable mysqld</span><br><span class="line">shell&gt; systemctl daemon-reload</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/11/MySQL-Explain2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/12/11/MySQL-Explain2/" itemprop="url">Explain(下)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-11T10:27:35+08:00">
-                2019-12-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>Extra</strong></p>
-<p><code>Extra</code> 列用来说明一些额外信息，帮助我们更准确的理解 <code>MySQL</code> 如何执行给定的查询语句。</p>
-<p>常见额外信息</p>
-<table>
-<thead>
-<tr>
-<th>名称</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>No tables used</td>
-<td>查询语句没有from子句</td>
-</tr>
-<tr>
-<td>Impossible WHERE</td>
-<td>查询语句的WHERE子句永远为FALSE</td>
-</tr>
-<tr>
-<td>No matching min/max row</td>
-<td>查询列表处有MIN或MAX聚集函数，但没有符合WHERE子句的搜索条件的记录</td>
-</tr>
-<tr>
-<td>Using index</td>
-<td>搜索条件只包含属于某索引的列，可以使用索引覆盖无需回表操作</td>
-</tr>
-<tr>
-<td>Using index condition</td>
-<td>查询执行过程中使用到Index Condition Pushdown（检查二级索引记录是否满足条件后再回表）特性</td>
-</tr>
-<tr>
-<td>Using where</td>
-<td>使用全表扫描，且语句中WHERE子句有针对该表的搜索条件</td>
-</tr>
-<tr>
-<td>Using join buffer(Block Nested Loop)</td>
-<td></td>
-</tr>
-</tbody></table>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1810,7 +1901,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">91</span>
+                  <span class="site-state-item-count">95</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1823,7 +1914,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/blog/tags/index.html">
-                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
