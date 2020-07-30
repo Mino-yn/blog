@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="Mino&#39;s blog">
 <meta property="og:description" content="Linux目录介绍/etc：(etcetera) 系统配置文件存放的目录，不建议在此目录下存放可执行文件。 /usr：(unix shared resources) 应用程序存放目录，  /usr/bin ：存放应用程序， /usr/share ：存放共享数据， /usr/lib： 存放不能直接运行的，却是许多程序运行所必需的一些函数库文件。 /usr/local:存放软件升级包。  /root：">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-27T07:41:55.927Z">
+<meta property="og:updated_time" content="2020-07-09T02:24:34.295Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux入门基础">
 <meta name="twitter:description" content="Linux目录介绍/etc：(etcetera) 系统配置文件存放的目录，不建议在此目录下存放可执行文件。 /usr：(unix shared resources) 应用程序存放目录，  /usr/bin ：存放应用程序， /usr/share ：存放共享数据， /usr/lib： 存放不能直接运行的，却是许多程序运行所必需的一些函数库文件。 /usr/local:存放软件升级包。  /root：">
@@ -360,7 +360,7 @@
 <li>/usr/local:存放软件升级包。</li>
 </ul>
 <p><strong>/root：</strong> 系统管理员root的家目录，系统第一个启动的分区为/，所以最好将/root和/放置在一个分区下。</p>
-<h2 id="Linux常用指令"><a href="#Linux常用指令" class="headerlink" title="Linux常用指令"></a>Linux常用指令</h2><p><strong>cd命令：</strong></p>
+<h2 id="Linux指令"><a href="#Linux指令" class="headerlink" title="Linux指令"></a>Linux指令</h2><p><strong>cd命令：</strong></p>
 <p>用于切换当前目录，它的参数是要切换到的目录的路径，可以是绝对路径，也可以是相对路径。</p>
 <ul>
 <li><p>cd /root/Docements         # 切换到目录/root/Docements  </p>
@@ -386,6 +386,8 @@
 </ul>
 <p><strong>pwd</strong>：查看用户当前目录</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">df -h                #查看磁盘占用比例</span><br><span class="line">ls -lht              #查看目录下所有文件大小总量</span><br><span class="line">du -sh * |sort -nr   #将当前目录下的文件从大到小排序  -n：从小到大排序</span><br><span class="line">tail -f 文件名        #动态查看日志信息</span><br><span class="line">tail -n 20 文件名     #查看最后一部分日志</span><br><span class="line">rm -rf               #删除文件</span><br><span class="line">top                  #动态查看cpu状态</span><br><span class="line"></span><br><span class="line">#服务器创建新用户</span><br><span class="line">$sudo useradd -m -s /bin/bash userName    // 在/home目录下新建userName目录</span><br><span class="line">$sudo passwd userName                     //设置密码</span><br></pre></td></tr></table></figure>
+
+<h3 id="Linux常用指令"><a href="#Linux常用指令" class="headerlink" title="Linux常用指令"></a>Linux常用指令</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 8核 * 32G * 600GB</span></span><br><span class="line"><span class="comment"># 查看系统CPU</span></span><br><span class="line"><span class="string">cat</span> <span class="string">/proc/cpuinfo</span> <span class="string">| grep "cores"|uniq</span></span><br><span class="line"><span class="string"># 显示系统内存</span></span><br><span class="line"><span class="string">free -g</span></span><br><span class="line"><span class="string"># 显示系统硬盘</span></span><br><span class="line"><span class="string">fdisk -l | grep Disk</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看所有安装的软件包</span></span><br><span class="line"><span class="string">rpm -qa |grep xtrabackup  </span></span><br><span class="line"><span class="string"># 删除安装包</span></span><br><span class="line"><span class="string">rpm -e 文件名</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 授权+执行</span></span><br><span class="line"><span class="string">chmod +x getip</span></span><br><span class="line"><span class="string">./getip</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下的文件数量</span></span><br><span class="line"><span class="string">ls -l |grep  "^-" | wc -l   </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下各文件、文件夹的大小</span></span><br><span class="line"><span class="string">du -h –max-depth=1 *</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#删除软链</span></span><br><span class="line"><span class="string">rm -rf  ./test_chk_ln</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 后台执行任务</span></span><br><span class="line"><span class="string">nohup 执行的任务指令 &amp;</span></span><br></pre></td></tr></table></figure>
 
 
       
@@ -500,7 +502,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">95</span>
+                  <span class="site-state-item-count">101</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -546,7 +548,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux目录介绍"><span class="nav-number">1.</span> <span class="nav-text">Linux目录介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux常用指令"><span class="nav-number">2.</span> <span class="nav-text">Linux常用指令</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux目录介绍"><span class="nav-number">1.</span> <span class="nav-text">Linux目录介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux指令"><span class="nav-number">2.</span> <span class="nav-text">Linux指令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux常用指令"><span class="nav-number">2.1.</span> <span class="nav-text">Linux常用指令</span></a></li></ol></li></ol></div>
             
 
           </div>

@@ -1,6 +1,234 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title></title>
+    <url>/blog/2020/07/29/install-docker/</url>
+    <content><![CDATA[<h5 id="title-Docker-·-安装"><a href="#title-Docker-·-安装" class="headerlink" title="title: Docker · 安装"></a>title: Docker · 安装</h5><p>date: 2020-07-29 11:05:09<br>tags: [Docker]</p>
+<h2 id="Docker安装说明"><a href="#Docker安装说明" class="headerlink" title="Docker安装说明"></a>Docker安装说明</h2><p>Docker 是一个开源的商业产品，有两个版本：社区版（Community Edition，缩写为 CE）和企业版（Enterprise Edition，缩写为 EE）。企业版包含了一些收费服务，个人开发者一般用不到。</p>
+<table>
+<thead>
+<tr>
+<th>操作系统</th>
+<th>Docker版本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>centos7.4+</td>
+<td>Docker Engine - Community<br>Version:           19.03.5</td>
+</tr>
+</tbody></table>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><h3 id="卸载旧版本"><a href="#卸载旧版本" class="headerlink" title="卸载旧版本"></a>卸载旧版本</h3><p>较旧的 Docker 版本称为 docker 或 docker-engine。如果已安装这些程序，请卸载它们以及相关的依赖项。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo yum remove docker \</span><br><span class="line">docker-client \</span><br><span class="line">docker-client-latest \</span><br><span class="line">docker-common \</span><br><span class="line">docker-latest \</span><br><span class="line">docker-latest-logrotate \</span><br><span class="line">docker-logrotate \</span><br><span class="line">docker-engine</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置yum源-存储库"><a href="#设置yum源-存储库" class="headerlink" title="设置yum源(存储库)"></a>设置yum源(存储库)</h3><h4 id="1、安装所需的软件包"><a href="#1、安装所需的软件包" class="headerlink" title="1、安装所需的软件包"></a>1、安装所需的软件包</h4><p><code>yum-utils</code> 提供了 <code>yum-config-manager</code>  效用，并 <code>device-mapper-persistent-data</code> 和 <code>lvm2</code> 由需要 <code>devicemapper</code> 存储驱动程序。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo yum install -y yum-utils \</span><br><span class="line">device-mapper-persistent-data \</span><br><span class="line">lvm2</span><br></pre></td></tr></table></figure>
+
+<h4 id="2、设置稳定的安装源-存储库"><a href="#2、设置稳定的安装源-存储库" class="headerlink" title="2、设置稳定的安装源(存储库)"></a>2、设置稳定的安装源(存储库)</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo yum-config-manager \</span><br><span class="line">--add-repo \</span><br><span class="line">https://download.docker.com/linux/centos/docker-ce.repo</span><br></pre></td></tr></table></figure>
+
+<h4 id="3、查询可安装的版本"><a href="#3、查询可安装的版本" class="headerlink" title="3、查询可安装的版本"></a>3、查询可安装的版本</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yum list docker-ce --showduplicates | sort -r</span><br><span class="line">This system is not registered with an entitlement server. You can use subscription-manager to register.</span><br><span class="line">              : manager</span><br><span class="line">Loading mirror speeds from cached hostfile</span><br><span class="line">Loaded plugins: fastestmirror, product-id, search-disabled-repos, subscription-</span><br><span class="line">docker-ce.x86_64            3:19.03.9-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.8-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.7-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.6-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.5-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.4-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.3-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.2-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.1-3.el7                     docker-ce-stable</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装docker-ce-19-03-5"><a href="#安装docker-ce-19-03-5" class="headerlink" title="安装docker-ce-19.03.5"></a>安装docker-ce-19.03.5</h3><p>这里安装docker-ce-19.03.5版本，如果安装的时候查询到新的版本，只要按照格式安装就可以了，注意版本号。<br>软件包名称是软件包名称（docker-ce）加上版本字符串（第二列），从第一个冒号（:）一直到第一个连字符，并用连字符（-）分隔。<br>例如，docker-ce-19.03.5。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 安装docker客户端和服务端</span><br><span class="line">yum install docker-ce-19.03.5-3.el7 docker-ce-cli-19.03.5-3.el7</span><br></pre></td></tr></table></figure>
+
+<h3 id="验证安装"><a href="#验证安装" class="headerlink" title="验证安装"></a>验证安装</h3><p>安装完成后，运行下面的命令，验证是否安装成功。</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">[root@db</span> <span class="string">lib]#</span>  <span class="string">docker</span> <span class="string">version</span></span><br><span class="line"><span class="attr">Client:</span> <span class="string">Docker</span> <span class="string">Engine</span> <span class="bullet">-</span> <span class="string">Community</span></span><br><span class="line"><span class="attr"> Version:</span>           <span class="number">19.03</span><span class="number">.5</span></span><br><span class="line"> <span class="string">API</span> <span class="attr">version:</span>       <span class="number">1.40</span></span><br><span class="line"> <span class="string">Go</span> <span class="attr">version:</span>        <span class="string">go1.12.12</span></span><br><span class="line"> <span class="string">Git</span> <span class="attr">commit:</span>        <span class="number">633</span><span class="string">a0ea</span></span><br><span class="line"><span class="attr"> Built:</span>             <span class="string">Wed</span> <span class="string">Nov</span> <span class="number">13</span> <span class="number">07</span><span class="string">:25:41</span> <span class="number">2019</span></span><br><span class="line"> <span class="string">OS/Arch:</span>           <span class="string">linux/amd64</span></span><br><span class="line"><span class="attr"> Experimental:</span>      <span class="literal">false</span></span><br><span class="line"><span class="string">Cannot</span> <span class="string">connect</span> <span class="string">to</span> <span class="string">the</span> <span class="string">Docker</span> <span class="string">daemon</span> <span class="string">at</span> <span class="attr">unix:///var/run/docker.sock.</span> <span class="string">Is</span> <span class="string">the</span> <span class="string">docker</span> <span class="string">daemon</span> <span class="string">running?</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 或者</span></span><br><span class="line"><span class="string">$</span> <span class="string">docker</span> <span class="string">info</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="启动-Docker"><a href="#启动-Docker" class="headerlink" title="启动 Docker"></a>启动 Docker</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ systemctl start docker</span><br></pre></td></tr></table></figure>
+
+<h4 id="测试运行容器"><a href="#测试运行容器" class="headerlink" title="测试运行容器"></a>测试运行容器</h4><p>通过运行 hello-world 映像来验证是否正确安装了 Docker Engine-Community 。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ docker run hello-world</span><br></pre></td></tr></table></figure>
+
+<p>命令会下载测试镜像并在容器中运行它。<br>容器运行时，会打印参考消息并退出。</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/install-docker.png" alt></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>error code [1366]</title>
+    <url>/blog/2020/07/24/emoji/</url>
+    <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>人力调研系统回复的时候有人会回复一些 <code>Emoji</code> 表情，现有数据库不支持，报错</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/emoji0.png" alt></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;&quot;code&quot;:-1,&quot;data&quot;:null,&quot;msg&quot;:&quot;\n### Error updating database.  Cause: java.sql.SQLException: Incorrect string value: &apos;\\xF0\\x9F\\x98\\xAD&apos; for column &apos;reply_content&apos; at row 1\n### The error may exist in com/apicloud/qd/feedback/dao/FeedbackMapper.java (best guess)\n### The error may involve com.apicloud.qd.feedback.dao.FeedbackMapper.updateById-Inline\n### The error occurred while setting parameters\n### SQL: UPDATE t_feedback  SET type=?, content=?, user_id=?, user_name=?,  user_park=?, user_dept_id=?, user_dept_name=?, anonymous=?, create_time=?, replied=?, expired=?, reply_content=?, reply_user=?, reply_time=?, reply_user_name=?, reply_user_nick=?, reply_source=?  WHERE id=?\n### Cause: java.sql.SQLException: Incorrect string value: &apos;\\xF0\\x9F\\x98\\xAD&apos; for column &apos;reply_content&apos; at row 1\n; uncategorized SQLException; SQL state [HY000]; error code [1366]; Incorrect string value: &apos;\\xF0\\x9F\\x98\\xAD&apos; for column &apos;reply_content&apos; at row 1; nested exception is java.sql.SQLException: Incorrect string value: &apos;\\xF0\\x9F\\x98\\xAD&apos; for column &apos;reply_content&apos; at row 1&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>修改数据库参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">character-set-server=utf8mb4</span><br><span class="line">character_set_database=utf8mb4</span><br></pre></td></tr></table></figure>
+
+<p>应用连数据库时指定字符集</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">useUnicode=true&amp;amp;characterEncoding=utf8</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL · ibtmp1文件过大</title>
+    <url>/blog/2020/07/23/ibtmp1/</url>
+    <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>项目经理反应服务器上有个500多G的文件，占用大量磁盘空间</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/ibtmp1%200.png" alt></p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p><code>ibtmp1</code> 文件是非压缩的 <code>innodb</code> 临时表的独立表空间。通过 <code>innodb_temp_data_file_path</code> 参数指定文件的路径。文件名和大小，默认配置为 <code>ibtmp1:12M:autoextend</code> ，也就是说在支持大文件的系统这个文件大小是可以无限增长的。</p>
+<p>查看参数 <code>innodb_temp_data_file_path</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &apos;%innodb_temp_data_file_path%&apos;;</span><br><span class="line">+----------------------------+-----------------------+</span><br><span class="line">| Variable_name              | Value                 |</span><br><span class="line">+----------------------------+-----------------------+</span><br><span class="line">| innodb_temp_data_file_path | ibtmp1:12M:autoextend |</span><br><span class="line">+----------------------------+-----------------------+</span><br><span class="line">1 row in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+
+<p>果然没有限制大小</p>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><h5 id="释放ibtmp1-并限制文件大小"><a href="#释放ibtmp1-并限制文件大小" class="headerlink" title="释放ibtmp1 并限制文件大小"></a>释放<code>ibtmp1</code> 并限制文件大小</h5><p>1、修改配置文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">innodb_temp_data_file_path = ibtmp1:12M:autoextend:max:5G</span><br></pre></td></tr></table></figure>
+
+<p>2、关闭数据库实例</p>
+<p>​    关闭后 <code>ibtmp1</code> 文件会自动清理</p>
+<p>3、启动数据库是理科</p>
+<p>3、启动后查询参数是否生效</p>
+<h4 id="优化策略"><a href="#优化策略" class="headerlink" title="优化策略"></a>优化策略</h4><p>调大 <code>tmp_table_size</code> 、<code>max_heap_table_size</code>  参数</p>
+<p>建议 :  <code>256M</code> </p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>为了避免 <code>ibtmp1</code> 文件无止境的暴涨占用过多的磁盘空间,可以修改 <code>innodb_temp_data_file_path</code> 参数，限制其文件最大尺寸。</p>
+<p><code>ibtmp1</code> 加上限制最大值。<code>innodb_temp_data_file_path = ibtmp1:12M:autoextend:max:5G</code>，<code>mysql</code> 会反复利用。</p>
+<p><strong>一、<code>MySQL</code> 在什么情况下会创建临时表(Internal Temporary Table Use in MySQL)？</strong></p>
+<ul>
+<li><p>GROUP BY 无索引字段或GROUP BY+ ORDER BY 的子句字段不一样时</p>
+</li>
+<li><p>order by 与distinct 共用，其中distinct与order by里的字段不一致（主键字段除外）</p>
+</li>
+<li><p>UNION查询（MySQL5.7后union all已不使用临时表）</p>
+</li>
+<li><p>insert into select …from …</p>
+</li>
+<li><p>数据表中包含blob/text列</p>
+</li>
+</ul>
+<p>具体参考：<a href="https://dev.mysql.com/doc/refman/5.7/en/internal-temporary-tables.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.7/en/internal-temporary-tables.html</a></p>
+<p><strong>二、判断sql是否使用了临时表</strong></p>
+<p>EXPLAIN 查看执行计划结果的 Extra 列中，如果包含 Using Temporary 就表示会用到临时表。</p>
+<p><strong>三、临时表有关的参数有哪些？</strong></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">innodb_temp_data_file_path</span> </span><br><span class="line"></span><br><span class="line"><span class="comment"># tmp_table_size 控制内存临时表的最大值,超过限值后就往硬盘写</span></span><br><span class="line"><span class="comment"># max_heap_table_size用户可以创建的内存表(memory table)的大小.用来计算内存表的最大行数值。</span></span><br><span class="line"><span class="comment"># 实际限制由tmp_table_size和max_heap_table_size的值中较小的一个确定</span></span><br><span class="line"><span class="string">tmp_table_size</span></span><br><span class="line"><span class="string">max_heap_table_size</span></span><br><span class="line"><span class="string">default_tmp_storage_engine</span></span><br><span class="line"><span class="string">internal_tmp_disk_storage_engine</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>四、</strong> <strong>ibtmp1 为何变大</strong></p>
+<p>​     有大量慢sql，而且有很多语句需要排序。</p>
+<p>​     如果临时表中需要存储的数据量超过了上限（  <code>tmp-table-size</code>  或 <code>max-heap-table-size</code> 中取其大者），这时候就需要生成基于磁盘的临时表了。也就是放在 <code>innodb_temp_data_file_path</code>指定的临时表空间中。</p>
+<p><strong>五、如何优化</strong></p>
+<p>​     内部临时表 (Internal Temporary Table) 用于排序，分组，当需要的存储空间超过 <code>tmp-table-size</code> 上限的时候，使用临时表空间。临时表空间是磁盘，速度比不上内存，所以可通过加大 <code>tmp_table_size</code> 和 ``max-heap-table-size<code>来优化需要使用临时表的SQL语句。 建议</code>256M`</p>
+]]></content>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>电子签章</title>
+    <url>/blog/2020/07/21/Ele-Signatures/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>HLMP数据归档</title>
+    <url>/blog/2020/07/13/HLMP-Data-archiving/</url>
+    <content><![CDATA[<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p><code>HLMP</code> 有两张业务表查询比较慢，历史数据较多需要先将历史表合并后，再对在用业务表进行数据归档。</p>
+<table>
+<thead>
+<tr>
+<th>数据库地址</th>
+<th>端口</th>
+<th>归档库</th>
+<th>在用业务表</th>
+<th align="left">历史归档表</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>10.138.86.40</td>
+<td>3306</td>
+<td>hlmp</td>
+<td>hlmp_ptd_detail</td>
+<td align="left">hlmp_ptd_detail_20191213 <br>hlmp_ptd_detail_his_20190731</td>
+</tr>
+<tr>
+<td>10.138.86.40</td>
+<td>3306</td>
+<td>hlmp</td>
+<td>hlmp_so_detail</td>
+<td align="left">hlmp_so_detail_copy1<br>hlmp_so_detail_his_20190731</td>
+</tr>
+</tbody></table>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HLMP.png" alt></p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HLMP0.png" alt></p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><h3 id="合并历史表"><a href="#合并历史表" class="headerlink" title="合并历史表"></a>合并历史表</h3><p>将历史表 <code>hlmp_ptd_detail_20191213</code>  <code>hlmp_ptd_detail_his_20190731</code> 合并为历史表 <code>hlmp_ptd_detail_history</code></p>
+<table>
+<thead>
+<tr>
+<th align="left">历史归档表</th>
+<th>ROW_ID最小值</th>
+<th>ROW_ID最大值</th>
+<th>总条数</th>
+<th>最小日期</th>
+<th>最大日期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">hlmp_ptd_detail_20191213</td>
+<td>10095375</td>
+<td>10252948</td>
+<td>38664</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td align="left">hlmp_ptd_detail_his_20190731</td>
+<td>40888</td>
+<td>7739849</td>
+<td>5945648</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td align="left">hlmp_ptd_detail</td>
+<td>6985462</td>
+<td>12576711</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>将历史表<code>hlmp_so_detail_copy1</code>  <code>hlmp_so_detail_his_20190731</code> 合并为历史表<code>hlmp_so_detail_history</code></p>
+<table>
+<thead>
+<tr>
+<th align="left">历史归档表</th>
+<th>ROW_ID最小值</th>
+<th>ROW_ID最大值</th>
+<th>总条数</th>
+<th>最小日期</th>
+<th>最大日期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">hlmp_so_detail_copy1</td>
+<td>159303</td>
+<td>7816137</td>
+<td>276030</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td align="left">hlmp_so_detail_his_20190731</td>
+<td>159305</td>
+<td>11455005</td>
+<td>5945648</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+]]></content>
+  </entry>
+  <entry>
+    <title>Linux · 安装telnet服务</title>
+    <url>/blog/2020/07/09/Linux-telnet/</url>
+    <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p><code>Linux centos</code> 运行 <code>telnet</code> 命令，出现下面的错误提示：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]# telnet 127.0.0.1</span><br><span class="line">-bash: telnet: command not found</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决方法-安装telnet服务"><a href="#解决方法-安装telnet服务" class="headerlink" title="解决方法: 安装telnet服务"></a>解决方法: 安装telnet服务</h3><p><code>centos</code>、<code>ubuntu</code> 安装 <code>telnet</code> 命令的方法：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum list telnet*                 列出telnet相关的安装包</span><br><span class="line">yum install telnet-server        安装telnet服务</span><br><span class="line">yum install telnet.*             安装telnet客户端</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CentOS 7 安装 Python pip</title>
     <url>/blog/2020/07/09/centos7-pip/</url>
     <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CentOS 7.x` 默认安装的版本为 `python 2.7.5`，默认是没有安装 `pip</span><br></pre></td></tr></table></figure>
@@ -4656,7 +4884,7 @@
 <li>/usr/local:存放软件升级包。</li>
 </ul>
 <p><strong>/root：</strong> 系统管理员root的家目录，系统第一个启动的分区为/，所以最好将/root和/放置在一个分区下。</p>
-<h2 id="Linux常用指令"><a href="#Linux常用指令" class="headerlink" title="Linux常用指令"></a>Linux常用指令</h2><p><strong>cd命令：</strong></p>
+<h2 id="Linux指令"><a href="#Linux指令" class="headerlink" title="Linux指令"></a>Linux指令</h2><p><strong>cd命令：</strong></p>
 <p>用于切换当前目录，它的参数是要切换到的目录的路径，可以是绝对路径，也可以是相对路径。</p>
 <ul>
 <li><p>cd /root/Docements         # 切换到目录/root/Docements  </p>
@@ -4682,6 +4910,8 @@
 </ul>
 <p><strong>pwd</strong>：查看用户当前目录</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">df -h                #查看磁盘占用比例</span><br><span class="line">ls -lht              #查看目录下所有文件大小总量</span><br><span class="line">du -sh * |sort -nr   #将当前目录下的文件从大到小排序  -n：从小到大排序</span><br><span class="line">tail -f 文件名        #动态查看日志信息</span><br><span class="line">tail -n 20 文件名     #查看最后一部分日志</span><br><span class="line">rm -rf               #删除文件</span><br><span class="line">top                  #动态查看cpu状态</span><br><span class="line"></span><br><span class="line">#服务器创建新用户</span><br><span class="line">$sudo useradd -m -s /bin/bash userName    // 在/home目录下新建userName目录</span><br><span class="line">$sudo passwd userName                     //设置密码</span><br></pre></td></tr></table></figure>
+
+<h3 id="Linux常用指令"><a href="#Linux常用指令" class="headerlink" title="Linux常用指令"></a>Linux常用指令</h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 8核 * 32G * 600GB</span></span><br><span class="line"><span class="comment"># 查看系统CPU</span></span><br><span class="line"><span class="string">cat</span> <span class="string">/proc/cpuinfo</span> <span class="string">| grep "cores"|uniq</span></span><br><span class="line"><span class="string"># 显示系统内存</span></span><br><span class="line"><span class="string">free -g</span></span><br><span class="line"><span class="string"># 显示系统硬盘</span></span><br><span class="line"><span class="string">fdisk -l | grep Disk</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看所有安装的软件包</span></span><br><span class="line"><span class="string">rpm -qa |grep xtrabackup  </span></span><br><span class="line"><span class="string"># 删除安装包</span></span><br><span class="line"><span class="string">rpm -e 文件名</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 授权+执行</span></span><br><span class="line"><span class="string">chmod +x getip</span></span><br><span class="line"><span class="string">./getip</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下的文件数量</span></span><br><span class="line"><span class="string">ls -l |grep  "^-" | wc -l   </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下各文件、文件夹的大小</span></span><br><span class="line"><span class="string">du -h –max-depth=1 *</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#删除软链</span></span><br><span class="line"><span class="string">rm -rf  ./test_chk_ln</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 后台执行任务</span></span><br><span class="line"><span class="string">nohup 执行的任务指令 &amp;</span></span><br></pre></td></tr></table></figure>
 
 ]]></content>
   </entry>

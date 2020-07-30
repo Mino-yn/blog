@@ -281,6 +281,839 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/07/01/MySQL8-Install-or-upgrade/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/07/01/MySQL8-Install-or-upgrade/" itemprop="url">MySQL8 · 安装or升级</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-01T10:20:32+08:00">
+                2020-07-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>最广泛使用的3种安装方式</p>
+<ul>
+<li>软件仓库（YUM或APT）</li>
+<li>RPM 或 DEB 文件</li>
+<li>通用二进制文件</li>
+</ul>
+<h3 id="软件仓库方式"><a href="#软件仓库方式" class="headerlink" title="软件仓库方式"></a>软件仓库方式</h3><ul>
+<li>YUM（CentOS、Red Hat 、Fedora 、Oracle Linux系统）</li>
+<li>APT（Debian、Ubuntu 系统）</li>
+</ul>
+<p><strong>使用YUM仓库</strong></p>
+<p><strong>注：需要服务器可以访问公共互联网</strong></p>
+<p>1、查看 <code>Red Het</code> 或 <code>CentOS</code> 的版本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/redhat-release</span><br><span class="line">CentOS Linux release 7.7.1908 (Core)</span><br></pre></td></tr></table></figure>
+
+<p>2、将 MySQL YUM 仓库添加到系统仓库列表，可通过安装MySQL提供的RPM执行</p>
+<p>通过<code>http://dev.mysql.com/downloads/repo/yum</code>  下载 MySQL YUM 仓库，根据自身操作系统选择文件</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#下载MySQL源安装包</span></span><br><span class="line"><span class="string">$</span> <span class="string">cd</span> <span class="string">/usr/local/src/</span></span><br><span class="line"><span class="string">$</span> <span class="string">wget</span> <span class="attr">https://dev.mysql.com/downloads/file/?id=489467</span></span><br><span class="line"><span class="comment"># 安装MySQL源 </span></span><br><span class="line"><span class="string">$</span> <span class="string">sudo</span> <span class="string">yum</span> <span class="string">localinstall</span> <span class="bullet">-y</span> <span class="string">mysql80-community-release-el7-3.noarch.rpm</span></span><br></pre></td></tr></table></figure>
+
+<p>3、检查 MySQL 源是否安装成功</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ yum repolist enabled | grep &apos;mysql.*-community.*&apos;</span><br><span class="line">mysql-connectors-community/x86_64 MySQL Connectors Community                 153</span><br><span class="line">mysql-tools-community/x86_64      MySQL Tools Community                      110</span><br><span class="line">mysql80-community/x86_64          MySQL 8.0 Community Server                 177</span><br></pre></td></tr></table></figure>
+
+<p>4、确认 <code>mysql80-community</code> 已启用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum repolist all | grep mysql8</span><br><span class="line">mysql80-community/x86_64                  MySQL 8.0 Community Se enabled:    177</span><br><span class="line">mysql80-community-source                  MySQL 8.0 Community Se disabled</span><br></pre></td></tr></table></figure>
+
+<p>5、安装 <code>MySQL 8</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 这一步才是真正安装MySQL </span></span><br><span class="line"><span class="string">$</span> <span class="string">sudo</span> <span class="string">yum</span> <span class="string">install</span> <span class="bullet">-y</span> <span class="string">mysql-community-server</span></span><br></pre></td></tr></table></figure>
+
+<p>6、查看已安装的软件包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rpm -qa |grep -i &apos;mysql.*8.*&apos;</span><br></pre></td></tr></table></figure>
+
+<p>7、启动 MySQL 服务并设置开机自启动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl start mysqld</span><br><span class="line">$ systemctl enable mysqld</span><br><span class="line">$ systemctl daemon-reload</span><br></pre></td></tr></table></figure>
+
+<p>8、查看临时密码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep &apos;temporary password&apos; /var/log/mysqld.log</span><br></pre></td></tr></table></figure>
+
+<p>9、登录数据库修改密码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SET PASSWORD = &apos;Haier@123&apos;;</span><br><span class="line">mysql&gt; ALTER USER &apos;root&apos;@&apos;localhost&apos; Password EXPIRE NEVER;</span><br><span class="line">mysql&gt; flush privileges;</span><br></pre></td></tr></table></figure>
+
+<h3 id="RPM-或-DEB-文件方式"><a href="#RPM-或-DEB-文件方式" class="headerlink" title="RPM 或 DEB 文件方式"></a>RPM 或 DEB 文件方式</h3><h2 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h2><h3 id="基于YUM的系统"><a href="#基于YUM的系统" class="headerlink" title="基于YUM的系统"></a>基于YUM的系统</h3><p>1、检查已经安装了哪些包：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl stop mysqld</span><br><span class="line">$ rpm -qa | grep -i mysql-community</span><br></pre></td></tr></table></figure>
+
+<p>2、删除包</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 可能会收到其他包依赖MySQL的通知，若计划再次安装，可通过 --nodeps 选项忽略告警</span></span><br><span class="line"><span class="string">$</span> <span class="string">rpm</span> <span class="bullet">-e</span> <span class="string">&lt;package-name&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>3、卸载依赖</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看mysql的其它依赖</span></span><br><span class="line"><span class="string">$</span> <span class="string">rpm</span> <span class="bullet">-qa</span> <span class="string">| grep -i mysql</span></span><br><span class="line"><span class="string"># 卸载依赖</span></span><br><span class="line"><span class="string">yum remove mysql-xxx</span></span><br></pre></td></tr></table></figure>
+
+<p>4、删除文件目录</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看文件目录</span></span><br><span class="line"><span class="string">$</span> <span class="string">find</span> <span class="string">/</span> <span class="bullet">-name</span> <span class="string">mysql</span></span><br><span class="line"><span class="comment"># 删除文件目录</span></span><br><span class="line"><span class="string">$</span> <span class="string">rm</span> <span class="bullet">-rf</span> <span class="string">/var/lib/mysql</span></span><br><span class="line"><span class="string">$</span> <span class="string">rm</span> <span class="bullet">-rf</span> <span class="string">/var/lib/mysql/mysql</span></span><br><span class="line"><span class="string">$</span> <span class="string">rm</span> <span class="bullet">-rf</span> <span class="string">/etc/selinux/targeted/active/modules/100/mysql</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="卸载二进制文件"><a href="#卸载二进制文件" class="headerlink" title="卸载二进制文件"></a><a href="https://mino-yn.github.io/blog/2019/08/09/Download-MySQL/">卸载二进制文件</a></h3>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/06/24/stored-procedure/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/06/24/stored-procedure/" itemprop="url">MySQL·存储过程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-24T11:32:10+08:00">
+                2020-06-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>简介</p>
+<p>存储过程处理的是一组 <code>SQL</code> 语句，且没有返回值。</p>
+<p>除 <code>SQL</code> 外，可使用变量存储结果，并在存储过程中执行程序化内容。如：可使用 <code>IF CASE</code> 操作、逻辑操作、<code>WHILE</code> 循环。</p>
+<ul>
+<li>存储函数（function）和过程（procedure）都称为存储例程（routine）</li>
+<li>权限：<code>CREATE ROUTINE</code> 、<code>ALTER ROUTINE</code> 、<code>EXECUTE</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">/*修改分隔符为 $$*/</span><br><span class="line">DELIMITER $$</span><br><span class="line">/* IN指定作为参数的变量，INOUT指定输出的变量*/</span><br><span class="line">CREATE PROCEDURE create_employee ( OUT new_emp_no INT, IN first_name VARCHAR(20),IN last_name VARCHAR(20),IN gender ENUM(&apos;M&apos;,&apos;F&apos;),IN birth_date DATE, IN emp_dept_name VARCHAR(40), IN title VARCHAR(50))</span><br><span class="line">BEGIN</span><br><span class="line">	/*为emp_dept_no 和 salary声明变量*/</span><br><span class="line">	DECLARE emp_dept_no CHAR(4);</span><br><span class="line">	DECLARE salary INT DEFAULT 60000;</span><br><span class="line">	</span><br><span class="line">	/*查询employee表的emp_no的最大值，赋值给变量new_emp_no*/</span><br><span class="line">	SELECT MAX(emp_no) INTO new_emp_no FROM employees;</span><br><span class="line">	/*增加 new_emp_no*/</span><br><span class="line">	SET new_emp_no = new_emp_no + 1;</span><br><span class="line">	</span><br><span class="line">	/*插入数据到 employees表中*/</span><br><span class="line">		/* CURDATE()函数给出当前日期 */</span><br><span class="line">		INSERT INTO employees VALUES(new_emp_no,birth_date,first_name,last_name,gender,CURDATE());</span><br><span class="line">		</span><br><span class="line">	/*找到 dept_name对应的 dept_no */</span><br><span class="line">	SELECT emp_dept_name;</span><br><span class="line">	SELECT dept_no INTO emp_dept_no FROM departments WHERE dept_name=emp_dept_name;</span><br><span class="line">	SELECT emp_dept_no;</span><br><span class="line">	</span><br><span class="line">	/*插入dept_emp*/</span><br><span class="line">	INSERT INTO dept_emp VALUES(new_emp_no,emp_dept_no,CURDATE(),&apos;9999-01-01&apos;);</span><br><span class="line">	</span><br><span class="line">	/*插入titles*/</span><br><span class="line">	INSERT INTO titles VALUES(new_emp_no,title,CURDATE(),&apos;9999-01-01&apos;);</span><br><span class="line">	</span><br><span class="line">	/*以title为条件查询的薪水*/</span><br><span class="line">	if title = &apos;Staff&apos;</span><br><span class="line">		then SET salary = 100000;</span><br><span class="line">	ELSEIF title = &apos;Senior Staff&apos;</span><br><span class="line">		then SET salary = 120000;</span><br><span class="line">	END if;</span><br><span class="line">	</span><br><span class="line">	/*插入salaries*/</span><br><span class="line">	INSERT INTO salaries VALUES(new_emp_no,salary,CURDATE(),&apos;9999-01-01&apos;);</span><br><span class="line">	end</span><br><span class="line">	$$</span><br><span class="line">	/*把分隔符改回;*/</span><br><span class="line">	DELIMITER;</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/06/23/XA-transaction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/06/23/XA-transaction/" itemprop="url">XA transaction</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-23T17:24:52+08:00">
+                2020-06-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/06/17/xtrabackup-error/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/06/17/xtrabackup-error/" itemprop="url">Xtrabackup · Error</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-17T10:53:06+08:00">
+                2020-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Error-124"><a href="#Error-124" class="headerlink" title="Error 124"></a>Error 124</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>使用 <code>innobackupex</code> 全备 <code>mysql</code> 数据库产生 <code>returned OS error 124</code> 错误</p>
+<p><strong>错误详情</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">200617 10:36:16 &gt;&gt; log scanned up to (1307637638975)</span><br><span class="line">InnoDB: Operating system error number 24 in a file operation.</span><br><span class="line">InnoDB: Error number 24 means &apos;Too many open files&apos;</span><br><span class="line">InnoDB: Some operating system error numbers are described at http://dev.mysql.com/doc/refman/5.7/en/operating-system-error-codes.html</span><br><span class="line">InnoDB: File ./cosmo_im_1023/base_supplier_type_relations_t.ibd: &apos;open&apos; returned OS error 124. Cannot continue operation</span><br><span class="line">InnoDB: Cannot continue operation.</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><ul>
+<li>该错误是指 <code>mysql</code> 进程打开的文件数超出可打开最大文件数量的限制，查看 <code>mysql</code> 数据文件目录下的文件总数</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@localhost</span> <span class="string">cosmo_im_1023]#</span> <span class="string">find</span> <span class="string">/home/data/mysql</span> <span class="bullet">-type</span> <span class="string">f|wc</span> <span class="bullet">-l</span></span><br><span class="line"><span class="number">3833</span></span><br></pre></td></tr></table></figure>
+
+<p>查看 <code>innodb_open_files</code> 参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &apos;%open_files%&apos;;</span><br><span class="line">+-------------------+-------+</span><br><span class="line">| Variable_name     | Value |</span><br><span class="line">+-------------------+-------+</span><br><span class="line">| innodb_open_files | 2000  |</span><br><span class="line">| open_files_limit  | 15000 |</span><br><span class="line">+-------------------+-------+</span><br><span class="line">2 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p><code>innodb_open_files</code>  限制 <code>innodb</code> 能打开的表的数量，这里 <code>innodb_open_files</code> 的默认值为 2000，而实际文件数量为3833，已超出限制。 该参数无法动态修改，需修改 <code>my.cnf</code> 配置文件。</p>
+<p>在<code>[mysqld]</code>下加入<code>innodb_open_files=10240</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 重启数据库，查看该参数已变为5000</span><br><span class="line">mysql&gt; show variables like &apos;%open_files%&apos;;</span><br><span class="line">+-------------------+-------+</span><br><span class="line">| Variable_name     | Value |</span><br><span class="line">+-------------------+-------+</span><br><span class="line">| innodb_open_files | 10240  |</span><br><span class="line">| open_files_limit  | 15000 |</span><br><span class="line">+-------------------+-------+</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>重新进行备份，但仍报相同错误。怀疑是系统可打开最大文件数目的问题</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看系统可打开最大文件数目</span></span><br><span class="line"><span class="string">[root@localhost</span> <span class="string">backup]#</span> <span class="string">ulimit</span> <span class="bullet">-a</span></span><br><span class="line"><span class="string">core</span> <span class="string">file</span> <span class="string">size</span>          <span class="string">(blocks,</span> <span class="bullet">-c)</span> <span class="number">0</span></span><br><span class="line"><span class="string">data</span> <span class="string">seg</span> <span class="string">size</span>           <span class="string">(kbytes,</span> <span class="bullet">-d)</span> <span class="string">unlimited</span></span><br><span class="line"><span class="string">scheduling</span> <span class="string">priority</span>             <span class="string">(-e)</span> <span class="number">0</span></span><br><span class="line"><span class="string">file</span> <span class="string">size</span>               <span class="string">(blocks,</span> <span class="bullet">-f)</span> <span class="string">unlimited</span></span><br><span class="line"><span class="string">pending</span> <span class="string">signals</span>                 <span class="string">(-i)</span> <span class="number">31149</span></span><br><span class="line"><span class="string">max</span> <span class="string">locked</span> <span class="string">memory</span>       <span class="string">(kbytes,</span> <span class="bullet">-l)</span> <span class="number">64</span></span><br><span class="line"><span class="string">max</span> <span class="string">memory</span> <span class="string">size</span>         <span class="string">(kbytes,</span> <span class="bullet">-m)</span> <span class="string">unlimited</span></span><br><span class="line"><span class="string">open</span> <span class="string">files</span>                      <span class="string">(-n)</span> <span class="number">1024</span></span><br><span class="line"><span class="string">pipe</span> <span class="string">size</span>            <span class="string">(512</span> <span class="string">bytes,</span> <span class="bullet">-p)</span> <span class="number">8</span></span><br><span class="line"><span class="string">POSIX</span> <span class="string">message</span> <span class="string">queues</span>     <span class="string">(bytes,</span> <span class="bullet">-q)</span> <span class="number">819200</span></span><br><span class="line"><span class="string">real-time</span> <span class="string">priority</span>              <span class="string">(-r)</span> <span class="number">0</span></span><br><span class="line"><span class="string">stack</span> <span class="string">size</span>              <span class="string">(kbytes,</span> <span class="bullet">-s)</span> <span class="number">8192</span></span><br><span class="line"><span class="string">cpu</span> <span class="string">time</span>               <span class="string">(seconds,</span> <span class="bullet">-t)</span> <span class="string">unlimited</span></span><br><span class="line"><span class="string">max</span> <span class="string">user</span> <span class="string">processes</span>              <span class="string">(-u)</span> <span class="number">31149</span></span><br><span class="line"><span class="string">virtual</span> <span class="string">memory</span>          <span class="string">(kbytes,</span> <span class="bullet">-v)</span> <span class="string">unlimited</span></span><br><span class="line"><span class="string">file</span> <span class="string">locks</span>                      <span class="string">(-x)</span> <span class="string">unlimited</span></span><br></pre></td></tr></table></figure>
+
+<p><code>open files</code>  显示为1024, 重新设置 <code>open files</code> 的值</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将 open files 设为5000</span></span><br><span class="line"><span class="comment"># 仅在当前会话中有效</span></span><br><span class="line"><span class="string">ulimit</span> <span class="bullet">-n</span> <span class="number">102400</span></span><br></pre></td></tr></table></figure>
+
+<p>重新备份，问题解决</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/05/18/Delete-large-file/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/05/18/Delete-large-file/" itemprop="url">删除大文件，磁盘空间未释放</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-18T10:38:13+08:00">
+                2020-05-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><code>HDY</code> 数据库所在服务器到期，需要腾出磁盘空间，进行数据库备份迁移，查看文件大小，发现有一个非常大的err日志文件 <code>326GB</code>, 为腾空间，决定将其删除。</p>
+<h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm -rf hop01.err</span><br><span class="line">df -h</span><br></pre></td></tr></table></figure>
+
+<p>删除后查看磁盘空间，发现空间未释放。应该有程序还在操作这个文件，指针未释放</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看后发现 mysqld 进程在占用这个文件，所以文件无法被删除</span></span><br><span class="line"><span class="string">[root@hop01</span> <span class="string">~]#</span> <span class="string">lsof</span> <span class="string">| grep deleted | grep err</span></span><br><span class="line"><span class="string">mysqld    24979     mysql    1w      REG              253,1 349262635660   22420100 /home/mysql/mysql-5.5.27-linux2.6-x86_64/data/hop01.err (deleted)</span></span><br><span class="line"><span class="string">mysqld    24979     mysql    2w      REG              253,1 349262635660   22420100 /home/mysql/mysql-5.5.27-linux2.6-x86_64/data/hop01.err (deleted)</span></span><br></pre></td></tr></table></figure>
+
+<p>删除进程</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 注意此时删除的是mysqld进程</span></span><br><span class="line"><span class="string">kill</span> <span class="number">24979</span></span><br><span class="line"><span class="comment"># 删除进程后果然告警，数据库连不上了，还好是从库，赶紧重启一下</span></span><br><span class="line"> <span class="string">mysqld_safe</span> <span class="bullet">--defaults-file=/etc/my.cnf</span> <span class="bullet">--user=mysql</span> <span class="string">&amp;</span></span><br><span class="line"><span class="comment"># 重启数据库后再次查看磁盘空间，空间已释放了</span></span><br><span class="line"> <span class="string">df</span> <span class="bullet">-h</span></span><br><span class="line"><span class="comment"># 确认一下，数据库可以连接，主从都没有问题</span></span><br><span class="line"><span class="string">show</span> <span class="string">slave</span> <span class="string">status</span></span><br><span class="line"><span class="comment"># 查看数据目录，已经有新的 hop01.err 文件了，大小为5.1K</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li><p><strong>方法一</strong></p>
+<p>在删除之前 先清空文件，再删除文件 这样能快速释放磁盘空间。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 该方法还未实验过</span></span><br><span class="line"><span class="string">echo</span> <span class="string">""</span> <span class="string">&gt; xxx.log</span></span><br><span class="line"><span class="string">rm -rf xxx.log</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>方法二</strong></p>
+<p>若文件已删除，但磁盘空间未被释放，很可能是此时这个文件被别的进程所占用，kill 掉占用文件的进程号即可解决。注意：<strong>kill 进程之前，确认一下删除的是什么进程，防止删除了重要的进程，造成不必要的麻烦</strong></p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/05/13/Console-Monitor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/05/13/Console-Monitor/" itemprop="url">控制台监控</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-13T14:17:38+08:00">
+                2020-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="本地-MySQL-接入控制台监控"><a href="#本地-MySQL-接入控制台监控" class="headerlink" title="本地 MySQL 接入控制台监控"></a>本地 <code>MySQL</code> 接入控制台监控</h3><ul>
+<li>安装 <code>mysqld_exporter</code> </li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载安装包</span></span><br><span class="line"><span class="string">cd</span> <span class="string">/data</span></span><br><span class="line"><span class="string">wget</span> <span class="attr">https://mino-yn.oss-cn-qingdao.aliyuncs.com/mysqld_exporter-0.12.1.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">tar</span> <span class="bullet">-xzf</span> <span class="string">mysqld_exporter-0.12.1.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">cd</span> <span class="string">mysqld_exporter-0.12.1.linux-amd64</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 编辑配置文件</span></span><br><span class="line"><span class="string">vi</span> <span class="string">.my.cnf</span></span><br><span class="line"><span class="string">[client]</span></span><br><span class="line"><span class="string">user=hdm</span></span><br><span class="line"><span class="string">password=Hdm@123!</span></span><br><span class="line"><span class="string">host=10.133.0.51</span></span><br><span class="line"><span class="string">port=3306</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动</span></span><br><span class="line"><span class="string">./mysqld_exporter</span> <span class="bullet">--config.my-cnf=/data/mysqld_exporter-0.12.1.linux-amd64/.my.cnf</span> <span class="string">&amp;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 检测</span></span><br><span class="line"><span class="string">ps</span> <span class="bullet">-ef</span> <span class="string">| grep mysqld_exporter</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 打开防火墙端口：9104</span></span><br><span class="line"><span class="string">firewall-cmd --zone=public --add-port=9104/tcp --permanent</span></span><br><span class="line"><span class="string">firewall-cmd --reload  </span></span><br><span class="line"><span class="string">firewall-cmd --zone=public --list-ports</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 测试</span></span><br><span class="line"><span class="string">10.133.0.51:9104</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>注册 <code>consul</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"># 注册</span><br><span class="line">PUT http://10.138.16.192:8500/v1/agent/service/register</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;:&quot;mysql_10.133.0.51_3306&quot;,</span><br><span class="line">    &quot;name&quot;:&quot;mysql&quot;,</span><br><span class="line">    &quot;address&quot;:&quot;10.133.0.51&quot;,</span><br><span class="line">    &quot;port&quot;:9104,</span><br><span class="line">    &quot;tags&quot;:[</span><br><span class="line">        &quot;cluster=QD&quot;,</span><br><span class="line">        &quot;project=TDDS&quot;,</span><br><span class="line">        &quot;instance=10.133.0.51:3306&quot;,</span><br><span class="line">        &quot;host=10.133.0.51&quot;,</span><br><span class="line">        &quot;port=3306&quot;,</span><br><span class="line">        &quot;env=prd&quot;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 查看</span><br><span class="line">GET http://10.138.16.192:8500/v1/catalog/service/mysql</span><br><span class="line"></span><br><span class="line"># 注销</span><br><span class="line">PUT http://10.138.16.192:8500/v1/agent/service/deregister/mysql_10.133.0.51_3306</span><br><span class="line"></span><br><span class="line"># Prometheus</span><br><span class="line">http://10.138.16.192:9099/targets</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>获取 CPU、内存、硬盘信息</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cat /proc/cpuinfo | grep &quot;cores&quot;|uniq</span><br><span class="line">free -g</span><br><span class="line">fdisk -l | grep Disk</span><br><span class="line">8核 * 32G * 600GB</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/04/30/character-set/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -749,950 +1582,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/04/02/mysql-POINT-cloud/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/04/02/mysql-POINT-cloud/" itemprop="url">MySQL · 积分中心数据库迁移上云</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-02T11:14:59+08:00">
-                2020-04-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>背景</p>
-<table>
-<thead>
-<tr>
-<th>项目信息</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>项目名称</td>
-<td>积分中心</td>
-</tr>
-<tr>
-<td>机房位置</td>
-<td>北京亦庄/卓郎机房</td>
-</tr>
-<tr>
-<td>本地数据库</td>
-<td>10.199.96.192</td>
-</tr>
-<tr>
-<td>数据量</td>
-<td>267GB</td>
-</tr>
-<tr>
-<td>版本</td>
-<td>MariaDB 5.5.49</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th>中转数据库</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>主机</td>
-<td>10.163.19.14</td>
-</tr>
-<tr>
-<td>自建MySQL</td>
-<td>MariaDB 5.5.49</td>
-</tr>
-<tr>
-<td>公网IP</td>
-<td>124.250.27.24</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th>阿里云 RDS</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>实例</td>
-<td>rm-2ze12yaraeqa2q8dk.mysql.rds.aliyuncs.com:3306</td>
-</tr>
-<tr>
-<td>版本</td>
-<td>MySQL 5.7</td>
-</tr>
-<tr>
-<td>用户名</td>
-<td>rds</td>
-</tr>
-</tbody></table>
-<p><strong>说明</strong>：用户中心数据库迁移上云时，开通了 <code>10.163.19.14</code> 服务器的公网IP。在 <code>10.163.19.14</code> 上搭建<code>10.199.96.192</code>  的从库的方式，通过 <code>10.163.19.14</code>  中转的方式迁移上云。</p>
-<h2 id="迁移方案"><a href="#迁移方案" class="headerlink" title="迁移方案"></a>迁移方案</h2><p>本地 IDC 数据库 -&gt; 开通公网IP的中转自建数据库 -&gt; 阿里云 RDS</p>
-<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><table>
-<thead>
-<tr>
-<th align="left">步骤</th>
-<th align="left">耗时</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">全备</td>
-<td align="left">1 h 20 min</td>
-</tr>
-<tr>
-<td align="left">传输</td>
-<td align="left">17 h 20 min</td>
-</tr>
-<tr>
-<td align="left">恢复</td>
-<td align="left">45 min</td>
-</tr>
-<tr>
-<td align="left">DTS 迁移</td>
-<td align="left">6 h</td>
-</tr>
-</tbody></table>
-<h3 id="实施"><a href="#实施" class="headerlink" title="实施"></a>实施</h3><ul>
-<li>全量备份</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=sre --password=&apos;xx&apos; --no-timestamp /data/backup</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>传输</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r root@10.199.96.192:/data/backup/*  /data/backup  &amp;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>全量恢复</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -uroot -p&apos;xx&apos; shutdown</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --apply-log /data/backup</span><br><span class="line">mv mysql mysql_bak</span><br><span class="line">mkdir mysql</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --copy-back /data/backup</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>重启 <code>MySQL</code> 服务</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chown -R mysql:mysql mysql</span><br><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>配置主从复制</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#主库创建repl_14用户</span></span><br><span class="line"><span class="string">GRANT</span> <span class="string">REPLICATION</span> <span class="string">SLAVE,</span> <span class="string">REPLICATION</span> <span class="string">CLIENT</span> <span class="string">ON</span> <span class="string">*.*</span> <span class="string">TO</span> <span class="string">'repl_14'</span><span class="string">@'10.163.19.%'</span> <span class="string">IDENTIFIED</span> <span class="string">BY</span> <span class="string">'Changeme_123'</span><span class="string">;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取Master binlog位置</span></span><br><span class="line"><span class="string">cat</span> <span class="string">xtrabackup_binlog_info</span></span><br><span class="line"><span class="string">mysql-bin.000048</span>        <span class="number">1924065</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#配置复制</span></span><br><span class="line"><span class="string">CHANGE</span> <span class="string">MASTER</span> <span class="string">TO</span></span><br><span class="line"><span class="string">MASTER_HOST='10.199.96.192',</span></span><br><span class="line"><span class="string">MASTER_USER='repl_14',</span></span><br><span class="line"><span class="string">MASTER_PASSWORD='Changeme_123',</span></span><br><span class="line"><span class="string">MASTER_PORT=3306,</span></span><br><span class="line"><span class="string">MASTER_LOG_FILE='mysql-bin.000048',</span></span><br><span class="line"><span class="string">MASTER_LOG_POS=1924065;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#启动同步</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">start</span> <span class="string">slave;</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/04/01/Go-environment/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/04/01/Go-environment/" itemprop="url">Go开发环境搭建</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-01T10:59:50+08:00">
-                2020-04-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="下载资源"><a href="#下载资源" class="headerlink" title="下载资源"></a>下载资源</h2><p><code>go安装包</code></p>
-<p><a href="https://mino-yn.oss-cn-qingdao.aliyuncs.com/Installation%20package/go1.13.1.windows-amd64.zip" target="_blank" rel="noopener">https://mino-yn.oss-cn-qingdao.aliyuncs.com/Installation%20package/go1.13.1.windows-amd64.zip</a></p>
-<p><code>goland</code></p>
-<p><a href="https://mino-yn.oss-cn-qingdao.aliyuncs.com/Installation%20package/goland-2019.3.2.exe" target="_blank" rel="noopener">https://mino-yn.oss-cn-qingdao.aliyuncs.com/Installation%20package/goland-2019.3.2.exe</a></p>
-<p><code>git</code></p>
-<p><a href="https://mino-yn.oss-cn-qingdao.aliyuncs.com/Installation%20package/Git-2.22.0-64-bit.exe" target="_blank" rel="noopener">https://mino-yn.oss-cn-qingdao.aliyuncs.com/Installation%20package/Git-2.22.0-64-bit.exe</a></p>
-<h2 id="搭建环境"><a href="#搭建环境" class="headerlink" title="搭建环境"></a>搭建环境</h2><p><a href="https://www.jianshu.com/p/683d64d5622f" target="_blank" rel="noopener">Go开发环境搭建Windows下</a></p>
-<p><a href="https://shimo.im/docs/9pJJRJPr6thtPxJd/read" target="_blank" rel="noopener">Goland破解教程（通用）</a></p>
-<ul>
-<li><a href="https://mino-yn.oss-cn-qingdao.aliyuncs.com/Installation%20package/GO/GO-Activation%20code.txt" target="_blank" rel="noopener">激活码</a></li>
-</ul>
-<p>配置系统环境变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#GOPATH</span><br><span class="line">G:\Go-WorkSpace</span><br><span class="line">#GOROOT</span><br><span class="line">C:\Go</span><br></pre></td></tr></table></figure>
-
-<p>安装Git</p>
-<h2 id="拉取GIT代码"><a href="#拉取GIT代码" class="headerlink" title="拉取GIT代码"></a>拉取GIT代码</h2><p>打开 <code>gopath</code> 所在目录新建三个文件夹：<code>bin</code>、 <code>src</code>  、<code>pkg</code></p>
-<ul>
-<li><p><code>bin</code> :   存放编译后的可执行文件</p>
-</li>
-<li><p><code>pkg</code> ：存放编译后的包文件、一些公用包文件</p>
-</li>
-<li><p><code>src</code> :   存放项目源文件</p>
-</li>
-</ul>
-<p>一般，<code>bin</code> 和 <code>pkg</code> 目录可以不创建，<code>go</code> 命令会自动创建（如 <code>go install</code>），<code>src</code> 目录，存放源文件，<code>Go</code> 中源文件以包（<code>package</code>）的形式组织。通常，新建一个包就在 <code>src</code> 目录中新建一个文件夹。</p>
-<h3 id="拉取项目代码"><a href="#拉取项目代码" class="headerlink" title="拉取项目代码"></a>拉取项目代码</h3><p>​    以<code>cmdb</code> 为例，本地路径要与<code>gitlab</code>保持一致，这样引用包的时候不会报错。<code>cmdb</code>路径：<a href="https://git.haier.net/console/cmdb" target="_blank" rel="noopener">https://git.haier.net/console/cmdb</a> .</p>
-<ul>
-<li>依次在 <code>src</code> 建一个 <code>git.haier.net</code> 的文件夹和 <code>console</code> 文件夹</li>
-<li>在<code>console</code>文件夹里右键打开 <code>git bash</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#拉取dev分支代码</span><br><span class="line">git clone -b dev https://git.haier.net/console/cmdb.git</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>用 <code>goland</code> 打开项目</li>
-</ul>
-<h3 id="拉取依赖"><a href="#拉取依赖" class="headerlink" title="拉取依赖"></a>拉取依赖</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#设置代理</span></span><br><span class="line"><span class="string">export</span> <span class="string">GOPROXY=[https://goproxy.cn](https://goproxy.cn/)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#清理无用的依赖</span></span><br><span class="line"><span class="string">go</span> <span class="string">mod</span> <span class="string">tidy</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#下载依赖至本地</span></span><br><span class="line"><span class="string">go</span> <span class="string">mod</span> <span class="string">download</span></span><br></pre></td></tr></table></figure>
-
-<p>如果仍有 <code>swagger</code>  、<code>doc</code>  的 <code>import</code> 报错，先注释掉</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/03/31/hdm-slow/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/03/31/hdm-slow/" itemprop="url">hdm慢日志分析异常</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-31T11:01:29+08:00">
-                2020-03-31
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>背景</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/hdm-slow0.png" alt></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/03/25/Mysql-Mem/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/03/25/Mysql-Mem/" itemprop="url">服务器内存使用率</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-25T14:13:49+08:00">
-                2020-03-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Linux查看内存使用率"><a href="#Linux查看内存使用率" class="headerlink" title="Linux查看内存使用率"></a>Linux查看内存使用率</h2><ul>
-<li><code>free</code></li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看内存</span></span><br><span class="line"><span class="string">free</span>  <span class="bullet">-m</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">#计算内存使用率的命令</span></span><br><span class="line"><span class="string">free</span> <span class="bullet">-m</span> <span class="string">| sed -n '2p' | awk '&#123;print "used mem is "$3"M,total mem is "$2"M,used percent is "$3/$2*100"%"&#125;'</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>ps</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#linux 下 取进程占用内存(MEM)最高的前10个进程</span></span><br><span class="line"><span class="string">ps</span> <span class="string">aux|head</span> <span class="bullet">-1</span><span class="string">;ps</span> <span class="string">aux|grep</span> <span class="bullet">-v</span> <span class="string">PID</span> <span class="string">| sort -rn -k +4 | head  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#linux 下 取进程占用 cpu 最高的前10个进程</span></span><br><span class="line"><span class="string">ps aux|head -1;ps aux|grep -v PID|sort -rn -k +3|head</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#然后根据查到的结果，可以把没用的进程杀掉（kill + PID号）</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>日志空间的处理</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#可以看到文件中每个文件的大小</span></span><br><span class="line"><span class="string">du</span> <span class="bullet">-a</span>   </span><br><span class="line"><span class="comment">#按照文件大小排序</span></span><br><span class="line"><span class="string">du</span> <span class="bullet">-sh</span> <span class="string">*</span> <span class="string">| sort -nr</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>top</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">PID</span> <span class="string">—</span> <span class="string">进程id</span></span><br><span class="line"><span class="string">USER</span> <span class="string">—</span> <span class="string">进程所有者</span></span><br><span class="line"><span class="string">PR</span> <span class="string">—</span> <span class="string">进程优先级</span></span><br><span class="line"><span class="string">NI</span> <span class="string">—</span> <span class="string">nice值。负值表示高优先级，正值表示低优先级</span></span><br><span class="line"><span class="string">VIRT</span> <span class="string">—</span> <span class="string">进程使用的虚拟内存总量，单位kb。VIRT=SWAP+RES</span></span><br><span class="line"><span class="string">RES</span> <span class="string">—</span> <span class="string">进程使用的、未被换出的物理内存大小，单位kb。RES=CODE+DATA</span></span><br><span class="line"><span class="string">SHR</span> <span class="string">—</span> <span class="string">共享内存大小，单位kb</span></span><br><span class="line"><span class="string">S</span> <span class="string">—</span> <span class="string">进程状态。D=不可中断的睡眠状态</span> <span class="string">R=运行</span> <span class="string">S=睡眠</span> <span class="string">T=跟踪/停止</span> <span class="string">Z=僵尸进程</span></span><br><span class="line"><span class="string">%CPU</span> <span class="string">—</span> <span class="string">上次更新到现在的CPU时间占用百分比</span></span><br><span class="line"><span class="string">%MEM</span> <span class="string">—</span> <span class="string">进程使用的物理内存百分比</span></span><br><span class="line"><span class="string">TIME+</span> <span class="string">—</span> <span class="string">进程使用的CPU时间总计，单位1/100秒</span></span><br><span class="line"><span class="string">COMMAND</span> <span class="string">—</span> <span class="string">进程名称（命令名/命令行）</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/03/11/postgresql/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/03/11/postgresql/" itemprop="url">PostgreSQL安装部署</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-11T17:39:16+08:00">
-                2020-03-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="PostgreSQL"><a href="#PostgreSQL" class="headerlink" title="PostgreSQL"></a>PostgreSQL</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><ul>
-<li><p>操作系统：CentOS Linux release 7.7.1908 (Core)</p>
-</li>
-<li><p>安装版本：<a href="https://www.postgresql.org/" target="_blank" rel="noopener">PostgreSQL</a> 9.6</p>
-</li>
-<li><p>安装方式：<code>yum</code> 安装</p>
-</li>
-</ul>
-<h4 id="检查PostgreSQL-是否已经安装"><a href="#检查PostgreSQL-是否已经安装" class="headerlink" title="检查PostgreSQL 是否已经安装"></a>检查PostgreSQL 是否已经安装</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查询是否安装</span></span><br><span class="line"><span class="string">rpm</span> <span class="bullet">-qa|grep</span> <span class="string">postgre</span></span><br><span class="line"><span class="comment">#查询包中文件安装的位置</span></span><br><span class="line"><span class="string">rpm</span> <span class="bullet">-qal|grep</span> <span class="string">postgre</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#卸载已安装包</span></span><br><span class="line"><span class="string">rpm</span> <span class="bullet">-e</span></span><br></pre></td></tr></table></figure>
-
-<p><a href="https://www.cnblogs.com/qiyebao/p/4343182.html" target="_blank" rel="noopener">linux-软件包管理-rpm命令管理-查询</a></p>
-<h4 id="创建用户和用户组"><a href="#创建用户和用户组" class="headerlink" title="创建用户和用户组"></a>创建用户和用户组</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#新增postgres用户组</span></span><br><span class="line"><span class="string">groupadd</span> <span class="string">postgres</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#新增postgres用户属于postgres用户组</span></span><br><span class="line"><span class="string">useradd</span> <span class="bullet">-g</span> <span class="string">postgres</span> <span class="string">postgres</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#创建PostgreSQL9.6的yum源文件</span></span><br><span class="line"><span class="string">yum</span> <span class="string">install</span> <span class="attr">https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#安装客户端</span></span><br><span class="line"><span class="string">yum</span> <span class="string">install</span> <span class="string">postgresql96</span>  </span><br><span class="line"></span><br><span class="line"><span class="comment">#安装服务端</span></span><br><span class="line"><span class="string">yum</span> <span class="string">install</span> <span class="string">postgresql96-server</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="初始化-amp-启动"><a href="#初始化-amp-启动" class="headerlink" title="初始化&amp;启动"></a>初始化&amp;启动</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#初始化数据库</span></span><br><span class="line"><span class="string">/usr/pgsql-9.6/bin/postgresql96-setup</span> <span class="string">initdb</span>  <span class="comment"># /usr/pgsql-9.6/bin/initdb -D /data/postgresql</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#启动postgresql服务，并设置为开机自动启动</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">enable</span> <span class="string">postgresql-9.6</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">start</span> <span class="string">postgresql-9.6</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">status</span> <span class="string">postgresql-9.6</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#查看监听端口</span></span><br><span class="line"><span class="string">netstat</span> <span class="bullet">-nat</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="修改数据目录"><a href="#修改数据目录" class="headerlink" title="修改数据目录"></a>修改数据目录</h4><p>默认目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/var/lib/pgsql/9.6/data/</span><br></pre></td></tr></table></figure>
-
-<p>修改数据目录</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#关闭服务</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">stop</span> <span class="string">postgresql-9.6</span></span><br><span class="line"><span class="comment">#创建目录，并给目录授权</span></span><br><span class="line"><span class="string">mkdir</span> <span class="string">/data/postgresql</span></span><br><span class="line"><span class="string">chown</span> <span class="bullet">-R</span> <span class="attr">postgres:postgres</span> <span class="string">postgresql</span></span><br><span class="line"><span class="string">chmod</span> <span class="number">700</span> <span class="string">/data/postgresql</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#修改systemctl启动文件</span></span><br><span class="line"><span class="string">vi</span> <span class="string">/usr/lib/systemd/system/postgresql-9.6.service</span>   <span class="comment"># Environment=PGDATA= /data/postgresql/</span></span><br><span class="line"><span class="comment"># 重新加载配置文件使其生效</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">daemon-reload</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#切换至postgres用户指定目录初始化数据</span></span><br><span class="line"><span class="string">su</span> <span class="bullet">-</span> <span class="string">postgres</span></span><br><span class="line"><span class="string">/usr/pgsql-9.6/bin/initdb</span> <span class="bullet">-D</span> <span class="string">/data/postgresql</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#root用户下</span></span><br><span class="line"><span class="string">vi</span> <span class="string">/data/postgresql/postgresql.conf</span>  <span class="comment"># data_directory = '/data/postgresql'</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">restart</span> <span class="string">postgresql-9.6</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#查看当前数据目录位置</span></span><br><span class="line"><span class="string">$</span> <span class="string">su</span> <span class="bullet">-</span> <span class="string">postgres</span></span><br><span class="line"><span class="bullet">-</span><span class="string">bash-4.2$</span> <span class="string">psql</span></span><br><span class="line"><span class="string">postgres=#</span> <span class="string">show</span> <span class="string">data_directory;</span></span><br><span class="line">  <span class="string">data_directory</span>  </span><br><span class="line"><span class="bullet">-</span><span class="bullet">-----------------</span></span><br><span class="line"> <span class="string">/data/postgresql</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#后台登录</span></span><br><span class="line"><span class="string">$</span> <span class="string">su</span> <span class="bullet">-</span> <span class="string">postgres</span></span><br><span class="line"><span class="bullet">-</span><span class="string">bash-4.2$</span> <span class="string">psql</span></span><br><span class="line"><span class="string">psql</span> <span class="string">(9.6.17)</span></span><br><span class="line"><span class="string">postgres=#</span> <span class="string">select</span> <span class="string">version();</span></span><br><span class="line">                                                  <span class="string">version</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">----------------------------------------------------------------------------------------------------------</span></span><br><span class="line"> <span class="string">PostgreSQL</span> <span class="number">9.6</span><span class="number">.17</span> <span class="string">on</span> <span class="string">x86_64-pc-linux-gnu,</span> <span class="string">compiled</span> <span class="string">by</span> <span class="string">gcc</span> <span class="string">(GCC)</span> <span class="number">4.8</span><span class="number">.5</span> <span class="number">20150623</span> <span class="string">(Red</span> <span class="string">Hat</span> <span class="number">4.8</span><span class="number">.5</span><span class="bullet">-39</span><span class="string">),</span> <span class="number">64</span><span class="bullet">-bit</span></span><br><span class="line"><span class="string">(1</span> <span class="string">row)</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="配置远程连接"><a href="#配置远程连接" class="headerlink" title="配置远程连接"></a>配置远程连接</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 配置Navicate可登录 &lt;postgres/Haier@123&gt;，本地后台登录不需要密码</span></span><br><span class="line"><span class="comment"># pg_hba.conf：配置对数据库的访问权限</span></span><br><span class="line"><span class="comment"># postgresql.conf：配置PostgreSQL数据库服务器的相应的参数</span></span><br><span class="line"><span class="string">vi</span> <span class="string">/data/postgresql/postgresql.conf</span>  <span class="comment"># listen_addresses = '*'</span></span><br><span class="line"><span class="string">vi</span> <span class="string">/data/postgresql/pg_hba.conf</span>  <span class="comment"># 文件末尾添加 host  all  all  0.0.0.0/0  trust</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 开启防火墙5432端口</span></span><br><span class="line"><span class="string">firewall-cmd</span> <span class="bullet">--zone=public</span> <span class="bullet">--add-port=5432/tcp</span> <span class="bullet">--permanent</span> <span class="comment"># 永久生效再加上 permanent </span></span><br><span class="line"><span class="string">firewall-cmd</span> <span class="bullet">--reload</span>                                      <span class="comment"># 更新防火墙规则</span></span><br><span class="line"><span class="string">firewall-cmd</span> <span class="bullet">--zone=public</span> <span class="bullet">--list-ports</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改登录密码</span></span><br><span class="line"><span class="string">sudo</span> <span class="bullet">-u</span> <span class="string">postgres</span> <span class="string">psql</span></span><br><span class="line"><span class="string">ALTER</span> <span class="string">USER</span> <span class="string">postgres</span> <span class="string">WITH</span> <span class="string">password</span> <span class="string">'Haier@123'</span><span class="string">;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h3><p>采用 <code>yum</code> 方式安装</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#yum 删除软件包</span></span><br><span class="line"><span class="string">yum</span> <span class="string">remove</span> <span class="string">postgresql*</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#删除相关目录文件：</span></span><br><span class="line"><span class="comment">#删除数据目录</span></span><br><span class="line"><span class="string">rm</span> <span class="bullet">-rf</span>  <span class="string">/var/lib/pgsql</span>       <span class="comment">#默认数据目录</span></span><br><span class="line"><span class="string">rm</span> <span class="bullet">-rf</span> <span class="string">/data/postgresql/</span>     <span class="comment">#修改后的数据目录</span></span><br><span class="line"><span class="comment">#删除安装目录</span></span><br><span class="line"><span class="string">rm</span> <span class="bullet">-rf</span>  <span class="string">/usr/pgsql*</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#删除pg相关用户组/用户</span></span><br><span class="line"><span class="string">userdel</span> <span class="bullet">-r</span> <span class="string">postgres</span></span><br><span class="line"><span class="string">groupdel</span> <span class="string">postgres</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><h4 id="客户端登录"><a href="#客户端登录" class="headerlink" title="客户端登录"></a>客户端登录</h4><ul>
-<li>安装 <a href="https://www.navicat.com.cn/products/navicat-premium" target="_blank" rel="noopener">Navicate</a></li>
-<li>登录数据库<ul>
-<li>主机：10.133.0.52</li>
-<li>端口：5432</li>
-<li>数据库：postgres</li>
-<li>用户名：postgres</li>
-<li>密码：Haier@123</li>
-</ul>
-</li>
-</ul>
-<h4 id="服务器远程登录"><a href="#服务器远程登录" class="headerlink" title="服务器远程登录"></a>服务器远程登录</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">su - postgres</span><br><span class="line">psql -h 47.104.161.59 -U postgres -d Haier@123 -p 5432</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/02/28/jumper/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/02/28/jumper/" itemprop="url">堡垒机登录</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-28T10:33:02+08:00">
-                2020-02-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>阿里云 ECS 服务器</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 登陆账户：工号 + 密码</span><br><span class="line"># 内网登录</span><br><span class="line">ssh -p 60022 01510886@10.163.193.54</span><br><span class="line"></span><br><span class="line"># 公网登陆</span><br><span class="line">ssh -p 60022 01510886@47.104.192.254</span><br></pre></td></tr></table></figure>
-
-<p><strong>本地 IDC 服务器</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 2222 01510886@10.138.16.192</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><span class="page-number current">2</span><a class="page-number" href="/blog/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/10/">10</a><a class="extend next" rel="next" href="/blog/page/3/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/blog/">1</a><span class="page-number current">2</span><a class="page-number" href="/blog/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/11/">11</a><a class="extend next" rel="next" href="/blog/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1738,7 +1632,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">95</span>
+                  <span class="site-state-item-count">101</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
