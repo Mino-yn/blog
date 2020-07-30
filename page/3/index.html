@@ -281,245 +281,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/04/02/mysql-POINT-cloud/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2020/04/02/mysql-POINT-cloud/" itemprop="url">MySQL · 积分中心数据库迁移上云</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-02T11:14:59+08:00">
-                2020-04-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>背景</p>
-<table>
-<thead>
-<tr>
-<th>项目信息</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>项目名称</td>
-<td>积分中心</td>
-</tr>
-<tr>
-<td>机房位置</td>
-<td>北京亦庄/卓郎机房</td>
-</tr>
-<tr>
-<td>本地数据库</td>
-<td>10.199.96.192</td>
-</tr>
-<tr>
-<td>数据量</td>
-<td>267GB</td>
-</tr>
-<tr>
-<td>版本</td>
-<td>MariaDB 5.5.49</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th>中转数据库</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>主机</td>
-<td>10.163.19.14</td>
-</tr>
-<tr>
-<td>自建MySQL</td>
-<td>MariaDB 5.5.49</td>
-</tr>
-<tr>
-<td>公网IP</td>
-<td>124.250.27.24</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th>阿里云 RDS</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>实例</td>
-<td>rm-2ze12yaraeqa2q8dk.mysql.rds.aliyuncs.com:3306</td>
-</tr>
-<tr>
-<td>版本</td>
-<td>MySQL 5.7</td>
-</tr>
-<tr>
-<td>用户名</td>
-<td>rds</td>
-</tr>
-</tbody></table>
-<p><strong>说明</strong>：用户中心数据库迁移上云时，开通了 <code>10.163.19.14</code> 服务器的公网IP。在 <code>10.163.19.14</code> 上搭建<code>10.199.96.192</code>  的从库的方式，通过 <code>10.163.19.14</code>  中转的方式迁移上云。</p>
-<h2 id="迁移方案"><a href="#迁移方案" class="headerlink" title="迁移方案"></a>迁移方案</h2><p>本地 IDC 数据库 -&gt; 开通公网IP的中转自建数据库 -&gt; 阿里云 RDS</p>
-<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><table>
-<thead>
-<tr>
-<th align="left">步骤</th>
-<th align="left">耗时</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">全备</td>
-<td align="left">1 h 20 min</td>
-</tr>
-<tr>
-<td align="left">传输</td>
-<td align="left">17 h 20 min</td>
-</tr>
-<tr>
-<td align="left">恢复</td>
-<td align="left">45 min</td>
-</tr>
-<tr>
-<td align="left">DTS 迁移</td>
-<td align="left">6 h</td>
-</tr>
-</tbody></table>
-<h3 id="实施"><a href="#实施" class="headerlink" title="实施"></a>实施</h3><ul>
-<li>全量备份</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=sre --password=&apos;xx&apos; --no-timestamp /data/backup</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>传输</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r root@10.199.96.192:/data/backup/*  /data/backup  &amp;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>全量恢复</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -uroot -p&apos;xx&apos; shutdown</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --apply-log /data/backup</span><br><span class="line">mv mysql mysql_bak</span><br><span class="line">mkdir mysql</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --copy-back /data/backup</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>重启 <code>MySQL</code> 服务</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chown -R mysql:mysql mysql</span><br><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>配置主从复制</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#主库创建repl_14用户</span></span><br><span class="line"><span class="string">GRANT</span> <span class="string">REPLICATION</span> <span class="string">SLAVE,</span> <span class="string">REPLICATION</span> <span class="string">CLIENT</span> <span class="string">ON</span> <span class="string">*.*</span> <span class="string">TO</span> <span class="string">'repl_14'</span><span class="string">@'10.163.19.%'</span> <span class="string">IDENTIFIED</span> <span class="string">BY</span> <span class="string">'Changeme_123'</span><span class="string">;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取Master binlog位置</span></span><br><span class="line"><span class="string">cat</span> <span class="string">xtrabackup_binlog_info</span></span><br><span class="line"><span class="string">mysql-bin.000048</span>        <span class="number">1924065</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#配置复制</span></span><br><span class="line"><span class="string">CHANGE</span> <span class="string">MASTER</span> <span class="string">TO</span></span><br><span class="line"><span class="string">MASTER_HOST='10.199.96.192',</span></span><br><span class="line"><span class="string">MASTER_USER='repl_14',</span></span><br><span class="line"><span class="string">MASTER_PASSWORD='Changeme_123',</span></span><br><span class="line"><span class="string">MASTER_PORT=3306,</span></span><br><span class="line"><span class="string">MASTER_LOG_FILE='mysql-bin.000048',</span></span><br><span class="line"><span class="string">MASTER_LOG_POS=1924065;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#启动同步</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">start</span> <span class="string">slave;</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/04/01/Go-environment/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1913,6 +1674,155 @@
 <p><strong>maven项目运行</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">E:\IdeaProjects\learing-java&gt;java -cp target/untitled-1.0-SNAPSHOT.jar org.example.App</span><br></pre></td></tr></table></figure>
 
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/02/10/Spring-Boot/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/02/10/Spring-Boot/" itemprop="url">Spring Boot入门</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-10T16:13:42+08:00">
+                2020-02-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Spring-Boot入门"><a href="#Spring-Boot入门" class="headerlink" title="Spring Boot入门"></a>Spring Boot入门</h2><h3 id="1、Spring-Boot简介"><a href="#1、Spring-Boot简介" class="headerlink" title="1、Spring Boot简介"></a>1、Spring Boot简介</h3><ul>
+<li>简化Spring应用开发的一个框架；</li>
+<li>整个Spring技术栈的一个大整合；</li>
+<li>J2EE开发的一站式解决方案；</li>
+</ul>
+<h3 id="2、微服务"><a href="#2、微服务" class="headerlink" title="2、微服务"></a>2、微服务</h3><p>2014，martin fowler</p>
+<p>微服务：架构风格（服务微化）</p>
+<ul>
+<li><p>一个应用应该是一组小型服务;可以通过HTTP的方式进行互通；</p>
+</li>
+<li><p>每一个功能元素最终都是一个可独立替换和独立升级的软件单元；</p>
+</li>
+</ul>
+<p>单体应用：ALL IN ONE </p>
+<ul>
+<li>所有的东西写在一个应用里；</li>
+</ul>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Spring%20Boot0.png" alt></p>
+<p><a href="https://www.jianshu.com/p/4821a29fa998" target="_blank" rel="noopener">详细参照微服务文档</a></p>
+<h3 id="3、环境准备"><a href="#3、环境准备" class="headerlink" title="3、环境准备"></a>3、环境准备</h3><ul>
+<li><p>jdk1.8    </p>
+</li>
+<li><p>maven3.6.1</p>
+</li>
+<li><p>springboot最新版</p>
+</li>
+<li><p>IDEA</p>
+</li>
+</ul>
+<h2 id="第一个SpringBoot程序"><a href="#第一个SpringBoot程序" class="headerlink" title="第一个SpringBoot程序"></a>第一个SpringBoot程序</h2><p>官方：提供了一个快速生成的网站！IDEA集成了这个网站</p>
 
           
         

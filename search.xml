@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title></title>
-    <url>/blog/2020/07/29/install-docker/</url>
-    <content><![CDATA[<h5 id="title-Docker-·-安装"><a href="#title-Docker-·-安装" class="headerlink" title="title: Docker · 安装"></a>title: Docker · 安装</h5><p>date: 2020-07-29 11:05:09<br>tags: [Docker]</p>
-<h2 id="Docker安装说明"><a href="#Docker安装说明" class="headerlink" title="Docker安装说明"></a>Docker安装说明</h2><p>Docker 是一个开源的商业产品，有两个版本：社区版（Community Edition，缩写为 CE）和企业版（Enterprise Edition，缩写为 EE）。企业版包含了一些收费服务，个人开发者一般用不到。</p>
-<table>
+    <title>电子签章</title>
+    <url>/blog/2020/07/30/DZQZ/</url>
+    <content><![CDATA[<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">交接事项：</span><br><span class="line">1. 协助对方准备账号</span><br><span class="line">2. 如何登录海尔环境 - d.haier.net</span><br><span class="line">3. 私有化容器平台的介绍</span><br><span class="line">4. 平时会做什么事情</span><br><span class="line">  a. 升级服务 - 基于镜像</span><br><span class="line">    delta-convert-html2pdf</span><br><span class="line">    haier-contract</span><br><span class="line">    hybrid-cloud</span><br><span class="line">    syncspeed-test-tool</span><br><span class="line">  b. 更新配置并重启服务</span><br><span class="line">  c. 日志提取协助</span><br><span class="line">5. 相关对接人概述</span><br><span class="line">6. vpn账号密码过期密码如何重置 - p.haier.net</span><br></pre></td></tr></table></figure>
+
+<h3 id="升级服务-基于镜像"><a href="#升级服务-基于镜像" class="headerlink" title="升级服务 - 基于镜像"></a>升级服务 - 基于镜像</h3><h4 id="安装docker客户端和服务端"><a href="#安装docker客户端和服务端" class="headerlink" title="安装docker客户端和服务端"></a>安装docker客户端和服务端</h4><table>
 <thead>
 <tr>
 <th>操作系统</th>
@@ -17,29 +17,9 @@
 <td>Docker Engine - Community<br>Version:           19.03.5</td>
 </tr>
 </tbody></table>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><h3 id="卸载旧版本"><a href="#卸载旧版本" class="headerlink" title="卸载旧版本"></a>卸载旧版本</h3><p>较旧的 Docker 版本称为 docker 或 docker-engine。如果已安装这些程序，请卸载它们以及相关的依赖项。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo yum remove docker \</span><br><span class="line">docker-client \</span><br><span class="line">docker-client-latest \</span><br><span class="line">docker-common \</span><br><span class="line">docker-latest \</span><br><span class="line">docker-latest-logrotate \</span><br><span class="line">docker-logrotate \</span><br><span class="line">docker-engine</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yum install docker-ce-19.03.5-3.el7 docker-ce-cli-19.03.5-3.el7</span><br></pre></td></tr></table></figure>
 
-<h3 id="设置yum源-存储库"><a href="#设置yum源-存储库" class="headerlink" title="设置yum源(存储库)"></a>设置yum源(存储库)</h3><h4 id="1、安装所需的软件包"><a href="#1、安装所需的软件包" class="headerlink" title="1、安装所需的软件包"></a>1、安装所需的软件包</h4><p><code>yum-utils</code> 提供了 <code>yum-config-manager</code>  效用，并 <code>device-mapper-persistent-data</code> 和 <code>lvm2</code> 由需要 <code>devicemapper</code> 存储驱动程序。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo yum install -y yum-utils \</span><br><span class="line">device-mapper-persistent-data \</span><br><span class="line">lvm2</span><br></pre></td></tr></table></figure>
-
-<h4 id="2、设置稳定的安装源-存储库"><a href="#2、设置稳定的安装源-存储库" class="headerlink" title="2、设置稳定的安装源(存储库)"></a>2、设置稳定的安装源(存储库)</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo yum-config-manager \</span><br><span class="line">--add-repo \</span><br><span class="line">https://download.docker.com/linux/centos/docker-ce.repo</span><br></pre></td></tr></table></figure>
-
-<h4 id="3、查询可安装的版本"><a href="#3、查询可安装的版本" class="headerlink" title="3、查询可安装的版本"></a>3、查询可安装的版本</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yum list docker-ce --showduplicates | sort -r</span><br><span class="line">This system is not registered with an entitlement server. You can use subscription-manager to register.</span><br><span class="line">              : manager</span><br><span class="line">Loading mirror speeds from cached hostfile</span><br><span class="line">Loaded plugins: fastestmirror, product-id, search-disabled-repos, subscription-</span><br><span class="line">docker-ce.x86_64            3:19.03.9-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.8-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.7-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.6-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.5-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.4-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.3-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.2-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.1-3.el7                     docker-ce-stable</span><br></pre></td></tr></table></figure>
-
-<h3 id="安装docker-ce-19-03-5"><a href="#安装docker-ce-19-03-5" class="headerlink" title="安装docker-ce-19.03.5"></a>安装docker-ce-19.03.5</h3><p>这里安装docker-ce-19.03.5版本，如果安装的时候查询到新的版本，只要按照格式安装就可以了，注意版本号。<br>软件包名称是软件包名称（docker-ce）加上版本字符串（第二列），从第一个冒号（:）一直到第一个连字符，并用连字符（-）分隔。<br>例如，docker-ce-19.03.5。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 安装docker客户端和服务端</span><br><span class="line">yum install docker-ce-19.03.5-3.el7 docker-ce-cli-19.03.5-3.el7</span><br></pre></td></tr></table></figure>
-
-<h3 id="验证安装"><a href="#验证安装" class="headerlink" title="验证安装"></a>验证安装</h3><p>安装完成后，运行下面的命令，验证是否安装成功。</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">[root@db</span> <span class="string">lib]#</span>  <span class="string">docker</span> <span class="string">version</span></span><br><span class="line"><span class="attr">Client:</span> <span class="string">Docker</span> <span class="string">Engine</span> <span class="bullet">-</span> <span class="string">Community</span></span><br><span class="line"><span class="attr"> Version:</span>           <span class="number">19.03</span><span class="number">.5</span></span><br><span class="line"> <span class="string">API</span> <span class="attr">version:</span>       <span class="number">1.40</span></span><br><span class="line"> <span class="string">Go</span> <span class="attr">version:</span>        <span class="string">go1.12.12</span></span><br><span class="line"> <span class="string">Git</span> <span class="attr">commit:</span>        <span class="number">633</span><span class="string">a0ea</span></span><br><span class="line"><span class="attr"> Built:</span>             <span class="string">Wed</span> <span class="string">Nov</span> <span class="number">13</span> <span class="number">07</span><span class="string">:25:41</span> <span class="number">2019</span></span><br><span class="line"> <span class="string">OS/Arch:</span>           <span class="string">linux/amd64</span></span><br><span class="line"><span class="attr"> Experimental:</span>      <span class="literal">false</span></span><br><span class="line"><span class="string">Cannot</span> <span class="string">connect</span> <span class="string">to</span> <span class="string">the</span> <span class="string">Docker</span> <span class="string">daemon</span> <span class="string">at</span> <span class="attr">unix:///var/run/docker.sock.</span> <span class="string">Is</span> <span class="string">the</span> <span class="string">docker</span> <span class="string">daemon</span> <span class="string">running?</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 或者</span></span><br><span class="line"><span class="string">$</span> <span class="string">docker</span> <span class="string">info</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="启动-Docker"><a href="#启动-Docker" class="headerlink" title="启动 Docker"></a>启动 Docker</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ systemctl start docker</span><br></pre></td></tr></table></figure>
-
-<h4 id="测试运行容器"><a href="#测试运行容器" class="headerlink" title="测试运行容器"></a>测试运行容器</h4><p>通过运行 hello-world 映像来验证是否正确安装了 Docker Engine-Community 。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ docker run hello-world</span><br></pre></td></tr></table></figure>
-
-<p>命令会下载测试镜像并在容器中运行它。<br>容器运行时，会打印参考消息并退出。</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/install-docker.png" alt></p>
+<p><a href="https://mino-yn.github.io/blog/2020/07/29/install-docker/">具体操作</a></p>
 ]]></content>
   </entry>
   <entry>
@@ -109,11 +89,6 @@
       <tags>
         <tag>MySQL</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>电子签章</title>
-    <url>/blog/2020/07/21/Ele-Signatures/</url>
-    <content><![CDATA[]]></content>
   </entry>
   <entry>
     <title>HLMP数据归档</title>
@@ -4913,6 +4888,51 @@
 
 <h3 id="Linux常用指令"><a href="#Linux常用指令" class="headerlink" title="Linux常用指令"></a>Linux常用指令</h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 8核 * 32G * 600GB</span></span><br><span class="line"><span class="comment"># 查看系统CPU</span></span><br><span class="line"><span class="string">cat</span> <span class="string">/proc/cpuinfo</span> <span class="string">| grep "cores"|uniq</span></span><br><span class="line"><span class="string"># 显示系统内存</span></span><br><span class="line"><span class="string">free -g</span></span><br><span class="line"><span class="string"># 显示系统硬盘</span></span><br><span class="line"><span class="string">fdisk -l | grep Disk</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看所有安装的软件包</span></span><br><span class="line"><span class="string">rpm -qa |grep xtrabackup  </span></span><br><span class="line"><span class="string"># 删除安装包</span></span><br><span class="line"><span class="string">rpm -e 文件名</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 授权+执行</span></span><br><span class="line"><span class="string">chmod +x getip</span></span><br><span class="line"><span class="string">./getip</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下的文件数量</span></span><br><span class="line"><span class="string">ls -l |grep  "^-" | wc -l   </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下各文件、文件夹的大小</span></span><br><span class="line"><span class="string">du -h –max-depth=1 *</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#删除软链</span></span><br><span class="line"><span class="string">rm -rf  ./test_chk_ln</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 后台执行任务</span></span><br><span class="line"><span class="string">nohup 执行的任务指令 &amp;</span></span><br></pre></td></tr></table></figure>
 
+]]></content>
+  </entry>
+  <entry>
+    <title>Docker · 安装</title>
+    <url>/blog/2019/08/09/install-docker/</url>
+    <content><![CDATA[<h2 id="Docker安装说明"><a href="#Docker安装说明" class="headerlink" title="Docker安装说明"></a>Docker安装说明</h2><p>Docker 是一个开源的商业产品，有两个版本：社区版（Community Edition，缩写为 CE）和企业版（Enterprise Edition，缩写为 EE）。企业版包含了一些收费服务，个人开发者一般用不到。</p>
+<table>
+<thead>
+<tr>
+<th>操作系统</th>
+<th>Docker版本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>centos7.4+</td>
+<td>Docker Engine - Community<br>Version:           19.03.5</td>
+</tr>
+</tbody></table>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><h3 id="卸载旧版本"><a href="#卸载旧版本" class="headerlink" title="卸载旧版本"></a>卸载旧版本</h3><p>较旧的 Docker 版本称为 docker 或 docker-engine。如果已安装这些程序，请卸载它们以及相关的依赖项。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo yum remove docker \</span><br><span class="line">docker-client \</span><br><span class="line">docker-client-latest \</span><br><span class="line">docker-common \</span><br><span class="line">docker-latest \</span><br><span class="line">docker-latest-logrotate \</span><br><span class="line">docker-logrotate \</span><br><span class="line">docker-engine</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置yum源-存储库"><a href="#设置yum源-存储库" class="headerlink" title="设置yum源(存储库)"></a>设置yum源(存储库)</h3><h4 id="1、安装所需的软件包"><a href="#1、安装所需的软件包" class="headerlink" title="1、安装所需的软件包"></a>1、安装所需的软件包</h4><p><code>yum-utils</code> 提供了 <code>yum-config-manager</code>  效用，并 <code>device-mapper-persistent-data</code> 和 <code>lvm2</code> 由需要 <code>devicemapper</code> 存储驱动程序。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo yum install -y yum-utils \</span><br><span class="line">device-mapper-persistent-data \</span><br><span class="line">lvm2</span><br></pre></td></tr></table></figure>
+
+<h4 id="2、设置稳定的安装源-存储库"><a href="#2、设置稳定的安装源-存储库" class="headerlink" title="2、设置稳定的安装源(存储库)"></a>2、设置稳定的安装源(存储库)</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo yum-config-manager \</span><br><span class="line">--add-repo \</span><br><span class="line">https://download.docker.com/linux/centos/docker-ce.repo</span><br></pre></td></tr></table></figure>
+
+<h4 id="3、查询可安装的版本"><a href="#3、查询可安装的版本" class="headerlink" title="3、查询可安装的版本"></a>3、查询可安装的版本</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yum list docker-ce --showduplicates | sort -r</span><br><span class="line">This system is not registered with an entitlement server. You can use subscription-manager to register.</span><br><span class="line">              : manager</span><br><span class="line">Loading mirror speeds from cached hostfile</span><br><span class="line">Loaded plugins: fastestmirror, product-id, search-disabled-repos, subscription-</span><br><span class="line">docker-ce.x86_64            3:19.03.9-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.8-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.7-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.6-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.5-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.4-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.3-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.2-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64            3:19.03.1-3.el7                     docker-ce-stable</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装docker-ce-19-03-5"><a href="#安装docker-ce-19-03-5" class="headerlink" title="安装docker-ce-19.03.5"></a>安装docker-ce-19.03.5</h3><p>这里安装docker-ce-19.03.5版本，如果安装的时候查询到新的版本，只要按照格式安装就可以了，注意版本号。<br>软件包名称是软件包名称（docker-ce）加上版本字符串（第二列），从第一个冒号（:）一直到第一个连字符，并用连字符（-）分隔。<br>例如，docker-ce-19.03.5。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 安装docker客户端和服务端</span><br><span class="line">yum install docker-ce-19.03.5-3.el7 docker-ce-cli-19.03.5-3.el7</span><br></pre></td></tr></table></figure>
+
+<h3 id="验证安装"><a href="#验证安装" class="headerlink" title="验证安装"></a>验证安装</h3><p>安装完成后，运行下面的命令，验证是否安装成功。</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">[root@db</span> <span class="string">lib]#</span>  <span class="string">docker</span> <span class="string">version</span></span><br><span class="line"><span class="attr">Client:</span> <span class="string">Docker</span> <span class="string">Engine</span> <span class="bullet">-</span> <span class="string">Community</span></span><br><span class="line"><span class="attr"> Version:</span>           <span class="number">19.03</span><span class="number">.5</span></span><br><span class="line"> <span class="string">API</span> <span class="attr">version:</span>       <span class="number">1.40</span></span><br><span class="line"> <span class="string">Go</span> <span class="attr">version:</span>        <span class="string">go1.12.12</span></span><br><span class="line"> <span class="string">Git</span> <span class="attr">commit:</span>        <span class="number">633</span><span class="string">a0ea</span></span><br><span class="line"><span class="attr"> Built:</span>             <span class="string">Wed</span> <span class="string">Nov</span> <span class="number">13</span> <span class="number">07</span><span class="string">:25:41</span> <span class="number">2019</span></span><br><span class="line"> <span class="string">OS/Arch:</span>           <span class="string">linux/amd64</span></span><br><span class="line"><span class="attr"> Experimental:</span>      <span class="literal">false</span></span><br><span class="line"><span class="string">Cannot</span> <span class="string">connect</span> <span class="string">to</span> <span class="string">the</span> <span class="string">Docker</span> <span class="string">daemon</span> <span class="string">at</span> <span class="attr">unix:///var/run/docker.sock.</span> <span class="string">Is</span> <span class="string">the</span> <span class="string">docker</span> <span class="string">daemon</span> <span class="string">running?</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 或者</span></span><br><span class="line"><span class="string">$</span> <span class="string">docker</span> <span class="string">info</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="启动-Docker"><a href="#启动-Docker" class="headerlink" title="启动 Docker"></a>启动 Docker</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ systemctl start docker</span><br></pre></td></tr></table></figure>
+
+<h4 id="测试运行容器"><a href="#测试运行容器" class="headerlink" title="测试运行容器"></a>测试运行容器</h4><p>通过运行 hello-world 映像来验证是否正确安装了 Docker Engine-Community 。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ docker run hello-world</span><br></pre></td></tr></table></figure>
+
+<p>命令会下载测试镜像并在容器中运行它。<br>容器运行时，会打印参考消息并退出。</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/install-docker.png" alt></p>
+<h2 id="常见错误"><a href="#常见错误" class="headerlink" title="常见错误"></a>常见错误</h2><h3 id="Errno-14"><a href="#Errno-14" class="headerlink" title="[Errno 14]"></a>[Errno 14]</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@hwork_nginx01 ~]#  sudo yum-config-manager \</span><br><span class="line">&gt; --add-repo \</span><br><span class="line">&gt; https://download.docker.com/linux/centos/docker-ce.repo</span><br><span class="line">Loaded plugins: fastestmirror</span><br><span class="line">adding repo from: https://download.docker.com/linux/centos/docker-ce.repo</span><br><span class="line">grabbing file https://download.docker.com/linux/centos/docker-ce.repo to /etc/yum.repos.d/docker-ce.repo</span><br><span class="line">Could not fetch/save url https://download.docker.com/linux/centos/docker-ce.repo to file /etc/yum.repos.d/docker-ce.repo: [Errno 14] curl#6 - &quot;Could not resolve host: download.docker.com; Unknown error&quot;</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong></p>
+<p>这是由于国内访问不到docker官方镜像的缘故<br>可以通过aliyun的源来完成：</p>
 ]]></content>
   </entry>
   <entry>
