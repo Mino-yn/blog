@@ -1,11 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>数据库特权账号申请</title>
+    <url>/blog/2020/08/11/Privilege-platform-MySQL/</url>
+    <content><![CDATA[<h3 id="申请流程"><a href="#申请流程" class="headerlink" title="申请流程"></a>申请流程</h3><p>Portal—-IT服务—数据库申请【特权】–账号权限申请—运维账号—普通账号</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>MySQL文件体系</title>
+    <url>/blog/2020/08/10/MySQL-file-system/</url>
+    <content><![CDATA[<p><a href="https://www.cnblogs.com/zejin2008/p/4628455.html" target="_blank" rel="noopener">https://www.cnblogs.com/zejin2008/p/4628455.html</a></p>
+<p><a href="https://blog.csdn.net/weixin_34390996/article/details/90304112" target="_blank" rel="noopener">https://blog.csdn.net/weixin_34390996/article/details/90304112</a></p>
+<h3 id="MySQL主要文件类型"><a href="#MySQL主要文件类型" class="headerlink" title="MySQL主要文件类型"></a>MySQL主要文件类型</h3><h4 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h4><ul>
+<li><p>当MySQL实例启动时，MySQL会先去读一个配置参数文件，用来寻找数据库的各种文件所在位置以及指定某些初始化参数，这些参数通常定义了某种内存结构有多大等设置。默认情况下，MySQL实例会按照一定的次序去取，你只需通过命令mysql –help|grep my.cnf来寻找即可。</p>
+<p>MySQL参数文件的作用和Oracle的参数文件极其类似；不同的是，Oracle实例启动时若找不到参数文件，是不能进行装载（mount）操作的。MySQL稍微有所不同，MySQL实例可以不需要参数文件，这时所有的参数值取决于编译MySQL时指定的默认值和源代码中指定参数的默认值。但是，如果MySQL在默认的数据库目录下找不到mysql架构，则启动同样会失败，你可能在错误日志文件中找到如下内容：</p>
+</li>
+<li><p>MySQL的很多性能优化工作、主从复制等都是在调整参数、主从复制等都是在调整参数以适应不同时期不同数量级的数据，因此理解my.cnf中的参数非常重要，只有理解了参数设置，才可能对数据库进行某些方面的调优工作。</p>
+</li>
+<li><p>Mysql参数文件中的参数可以分为2种类型：动态（dynamic）参数和静态参数（staitic）<br>动态参数意味着可以在mysql实例运行中进行修改，修改后无需重启数据库即可生效<br>生效范围分为：global和session。</p>
+<p>静态的说明在整个mysql实例运行期间不得进行修改，就类似一个只读的read only，需要修改数据库配置文件，然后重启数据库实例才可生效</p>
+</li>
+</ul>
+<h4 id="日志文件"><a href="#日志文件" class="headerlink" title="日志文件"></a><strong>日志文件</strong></h4><p>日志文件记录了影响 <code>mysql</code> 数据库的各种类型活动，常见的日志文件有错误日志、二进制日志、慢查询日志、全查询日志、redo日志、undo日志</p>
+<p><strong>错误日志</strong></p>
+<p>错误日志对mysql的启动、运行、关闭过程进行了记录，</p>
+<p>在遇到问题时候，第一时间应该查看这个错误日志文件，</p>
+<p>错误日志也不仅仅记录出错信息，还记录了一些警告信息以及正确信息，总的来说，可以在错误日志文件里面看到一些数据库启动信息，以及告警信息还有就是报错信息</p>
+<p><strong>二进制文件</strong></p>
+<p>记录对MySQL数据库真正执行更改的所有操作不包含没有修改任何数据的语句：select、show</p>
+<p>如果你还想记录select和show的话，你就需要查看全查询日志，另外binlog还包括了执行数据库更改操作时间和执行时间等信息。</p>
+<p>二进制的<strong>主要作用</strong>有如下2个：<br>1.主从复制，在主服务器中把所有修改数据的操作记录到binlog中，通过网路发送给从服务器，从服务器将binlog中记录的操作重新执行一遍，从而实现主从同步。</p>
+<p>2、恢复 ：某些数据的恢复需要二进制日志，在全库文件恢复后，可以在此基础上通过二进制日志进行基于时间点的恢复。还可以进行通过binlog日志实现对误操作的恢复工作。</p>
+<p><strong>日志格式</strong>：</p>
+<p><strong>Statement</strong>：每一条会修改数据的sql都会记录在binlog中。</p>
+<p><strong>Row</strong>:不记录sql语句上下文相关信息，仅保存哪条记录被修改。<br>如：更新语句更新10行记录时，所有10行更新信息都会被写入日志，</p>
+<p>基于<strong>Statement</strong>，只有更新语句的SQL写入日志。默认格式ROW</p>
+<p><strong>Mixedlevel</strong>: 是以上两种level的混合使用，一般的语句修改使用statment格式保存binlog，如一些函数，statement无法完成主从复制的操作，则采用row格式保存binlog。</p>
+<p><strong>慢查询日志slow log</strong><br>将运行时间超过该阀值的sql语句的运行信息都记录到slow log日志里面去。该阀值可以通过<strong>long_query_time</strong>来设置，也可以设置到毫秒微秒：<br>对于运行时间等于该阀值的，就不会记录在内了。</p>
+<p><strong>审计日志：</strong></p>
+<p><strong>pid文件</strong><br>.pid文件的作用是防止进程启动多个副本，只有获得特定pid文件（固定路径和文件名）的写入权限（F_WRLCK）的进程才能正常启动并将自身的进程PID写入该文件，其它同一程序的多余进程则自动退出。</p>
+<p><strong>表结构文件</strong></p>
+<p>存放mysql表结构定义文件</p>
+<p>我们的数据其实都是以记录的形式插入到表中的，每个表的信息其实可以分为两种：</p>
+<ol>
+<li>表结构的定义</li>
+<li>表中的数据</li>
+</ol>
+<p>.frm:<code>表结构</code>就是该表的名称是啥，表里边有多少列，每个列的数据类型是啥，有啥约束条件和索引，用的是啥字符集和比较规则吧啦吧啦的各种信息</p>
+<p>假如我们使用了<code>独立表空间</code>去存储某个数据库下的<code>test</code>表的话，那么在该数据库对应的目录下会为<code>test</code>表创建两个文件：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">test.frm</span><br><span class="line">test.ibd</span><br></pre></td></tr></table></figure>
+
+<p>存储引擎文件</p>
+<p>存储引擎相关的文件</p>
+<p>表空间文件：</p>
+<p>存储数据</p>
+<p>我们也可以自己指定使用<code>系统表空间</code>还是<code>独立表空间</code>来存储数据，这个功能由启动参数<code>innodb_file_per_table</code>控制。</p>
+<p>当<code>innodb_file_per_table</code>的值为<code>0</code>时，代表使用系统表空间，表中的数据都会被存储到这个 <strong><em>系统表空间</em></strong>。；当<code>innodb_file_per_table</code>的值为<code>1</code>时，代表使用独立表空间，每一个表建立一个独立表空间，就会生成一个ibd文件，也就是说我们创建了多少个表，就有多少个独立表空间。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>电子签章</title>
     <url>/blog/2020/07/30/DZQZ/</url>
-    <content><![CDATA[<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">交接事项：</span><br><span class="line">1. 协助对方准备账号</span><br><span class="line">2. 如何登录海尔环境 - d.haier.net</span><br><span class="line">3. 私有化容器平台的介绍</span><br><span class="line">4. 平时会做什么事情</span><br><span class="line">  a. 升级服务 - 基于镜像</span><br><span class="line">    delta-convert-html2pdf</span><br><span class="line">    haier-contract</span><br><span class="line">    hybrid-cloud</span><br><span class="line">    syncspeed-test-tool</span><br><span class="line">  b. 更新配置并重启服务</span><br><span class="line">  c. 日志提取协助</span><br><span class="line">5. 相关对接人概述</span><br><span class="line">6. vpn账号密码过期密码如何重置 - p.haier.net</span><br></pre></td></tr></table></figure>
+    <content><![CDATA[<h2 id="交接事项"><a href="#交接事项" class="headerlink" title="交接事项"></a>交接事项</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">交接事项：</span><br><span class="line">1. 协助对方准备账号</span><br><span class="line">2. 如何登录海尔环境 - d.haier.net</span><br><span class="line">3. 私有化容器平台的介绍</span><br><span class="line">4. 平时会做什么事情</span><br><span class="line">  a. 升级服务 - 基于镜像</span><br><span class="line">    delta-convert-html2pdf</span><br><span class="line">    haier-contract</span><br><span class="line">    hybrid-cloud</span><br><span class="line">    syncspeed-test-tool</span><br><span class="line">  b. 更新配置并重启服务</span><br><span class="line">  c. 日志提取协助</span><br><span class="line">5. 相关对接人概述</span><br><span class="line">6. vpn账号密码过期密码如何重置 - p.haier.net</span><br></pre></td></tr></table></figure>
 
-<h3 id="升级服务-基于镜像"><a href="#升级服务-基于镜像" class="headerlink" title="升级服务 - 基于镜像"></a>升级服务 - 基于镜像</h3><h4 id="安装docker客户端和服务端"><a href="#安装docker客户端和服务端" class="headerlink" title="安装docker客户端和服务端"></a>安装docker客户端和服务端</h4><table>
+<h2 id="主要工作"><a href="#主要工作" class="headerlink" title="主要工作"></a>主要工作</h2><h3 id="升级服务-基于镜像"><a href="#升级服务-基于镜像" class="headerlink" title="升级服务 - 基于镜像"></a>升级服务 - 基于镜像</h3><h4 id="安装docker客户端和服务端"><a href="#安装docker客户端和服务端" class="headerlink" title="安装docker客户端和服务端"></a><strong>安装docker客户端和服务端</strong></h4><table>
 <thead>
 <tr>
 <th>操作系统</th>
@@ -20,6 +78,22 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yum install docker-ce-19.03.5-3.el7 docker-ce-cli-19.03.5-3.el7</span><br></pre></td></tr></table></figure>
 
 <p><a href="https://mino-yn.github.io/blog/2020/07/29/install-docker/">具体操作</a></p>
+<h4 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a><strong>目录结构</strong></h4><p>服务器 ip：10.133.0.53</p>
+<p>制作服务器镜像的目录放在 /root/haier-upgrade 下 ，其文件夹目录结构如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">haier-upgrade</span><br><span class="line">|-- delta-convert-html2pdf</span><br><span class="line">|   \-- Dockerfile</span><br><span class="line">|-- haier-contract</span><br><span class="line">|   \-- Dockerfile</span><br><span class="line">|-- hybrid-cloud</span><br><span class="line">|   |-- Dockerfile</span><br><span class="line">\-- syncspeed-test-tool</span><br><span class="line">    \-- Dockerfile</span><br></pre></td></tr></table></figure>
+
+<p><code>Dockfile</code>文件</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># /root/haier-upgrade/delta-convert-html2pdf/Dockerfile</span></span><br><span class="line"><span class="string">FROM</span> <span class="string">registry.haier.net/dzqz_gitlab/centos:7.4.1708</span></span><br><span class="line"><span class="string">ADD</span> <span class="string">wkhtmltox-0.12.5-1.centos7.x86_64.rpm</span> <span class="string">/tmp/</span></span><br><span class="line"><span class="string">RUN</span> <span class="string">yum</span> <span class="string">install</span> <span class="bullet">-y</span> <span class="string">xorg-x11-fonts-75dpi</span> <span class="string">xorg-x11-fonts-Type1</span> <span class="string">icu</span> <span class="string">libjpeg</span> <span class="string">libXrender</span> <span class="string">libXext</span></span><br><span class="line"><span class="string">RUN</span> <span class="string">yum</span> <span class="string">install</span> <span class="bullet">-y</span> <span class="string">/tmp/wkhtmltox-0.12.5-1.centos7.x86_64.rpm</span></span><br><span class="line"><span class="string">RUN</span> <span class="string">mkdir</span> <span class="bullet">-p</span> <span class="string">/data/delta-convert-html2pdf/logs</span></span><br><span class="line"><span class="string">WORKDIR</span> <span class="string">/data/delta-convert-html2pdf</span></span><br><span class="line"><span class="string">COPY</span> <span class="string">delta-convert-html2pdf.jar</span> <span class="string">/data/delta-convert-html2pdf/</span></span><br><span class="line"><span class="string">ENTRYPOINT</span> <span class="string">[</span> <span class="string">"sh"</span><span class="string">,</span> <span class="string">"-c"</span><span class="string">,</span> <span class="string">"java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -jar delta-convert-html2pdf.jar --spring.config.location=application.properties"</span> <span class="string">]</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#/root/haier-upgrade/haier-contract/Dockerfile</span></span><br><span class="line"><span class="string">FROM</span> <span class="string">registry.haier.net/dzqz_gitlab/centos:7.4.1708</span></span><br><span class="line"><span class="string">RUN</span> <span class="string">mkdir</span> <span class="bullet">-p</span> <span class="string">/data/haier-contract/logs</span></span><br><span class="line"><span class="string">WORKDIR</span> <span class="string">/data/haier-contract</span></span><br><span class="line"><span class="string">COPY</span> <span class="string">haier-contract.jar</span> <span class="string">/data/haier-contract/</span></span><br><span class="line"><span class="string">ENTRYPOINT</span> <span class="string">[</span> <span class="string">"sh"</span><span class="string">,</span> <span class="string">"-c"</span><span class="string">,</span> <span class="string">"java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -jar haier-contract.jar --spring.config.location=application.yaml"</span> <span class="string">]</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#/root/haier-upgrade/hybrid-cloud/Dockerfile</span></span><br><span class="line"><span class="string">FROM</span> <span class="string">registry.haier.net/dzqz_gitlab/centos:7.4.1708</span></span><br><span class="line"><span class="string">RUN</span> <span class="string">mkdir</span> <span class="bullet">-p</span> <span class="string">/data/hybrid-cloud/logs</span></span><br><span class="line"><span class="string">WORKDIR</span> <span class="string">/data/hybrid-cloud</span></span><br><span class="line"><span class="string">COPY</span> <span class="string">hybrid-cloud.jar</span> <span class="string">/data/hybrid-cloud/</span></span><br><span class="line"><span class="string">ENTRYPOINT</span> <span class="string">[</span> <span class="string">"sh"</span><span class="string">,</span> <span class="string">"-c"</span><span class="string">,</span> <span class="string">"java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dsun.misc.URLClassPath.disableJarChecking=true -Dfile.encoding=UTF-8 -jar hybrid-cloud.jar --spring.config.location=application.properties"</span> <span class="string">]</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#/root/haier-upgrade/syncspeed-test-tool/Dockerfile</span></span><br><span class="line"><span class="string">FROM</span> <span class="string">registry.haier.net/dzqz_gitlab/centos:7.4.1708</span></span><br><span class="line"><span class="string">RUN</span> <span class="string">mkdir</span> <span class="bullet">-p</span> <span class="string">/data/syncspeed-test-tool/logs</span></span><br><span class="line"><span class="string">WORKDIR</span> <span class="string">/data/syncspeed-test-tool</span></span><br><span class="line"><span class="string">COPY</span> <span class="string">syncspeed-test-tool.jar</span> <span class="string">/data/syncspeed-test-tool/</span></span><br><span class="line"><span class="string">ENTRYPOINT</span> <span class="string">[</span> <span class="string">"sh"</span><span class="string">,</span> <span class="string">"-c"</span><span class="string">,</span> <span class="string">"java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -jar syncspeed-test-tool.jar --spring.config.location=application.properties"</span> <span class="string">]</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="升级服务"><a href="#升级服务" class="headerlink" title="升级服务"></a>升级服务</h4><p><strong>1、登录镜像仓库</strong></p>
+<p>登录 <code>haier</code> 镜像仓库，相关信息可以从compass平台那边获取</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker login registry.haier.net -u XXXX -p xxxxxx</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/DZQZ0.png" alt></p>
+<p><strong>2、更改jar包名称</strong></p>
+<p>把要换的jar包放在对应目录下：<code>delta-convert-html2pdf</code>，<code>haier-contract</code>，<code>hybrid-cloud</code><br>设置文件名为：<code>delta-convert-html2pdf.jar</code>, <code>haier-contract.jar</code>, <code>hybrid-cloud.jar</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 ]]></content>
   </entry>
   <entry>
@@ -4848,49 +4922,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Linux入门基础</title>
-    <url>/blog/2019/08/09/introduction-to-Linux/</url>
-    <content><![CDATA[<h2 id="Linux目录介绍"><a href="#Linux目录介绍" class="headerlink" title="Linux目录介绍"></a>Linux目录介绍</h2><p><strong>/etc：</strong>(etcetera) 系统配置文件存放的目录，不建议在此目录下存放可执行文件。</p>
-<p><strong>/usr：</strong>(unix shared resources) 应用程序存放目录，</p>
-<ul>
-<li>/usr/bin ：存放应用程序，</li>
-<li>/usr/share ：存放共享数据，</li>
-<li>/usr/lib： 存放不能直接运行的，却是许多程序运行所必需的一些函数库文件。</li>
-<li>/usr/local:存放软件升级包。</li>
-</ul>
-<p><strong>/root：</strong> 系统管理员root的家目录，系统第一个启动的分区为/，所以最好将/root和/放置在一个分区下。</p>
-<h2 id="Linux指令"><a href="#Linux指令" class="headerlink" title="Linux指令"></a>Linux指令</h2><p><strong>cd命令：</strong></p>
-<p>用于切换当前目录，它的参数是要切换到的目录的路径，可以是绝对路径，也可以是相对路径。</p>
-<ul>
-<li><p>cd /root/Docements         # 切换到目录/root/Docements  </p>
-</li>
-<li><p>cd ./path                             # 切换到当前目录下的path目录中，“.”表示当前目录    </p>
-</li>
-<li><p>cd ../path                            # 切换到上层目录中的path目录中，“..”表示上一层目录</p>
-</li>
-</ul>
-<p><strong>ls命令：</strong></p>
-<p>ls命令是用来查看文件与目录的命令，list之意，它的参数非常多，下面就列出一些常用的参数 。</p>
-<ul>
-<li><p>-l ：一般直接使用ll，列出长数据串，包含文件的属性与权限数据等</p>
-</li>
-<li><p>-a ：列出全部的文件，连同隐藏文件（开头为.的文件）一起列出来（常用）  </p>
-</li>
-<li><p>-d ：仅列出目录本身，而不是列出目录的文件数据  </p>
-</li>
-<li><p>-h ：将文件容量以较易读的方式（GB，kB等）列出来  </p>
-</li>
-<li><p>-R ：连同子目录的内容一起列出（递归列出），等于该目录下的所有文件都会显示出来  </p>
-</li>
-</ul>
-<p><strong>pwd</strong>：查看用户当前目录</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">df -h                #查看磁盘占用比例</span><br><span class="line">ls -lht              #查看目录下所有文件大小总量</span><br><span class="line">du -sh * |sort -nr   #将当前目录下的文件从大到小排序  -n：从小到大排序</span><br><span class="line">tail -f 文件名        #动态查看日志信息</span><br><span class="line">tail -n 20 文件名     #查看最后一部分日志</span><br><span class="line">rm -rf               #删除文件</span><br><span class="line">top                  #动态查看cpu状态</span><br><span class="line"></span><br><span class="line">#服务器创建新用户</span><br><span class="line">$sudo useradd -m -s /bin/bash userName    // 在/home目录下新建userName目录</span><br><span class="line">$sudo passwd userName                     //设置密码</span><br></pre></td></tr></table></figure>
-
-<h3 id="Linux常用指令"><a href="#Linux常用指令" class="headerlink" title="Linux常用指令"></a>Linux常用指令</h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 8核 * 32G * 600GB</span></span><br><span class="line"><span class="comment"># 查看系统CPU</span></span><br><span class="line"><span class="string">cat</span> <span class="string">/proc/cpuinfo</span> <span class="string">| grep "cores"|uniq</span></span><br><span class="line"><span class="string"># 显示系统内存</span></span><br><span class="line"><span class="string">free -g</span></span><br><span class="line"><span class="string"># 显示系统硬盘</span></span><br><span class="line"><span class="string">fdisk -l | grep Disk</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看所有安装的软件包</span></span><br><span class="line"><span class="string">rpm -qa |grep xtrabackup  </span></span><br><span class="line"><span class="string"># 删除安装包</span></span><br><span class="line"><span class="string">rpm -e 文件名</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 授权+执行</span></span><br><span class="line"><span class="string">chmod +x getip</span></span><br><span class="line"><span class="string">./getip</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下的文件数量</span></span><br><span class="line"><span class="string">ls -l |grep  "^-" | wc -l   </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下各文件、文件夹的大小</span></span><br><span class="line"><span class="string">du -h –max-depth=1 *</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#删除软链</span></span><br><span class="line"><span class="string">rm -rf  ./test_chk_ln</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 后台执行任务</span></span><br><span class="line"><span class="string">nohup 执行的任务指令 &amp;</span></span><br></pre></td></tr></table></figure>
-
-]]></content>
-  </entry>
-  <entry>
     <title>Docker · 安装</title>
     <url>/blog/2019/08/09/install-docker/</url>
     <content><![CDATA[<h2 id="Docker安装说明"><a href="#Docker安装说明" class="headerlink" title="Docker安装说明"></a>Docker安装说明</h2><p>Docker 是一个开源的商业产品，有两个版本：社区版（Community Edition，缩写为 CE）和企业版（Enterprise Edition，缩写为 EE）。企业版包含了一些收费服务，个人开发者一般用不到。</p>
@@ -4932,7 +4963,54 @@
 <h2 id="常见错误"><a href="#常见错误" class="headerlink" title="常见错误"></a>常见错误</h2><h3 id="Errno-14"><a href="#Errno-14" class="headerlink" title="[Errno 14]"></a>[Errno 14]</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@hwork_nginx01 ~]#  sudo yum-config-manager \</span><br><span class="line">&gt; --add-repo \</span><br><span class="line">&gt; https://download.docker.com/linux/centos/docker-ce.repo</span><br><span class="line">Loaded plugins: fastestmirror</span><br><span class="line">adding repo from: https://download.docker.com/linux/centos/docker-ce.repo</span><br><span class="line">grabbing file https://download.docker.com/linux/centos/docker-ce.repo to /etc/yum.repos.d/docker-ce.repo</span><br><span class="line">Could not fetch/save url https://download.docker.com/linux/centos/docker-ce.repo to file /etc/yum.repos.d/docker-ce.repo: [Errno 14] curl#6 - &quot;Could not resolve host: download.docker.com; Unknown error&quot;</span><br></pre></td></tr></table></figure>
 
 <p><strong>解决方法</strong></p>
-<p>这是由于国内访问不到docker官方镜像的缘故<br>可以通过aliyun的源来完成：</p>
+<p>这是由于国内访问不到docker官方镜像的缘故 ，可以通过 <code>aliyun</code> 的源来完成：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 出现以下内容则表示docker仓库配置成功：</span></span><br><span class="line"><span class="string">Loaded</span> <span class="attr">plugins:</span> <span class="string">fastestmirror</span></span><br><span class="line"><span class="string">adding</span> <span class="string">repo</span> <span class="attr">from:</span> <span class="attr">http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span></span><br><span class="line"><span class="string">grabbing</span> <span class="string">file</span> <span class="attr">http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span> <span class="string">to</span> <span class="string">/etc/yum.repos.d/docker-ce.repo</span></span><br><span class="line"><span class="string">repo</span> <span class="string">saved</span> <span class="string">to</span> <span class="string">/etc/yum.repos.d/docker-ce.repo</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+  </entry>
+  <entry>
+    <title>Linux入门基础</title>
+    <url>/blog/2019/08/09/introduction-to-Linux/</url>
+    <content><![CDATA[<h2 id="Linux目录介绍"><a href="#Linux目录介绍" class="headerlink" title="Linux目录介绍"></a>Linux目录介绍</h2><p><strong>/etc：</strong>(etcetera) 系统配置文件存放的目录，不建议在此目录下存放可执行文件。</p>
+<p><strong>/usr：</strong>(unix shared resources) 应用程序存放目录，</p>
+<ul>
+<li>/usr/bin ：存放应用程序，</li>
+<li>/usr/share ：存放共享数据，</li>
+<li>/usr/lib： 存放不能直接运行的，却是许多程序运行所必需的一些函数库文件。</li>
+<li>/usr/local:存放软件升级包。</li>
+</ul>
+<p><strong>/root：</strong> 系统管理员root的家目录，系统第一个启动的分区为/，所以最好将/root和/放置在一个分区下。</p>
+<h2 id="Linux指令"><a href="#Linux指令" class="headerlink" title="Linux指令"></a>Linux指令</h2><p><strong>cd命令：</strong></p>
+<p>用于切换当前目录，它的参数是要切换到的目录的路径，可以是绝对路径，也可以是相对路径。</p>
+<ul>
+<li><p>cd /root/Docements         # 切换到目录/root/Docements  </p>
+</li>
+<li><p>cd ./path                             # 切换到当前目录下的path目录中，“.”表示当前目录    </p>
+</li>
+<li><p>cd ../path                            # 切换到上层目录中的path目录中，“..”表示上一层目录</p>
+</li>
+</ul>
+<p><strong>ls命令：</strong></p>
+<p>ls命令是用来查看文件与目录的命令，list之意，它的参数非常多，下面就列出一些常用的参数 。</p>
+<ul>
+<li><p>-l ：一般直接使用ll，列出长数据串，包含文件的属性与权限数据等</p>
+</li>
+<li><p>-a ：列出全部的文件，连同隐藏文件（开头为.的文件）一起列出来（常用）  </p>
+</li>
+<li><p>-d ：仅列出目录本身，而不是列出目录的文件数据  </p>
+</li>
+<li><p>-h ：将文件容量以较易读的方式（GB，kB等）列出来  </p>
+</li>
+<li><p>-R ：连同子目录的内容一起列出（递归列出），等于该目录下的所有文件都会显示出来  </p>
+</li>
+</ul>
+<p><strong>pwd</strong>：查看用户当前目录</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">df -h                #查看磁盘占用比例</span><br><span class="line">ls -lht              #查看目录下所有文件大小总量</span><br><span class="line">du -sh * |sort -nr   #将当前目录下的文件从大到小排序  -n：从小到大排序</span><br><span class="line">tail -f 文件名        #动态查看日志信息</span><br><span class="line">tail -n 20 文件名     #查看最后一部分日志</span><br><span class="line">rm -rf               #删除文件</span><br><span class="line">top                  #动态查看cpu状态</span><br><span class="line"></span><br><span class="line">#服务器创建新用户</span><br><span class="line">$sudo useradd -m -s /bin/bash userName    // 在/home目录下新建userName目录</span><br><span class="line">$sudo passwd userName                     //设置密码</span><br></pre></td></tr></table></figure>
+
+<h3 id="Linux常用指令"><a href="#Linux常用指令" class="headerlink" title="Linux常用指令"></a>Linux常用指令</h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 8核 * 32G * 600GB</span></span><br><span class="line"><span class="comment"># 查看系统CPU</span></span><br><span class="line"><span class="string">cat</span> <span class="string">/proc/cpuinfo</span> <span class="string">| grep "cores"|uniq</span></span><br><span class="line"><span class="string"># 显示系统内存</span></span><br><span class="line"><span class="string">free -g</span></span><br><span class="line"><span class="string"># 显示系统硬盘</span></span><br><span class="line"><span class="string">fdisk -l | grep Disk</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看所有安装的软件包</span></span><br><span class="line"><span class="string">rpm -qa |grep xtrabackup  </span></span><br><span class="line"><span class="string"># 删除安装包</span></span><br><span class="line"><span class="string">rpm -e 文件名</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 授权+执行</span></span><br><span class="line"><span class="string">chmod +x getip</span></span><br><span class="line"><span class="string">./getip</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下的文件数量</span></span><br><span class="line"><span class="string">ls -l |grep  "^-" | wc -l   </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下各文件、文件夹的大小</span></span><br><span class="line"><span class="string">du -h –max-depth=1 *</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#删除软链</span></span><br><span class="line"><span class="string">rm -rf  ./test_chk_ln</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 后台执行任务</span></span><br><span class="line"><span class="string">nohup 执行的任务指令 &amp;</span></span><br></pre></td></tr></table></figure>
+
 ]]></content>
   </entry>
   <entry>
