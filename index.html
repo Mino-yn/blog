@@ -378,7 +378,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 创建归档表与原表表结构一致</span><br><span class="line">create table itf_apply_out_sys_order_archive like itf_apply_out_sys_order;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>开始归档</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup pt-archiver --source h=10.138.98.179,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=mvm,t=itf_apply_out_sys_order --charset=utf8 --dest h=10.138.98.179,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=mvm,t=itf_apply_out_sys_order_archive --where &quot;add_time &lt; &apos;2020-XX-XX&apos;&quot;   --limit 1000 --commit-each --bulk-insert --no-version-check &gt; myout.file 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup pt-archiver --source h=10.138.98.179,P=3306,u=sre,p=&apos;XX&apos;,D=mvm,t=itf_apply_out_sys_order --charset=utf8 --dest h=10.138.98.179,P=3306,u=sre,p=&apos;XX&apos;,D=mvm,t=itf_apply_out_sys_order_archive --where &quot;add_time &lt; &apos;2020-XX-XX&apos;&quot;   --limit 1000 --commit-each --bulk-insert --no-version-check &gt; myout.file 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
 
 
 </li>

@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Mino&#39;s blog">
 <meta property="og:description" content="需求   数据库IP 端口 库名 表名 数据量    10.138.98.179 3306 mvm itf_apply_out_sys_order 62128039   根据 add_time 字段保留近一个月数据 实践 安装Percona Toolkit  创建归档表 12# 创建归档表与原表表结构一致create table itf_apply_out_sys_order_archive li">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-09-28T08:39:36.607Z">
+<meta property="og:updated_time" content="2020-09-28T08:42:37.489Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="COSMOCYGL数据归档">
 <meta name="twitter:description" content="需求   数据库IP 端口 库名 表名 数据量    10.138.98.179 3306 mvm itf_apply_out_sys_order 62128039   根据 add_time 字段保留近一个月数据 实践 安装Percona Toolkit  创建归档表 12# 创建归档表与原表表结构一致create table itf_apply_out_sys_order_archive li">
@@ -378,7 +378,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 创建归档表与原表表结构一致</span><br><span class="line">create table itf_apply_out_sys_order_archive like itf_apply_out_sys_order;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>开始归档</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup pt-archiver --source h=10.138.98.179,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=mvm,t=itf_apply_out_sys_order --charset=utf8 --dest h=10.138.98.179,P=3306,u=sre,p=&apos;sre@@p$i&apos;,D=mvm,t=itf_apply_out_sys_order_archive --where &quot;add_time &lt; &apos;2020-XX-XX&apos;&quot;   --limit 1000 --commit-each --bulk-insert --no-version-check &gt; myout.file 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup pt-archiver --source h=10.138.98.179,P=3306,u=sre,p=&apos;XX&apos;,D=mvm,t=itf_apply_out_sys_order --charset=utf8 --dest h=10.138.98.179,P=3306,u=sre,p=&apos;XX&apos;,D=mvm,t=itf_apply_out_sys_order_archive --where &quot;add_time &lt; &apos;2020-XX-XX&apos;&quot;   --limit 1000 --commit-each --bulk-insert --no-version-check &gt; myout.file 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
 
 
 </li>
