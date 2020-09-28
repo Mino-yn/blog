@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Mino&#39;s blog">
 <meta property="og:description" content="简介CentOS 升级到7后，内置防火墙从 iptables 变为 firewalled 不同操作系统设置的方式不同。  查看系统版本  123lsb_release -a             #可列出所有版本信息cat /etc/redhat-release    #只适合Redhat系的Linuxcat /etc/issue             #适用于所有的Linux发行版  Cen">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-15T05:59:27.853Z">
+<meta property="og:updated_time" content="2020-09-09T02:55:10.939Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CentOS 6与 CentOS 7防火墙设置与端口打开">
 <meta name="twitter:description" content="简介CentOS 升级到7后，内置防火墙从 iptables 变为 firewalled 不同操作系统设置的方式不同。  查看系统版本  123lsb_release -a             #可列出所有版本信息cat /etc/redhat-release    #只适合Redhat系的Linuxcat /etc/issue             #适用于所有的Linux发行版  Cen">
@@ -369,6 +369,11 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/sbin/iptables -I INPUT -p tcp --dport 22 -j ACCEPT   # 打开22端口</span><br><span class="line">/sbin/iptables -I INPUT -p tcp --dport 3306 -j ACCEPT # 打开3306端口</span><br><span class="line">/etc/rc.d/init.d/iptables save   # 保存防火墙</span><br><span class="line">/etc/init.d/iptables restart     # 重启防火墙</span><br></pre></td></tr></table></figure>
 
 <ul>
+<li>配置防火墙允许指定 <code>ip</code> 访问端口</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#关闭所有的80端口</span><br><span class="line">iptables -I INPUT -p tcp --dport 80 -j DROP </span><br><span class="line">#开启ip段192.168.1.0/24端的80口</span><br><span class="line">iptables -I INPUT -s 192.168.1.0/24 -p tcp --dport 80 -j ACCEPT</span><br></pre></td></tr></table></figure>
+
+<ul>
 <li>查看打开的端口</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/iptables status</span><br></pre></td></tr></table></figure>
@@ -376,12 +381,12 @@
 <h3 id="CentOS-7"><a href="#CentOS-7" class="headerlink" title="CentOS 7"></a>CentOS 7</h3><ul>
 <li>打开/关闭/重启防火墙</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start firewalld  # 启用防火墙systemctl stop firewalld   # 停止防火墙systemctl status firewalld # 查看状态</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemctl start firewalld  # 启用防火墙</span><br><span class="line">systemctl stop firewalld   # 停止防火墙</span><br><span class="line">systemctl status firewalld # 查看状态</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>打开端口</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=80/tcp # 永久生效再加上--permanentfirewall-cmd --reload                        # 更新防火墙规则</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=80/tcp # 永久生效再加上--permanent</span><br><span class="line">firewall-cmd --reload                        # 更新防火墙规则</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>查看打开的端口</li>
@@ -505,7 +510,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-count">104</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

@@ -281,6 +281,148 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/10/25/B-tree-index-use/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/10/25/B-tree-index-use/" itemprop="url">B+树索引的使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-25T17:09:47+08:00">
+                2019-10-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <ul>
+<li><code>B+</code>树索引在空间和时间上都有代价，所以不能随便乱建索引。</li>
+<li><code>B+</code>树索引适用于下边这些情况：<ul>
+<li>全值匹配</li>
+<li>匹配左边的列</li>
+<li>匹配范围值</li>
+<li>精确匹配某一列并范围匹配另外一列</li>
+<li>用于排序</li>
+<li>用于分组</li>
+</ul>
+</li>
+<li>在使用索引时需要注意下边这些事项：<ul>
+<li>只为用于搜索、排序或分组的列创建索引</li>
+<li>为列的基数大的列创建索引</li>
+<li>索引列的类型尽量小</li>
+<li>可以只对字符串值的前缀建立索引</li>
+<li>只有索引列在比较表达式中单独出现才可以适用索引</li>
+<li>为了尽可能少的让<code>聚簇索引</code>发生页面分裂和记录移位的情况，建议让主键拥有<code>AUTO_INCREMENT</code>属性。</li>
+<li>定位并删除表中的重复和冗余索引</li>
+<li>尽量使用<code>覆盖索引</code>进行查询，避免<code>回表</code>带来的性能损耗。</li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/10/24/index-type/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1897,198 +2039,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/26/MySQL-common-errors/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/09/26/MySQL-common-errors/" itemprop="url">MySQL常见问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-26T09:25:40+08:00">
-                2019-09-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="插入数据库报错"><a href="#插入数据库报错" class="headerlink" title="插入数据库报错"></a>插入数据库报错</h2><h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p>执行包含中文的插入语句报错</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#向employees的test表中插入数据</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">insert</span> <span class="string">into</span> <span class="string">test(name,age,address)</span> <span class="string">values('xujinliang',32,'山东省青岛市');</span></span><br><span class="line"><span class="comment">#报错信息</span></span><br><span class="line"><span class="string">ERROR</span> <span class="number">1366</span> <span class="string">(HY000):</span> <span class="string">Incorrect</span> <span class="string">string</span> <span class="attr">value:</span> <span class="string">'\xE5\xB1\xB1\xE4\xB8\x9C...'</span> <span class="string">for</span> <span class="string">column</span> <span class="string">'address'</span> <span class="string">at</span> <span class="string">row</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><p>查看<code>test</code>表的字符集</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">mysql&gt;</span> <span class="string">show</span> <span class="string">create</span> <span class="string">table</span> <span class="string">test;</span></span><br><span class="line"><span class="string">| Table | Create Table                                                                   </span></span><br><span class="line"><span class="string">| test  | CREATE TABLE `test` (</span></span><br><span class="line"><span class="string">  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,</span></span><br><span class="line"><span class="string">  `name` char(20) CHARACTER SET latin1 NOT NULL,</span></span><br><span class="line"><span class="string">  `age` tinyint(3) unsigned NOT NULL DEFAULT '0',</span></span><br><span class="line"><span class="string">  `gmt_create` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,</span></span><br><span class="line"><span class="string">  `gmt_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,</span></span><br><span class="line"><span class="string">  `address` varchar(50) CHARACTER SET latin1 DEFAULT NULL,</span></span><br><span class="line"><span class="string">  PRIMARY KEY (`id`)</span></span><br><span class="line"><span class="string">) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 |</span></span><br></pre></td></tr></table></figure>
-
-<p><code>address</code>字段的默认字符集为<code>latin1</code></p>
-<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>将 <code>address</code>字段的字符集修改为<code>utf8</code></p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">ALTER</span> <span class="string">TABLE</span> <span class="string">test</span> <span class="string">CHANGE</span> <span class="string">address</span> <span class="string">address</span> <span class="string">VARCHAR(50)</span> <span class="string">CHARACTER</span> <span class="string">SET</span> <span class="string">utf8</span> <span class="string">COLLATE</span> <span class="string">utf8_general_ci;</span></span><br></pre></td></tr></table></figure>
-
-<p>重新执行插入语句</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">mysql&gt;</span> <span class="string">insert</span> <span class="string">into</span> <span class="string">test(name,age,address)</span> <span class="string">values('xujinliang',32,'山东省青岛市');</span></span><br><span class="line"><span class="string">Query</span> <span class="string">OK,</span> <span class="number">1</span> <span class="string">row</span> <span class="string">affected</span> <span class="string">(0.00</span> <span class="string">sec)</span></span><br></pre></td></tr></table></figure>
-
-<p>插入成功。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><code>MySQL</code>插入中文字符到数据库报错：ERROR 1366 (HY000): Incorrect string value: ‘\xE5\xB1\xB1\xE4\xB8\x9C…’ for column </p>
-<h4 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h4><p><strong>创建数据库和数据表时设置数据库的默认编码`utf8</strong>`</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#创建数据库</span></span><br><span class="line"><span class="string">CREATE</span> <span class="string">DATABASE</span> <span class="string">test</span> <span class="string">DEFAULT</span> <span class="string">CHARACTER</span> <span class="string">SET</span> <span class="string">utf8</span> <span class="string">COLLATE</span> <span class="string">utf8_general_ci;</span></span><br><span class="line"><span class="comment">#创建数据表</span></span><br><span class="line"><span class="string">CREATE</span> <span class="string">TABLE</span> <span class="string">`test`</span> <span class="string">(</span></span><br><span class="line">	<span class="string">`id`</span> <span class="string">BIGINT(20)</span> <span class="string">UNSIGNED</span> <span class="string">NOT</span> <span class="literal">NULL</span> <span class="string">AUTO_INCREMENT,</span></span><br><span class="line">	<span class="string">`name`</span> <span class="string">CHAR(20)</span> <span class="string">NOT</span> <span class="literal">NULL</span><span class="string">,</span></span><br><span class="line">	<span class="string">`age`</span> <span class="string">TINYINT(3)</span> <span class="string">UNSIGNED</span> <span class="string">NOT</span> <span class="literal">NULL</span> <span class="string">DEFAULT</span> <span class="string">'0'</span><span class="string">,</span></span><br><span class="line">	<span class="string">`gmt_create`</span> <span class="string">DATETIME</span> <span class="string">NOT</span> <span class="literal">NULL</span> <span class="string">DEFAULT</span> <span class="string">CURRENT_TIMESTAMP,</span></span><br><span class="line">	<span class="string">`gmt_modified`</span> <span class="string">DATETIME</span> <span class="string">NOT</span> <span class="literal">NULL</span> <span class="string">DEFAULT</span> <span class="string">CURRENT_TIMESTAMP</span> <span class="string">ON</span> <span class="string">UPDATE</span> <span class="string">CURRENT_TIMESTAMP,</span></span><br><span class="line">	<span class="string">`address`</span> <span class="string">VARCHAR(50)</span> <span class="literal">NULL</span> <span class="string">DEFAULT</span> <span class="literal">NULL</span><span class="string">,</span></span><br><span class="line">	<span class="string">PRIMARY</span> <span class="string">KEY</span> <span class="string">(`id`)</span></span><br><span class="line"><span class="string">)</span></span><br><span class="line"><span class="string">ENGINE=InnoDB</span></span><br><span class="line"><span class="string">DEFAULT</span> <span class="string">CHARSET=latin1</span></span><br><span class="line"><span class="string">AUTO_INCREMENT=4;</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h4><h5 id="查看修改字符集语句"><a href="#查看修改字符集语句" class="headerlink" title="查看修改字符集语句"></a>查看修改字符集语句</h5><p><strong>查看字符集：</strong></p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看mysql的字符集</span></span><br><span class="line"><span class="string">show</span> <span class="string">variables</span> <span class="string">where</span> <span class="string">Variable_name</span> <span class="string">like</span> <span class="string">'%char%'</span><span class="string">;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#查看某一个数据库字符集(enterprises为数据库)</span></span><br><span class="line"><span class="string">show</span> <span class="string">create</span> <span class="string">database</span> <span class="string">enterprises;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#查看某一个数据表字符集：(employees为数据表)</span></span><br><span class="line"><span class="string">show</span> <span class="string">create</span> <span class="string">table</span> <span class="string">employees;</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>修改字符集：</strong></p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#修改mysql的字符集</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">set</span> <span class="string">character_set_client=utf8;</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">set</span> <span class="string">character_set_connection=utf8;</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">set</span> <span class="string">character_set_database=utf8;</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">set</span> <span class="string">character_set_results=utf8;</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">set</span> <span class="string">character_set_server=utf8;</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">set</span> <span class="string">character_set_system=utf8;</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">set</span> <span class="string">collation_connection=utf8;</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">set</span> <span class="string">collation_database=utf8;</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">set</span> <span class="string">collation_server=utf8;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#修改数据库enterprises的字符集：</span></span><br><span class="line"><span class="string">alter</span> <span class="string">database</span> <span class="string">enterprises</span> <span class="string">character</span> <span class="string">set</span> <span class="string">utf8;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#修改数据表employees的字符集：</span></span><br><span class="line"><span class="string">alter</span> <span class="string">table</span> <span class="string">employees</span> <span class="string">character</span> <span class="string">set</span> <span class="string">utf8;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#修改字段的字符集</span></span><br><span class="line"><span class="string">alter</span> <span class="string">table</span> <span class="string">test</span> <span class="string">change</span> <span class="string">address</span> <span class="string">address</span> <span class="string">varchar(50)</span> <span class="string">character</span> <span class="string">set</span> <span class="string">utf8</span> <span class="string">collate</span> <span class="string">utf8_general_ci;</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="MySQL中的字符集转换过程"><a href="#MySQL中的字符集转换过程" class="headerlink" title="MySQL中的字符集转换过程"></a>MySQL中的字符集转换过程</h5><p><code>MSQL Server</code>收到请求时将请求数据从<code>character_set_client</code>转换为<code>character_set_connection</code>；</p>
-<p>进行内部操作前将请求数据从<code>character_set_connection</code>转换为内部操作字符集，其确定方法如下：</p>
-<ul>
-<li><p>使用每个<strong>数据字段</strong>的<code>CHARACTER SET</code>设定值；</p>
-</li>
-<li><p>若上述值不存在，则使用对应<strong>数据表</strong>的<code>DEFAULT CHARACTER SET</code>设定值(MySQL扩展，非SQL标准)；</p>
-</li>
-<li><p>若上述值不存在，则使用对应<strong>数据库</strong>的<code>DEFAULT CHARACTER SET</code>设定值；</p>
-</li>
-<li><p>若上述值不存在，则使用<code>character_set_server</code>设定值。</p>
-</li>
-</ul>
-<h2 id="找不到mysql-sock文件"><a href="#找不到mysql-sock文件" class="headerlink" title="找不到mysql.sock文件"></a>找不到mysql.sock文件</h2><h3 id="问题现象-1"><a href="#问题现象-1" class="headerlink" title="问题现象"></a>问题现象</h3><p>使用<code>mysql</code>、<code>mysqladmin</code>、<code>mysqldump</code>等命令管理数据库时，报错：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR 2002 (HY000): Can&apos;t connect to local MySQL server through socket &apos;/data/mysql-tdds/mysql.sock&apos; (2)</span><br></pre></td></tr></table></figure>
-
-<h3 id="原因分析-1"><a href="#原因分析-1" class="headerlink" title="原因分析"></a>原因分析</h3><p>下面通过三种方式连接数据库，观察提示的错误信息</p>
-<p>1、直接使用用户名和密码，不加主机主机名参数。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@mysql-s init.d]# mysql -u root -p123456</span><br><span class="line">mysql: [Warning] Using a password on the command line interface can be insecure.</span><br><span class="line">ERROR 2002 (HY000): Can&apos;t connect to local MySQL server through socket &apos;/data/mysql-tdds/mysql.sock&apos; (2)</span><br></pre></td></tr></table></figure>
-
-<p>2、使用带了主机名 <code>localhost</code>参数的<code>mysql -h localhost</code>命令。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@mysql-s init.d]# mysql -h localhost -u root -p123456</span><br><span class="line">mysql: [Warning] Using a password on the command line interface can be insecure.</span><br><span class="line">ERROR 2002 (HY000): Can&apos;t connect to local MySQL server through socket &apos;/data/mysql-tdds/mysql.sock&apos; (2)</span><br></pre></td></tr></table></figure>
-
-<p>3、使用带了主机名<code>127.0.0.1</code>参数的<code>mysql -h 127.0.0.1</code> 命令。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@mysql-s ~]# mysql -h 127.0.0.1 -u root -p123456</span><br><span class="line">mysql: [Warning] Using a password on the command line interface can be insecure.</span><br><span class="line">ERROR 1045 (28000): Access denied for user &apos;root&apos;@&apos;localhost&apos; (using password: YES)</span><br></pre></td></tr></table></figure>
-
-<p>　可以发现，前两种连接方式都报错： Can’t connect to local MySQL server through socket ‘/data/mysql-tdds/mysql.sock’。而第三种方式连接是不会产生标题中的错误的（这里报错是由于密码错误）。</p>
-<p>​    当使用<code>localhost</code>作为主机名参数连接 <code>mysql</code> 服务端时 ( 未设置 -h 参数，服务器会默认使用 <code>localhost</code> 作为主机名)，<code>mysql</code> 客户端会认为是连接本机，会使用 UNIX socket 方式 （比 TCP/IP 方式使用 IP:端口 的效率更高），尝试以<code>socket</code>文件进行连接。此时根据<code>mysql</code> 的配置文件 <code>my.cnf</code>未找到相应的<code>socket</code>文件就会引发该错误。</p>
-<p>​    当使用 <code>127.0.0.1</code> 作为主机名参数连接 <code>mysql</code> 服务端时，<code>mysql</code> 服务器接收到的来源主机是 <code>127.0.0.1</code>, 此时是通过  TCP/IP  方式使用 IP:端口  进行连接，所以未引发此错误。</p>
-<p><strong>准备工作</strong></p>
-<p>1、查看<code>mysql</code>服务是否在运行</p>
-<p>​    因为<code>socket</code> 文件是由<code>mysql</code>服务运行时创建的，当报错：ERROR 2002 (HY000): Can’t connect to local MySQL server through socket ‘***’ (2)时首先要确认<code>mysql</code> 服务是否正在运行中。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#1、查看端口是否打开</span><br><span class="line">$ lsof -i:3306</span><br><span class="line">COMMAND     PID  USER   FD   TYPE   DEVICE SIZE/OFF NODE NAME</span><br><span class="line">mysqld     2446 mysql   24u  IPv6    22257      0t0  TCP *:mysql (LISTEN)</span><br><span class="line"></span><br><span class="line">#2、mysqld服务是否正在运行</span><br><span class="line">$ service mysqld status</span><br><span class="line"> SUCCESS! MySQL running (2446)</span><br><span class="line"># 查看mysql进程是否存在</span><br><span class="line">$ ps -ef|grep mysqld</span><br></pre></td></tr></table></figure>
-
-<p>2、确定<code>socket</code> 文件的正确位置</p>
-<p>　如果<code>mysql</code>服务正常运行，则产生此错误的原因只剩下<code>socket</code>文件路径不正确了，我们可以查看 <code>mysql</code> 服务进程或使用<code>find</code>命令来确定<code>socket</code>文件的正确路径</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#查看mysql进程中是否显示有mysql的socket文件地址</span><br><span class="line">$ ps -ef|grep mysqld</span><br><span class="line">root      20688      1  0 14:27 ?        00:00:00 /bin/sh /usr/local/mysql/bin/mysqld_safe --datadir=/data/mysql3306/ --pid-file=/data/mysql3306//cosmoim-d-jt01.pid</span><br><span class="line">mysql     21290  20688 22 14:27 ?        00:01:51 /usr/local/mysql/bin/mysqld --basedir=/usr/local/mysql --datadir=/data/mysql3306 --plugin-dir=/usr/local/mysql/lib/plugin --user=mysql --log-error=/data/mysql3306/error.log --pid-file=/data/mysql3306//cosmoim-d-jt01.pid --socket=/data/mysql3306/mysql.sock --port=3306</span><br><span class="line"></span><br><span class="line">#使用find命令查看socket文件地址</span><br><span class="line">$ find / -name &apos;*.sock&apos;</span><br><span class="line">/data/mysql3306/mysql.sock</span><br></pre></td></tr></table></figure>
-
-<h3 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a>解决方法</h3><h4 id="方案一"><a href="#方案一" class="headerlink" title="方案一"></a>方案一</h4><p>　修改<code>MySQL</code>的配置文件，在配置文件中添加 <code>[client]</code> 选项和 <code>[mysqld]</code> 选项，并使这两个选项下的<code>socket</code>参数值所指向的<code>socket</code>文件路径完全一致。如下： </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">port                      = 3306</span><br><span class="line">socket                    = /data/mysql-tdds/mysql.sock</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">port                      = 3306</span><br><span class="line">socket                    = /data/mysql-tdds/mysql.sock</span><br></pre></td></tr></table></figure>
-
-<p>修改完成后重启<code>mysql</code>服务,启动时使用<code>mysqld_safe</code> 启动，并指定参数文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$  /usr/local/mysql-tdds/bin/mysqld_safe --defaults-file=/etc/my-tdds.cnf --user=mysql &amp;</span><br></pre></td></tr></table></figure>
-
-<h4 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h4><p>通过查看<code>mysql</code> 进程或<code>find</code> 命令查找到连接数据库时使用 -S 指定socket文件地址进行连接。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@mysql-s init.d]# find / -name &apos;*.sock&apos;</span><br><span class="line">/tmp/mysql.sock</span><br><span class="line">[root@mysql-s init.d]# mysql -u root -pHaier@123 -S/tmp/mysql.sock</span><br></pre></td></tr></table></figure>
-
-<h4 id="方案三"><a href="#方案三" class="headerlink" title="方案三"></a>方案三</h4><p>建立一个软连接将正确的<code>socket</code>文件，链接到提示错误的<code>socket</code>文件路径位置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@mysql-s mysql-tdds]# ls  /data/mysql-tdds/mysql.sock</span><br><span class="line">ls: 无法访问/data/mysql-tdds/mysql.sock: 没有那个文件或目录</span><br><span class="line">[root@mysql-s mysql-tdds]# ln -s /tmp/mysql.sock /data/mysql-tdds/mysql.sock</span><br><span class="line">[root@mysql-s mysql-tdds]# ls  /data/mysql-tdds/mysql.sock</span><br><span class="line">/data/mysql-tdds/mysql.sock</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2139,7 +2089,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-count">104</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

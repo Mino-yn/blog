@@ -281,6 +281,147 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/02/16/Pom-xml/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2020/02/16/Pom-xml/" itemprop="url">IDEA· jar包导入</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-16T21:31:34+08:00">
+                2020-02-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h2><p>搭建 <code>maven</code> 工程时 <code>pom</code> 文件出现了 “Failed to read artifact descriptor for xxx:jar” 错误，原因是由于本地仓库中没有这个 <code>jar</code> 包，并且也无法从中央仓库中下载下来。查看本地仓库的对应文件夹，只有 <code>lastUpdated</code> 文件存在。</p>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>手动将 <code>jar</code> 包发布到 <code>maven</code> 本地仓库中</p>
+<p>1、下载好对应的 <code>jar</code> 包到本地</p>
+<p>2、查看该 <code>jar</code> 包的坐标</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">	 &lt;groupId&gt;mysql&lt;/groupId&gt;</span><br><span class="line">	 &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;</span><br><span class="line">     &lt;version&gt;8.0.18&lt;/version&gt;</span><br><span class="line">	 &lt;scope&gt;runtime&lt;/scope&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p>3、执行命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn install:install-file -DgroupId=mysql -DartifactId=mysql-connector-java -Dversion=8.0.18 -Dpackaging=jar -Dfile=F:\jar\mysql-connector-java-8.0.18.jar</span><br></pre></td></tr></table></figure>
+
+<p>命令的参数如下：</p>
+<ul>
+<li><code>DgroupId</code> 为 <code>jar</code> 包坐标的 <code>groupId</code> 值</li>
+<li><code>DartifactId</code> 为 <code>jar</code> 包坐标的 <code>artifactId</code> 值</li>
+<li><code>Dversion</code> 为 <code>jar</code> 包坐标的版本号</li>
+<li><code>Dpackaging</code> 为 <code>jar</code> 包的打包方式</li>
+<li><code>Dfile</code> 为 <code>jar</code> 包的本地路径</li>
+</ul>
+<p>执行可以在 <code>IDEA</code> 的 <code>maven project</code> 窗口进行执行</p>
+<p>4、重新导入所有的 <code>maven</code> 项目</p>
+<p>点击 <code>maven project</code> 窗口左上角的刷新按钮，<code>Reimport All Meven Projects</code> 。</p>
+<h2 id="问题二"><a href="#问题二" class="headerlink" title="问题二"></a>问题二</h2><p><code>maven</code> 本地仓库中存在 <code>jar</code> 包，<code>pom.xml</code> 文件未报错，但是 <code>Maven Projects</code>  中的 <code>Dependencies</code> 中有红线报错</p>
+<h3 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a>解决方法</h3><p>将 <code>pom.xml</code> 中这些出错的 <code>jar</code> 包引用先删除，刷新一次后再重新添加上</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2020/02/11/maven/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1538,228 +1679,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/27/CentOS-MySQL-Download/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/12/27/CentOS-MySQL-Download/" itemprop="url">未命名</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-27T17:25:18+08:00">
-                2019-12-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>title: CentOS安装MySQL<br>date: 2019-12-27 17:25:18<br>tags: [MySQL]</p>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>Linux</code> 上安装软件常用方式：</p>
-<ul>
-<li>源码编译</li>
-<li>压缩包解压（一般为 <code>tar.gz</code>）</li>
-<li>编译好的安装包（RPM、DPKG等）</li>
-<li>在线安装（YUM、APT等）</li>
-</ul>
-<p>便捷性：</p>
-<p>YUM &gt; RPM &gt; tar.gz &gt; 源码</p>
-<p>通用性:</p>
-<p>源码 &gt; tar.gz &gt; RPM &gt; YUM</p>
-<p>如：使用压缩包解压的方式安装，虽然需要自己额外进行一些配置工作，但掌握方法后各个平台都基本适用，YUM方式虽然简单，但平台和网络受限，必要时需添加一些特定的YUM源。</p>
-<h2 id="删除已安装的MySQL"><a href="#删除已安装的MySQL" class="headerlink" title="删除已安装的MySQL"></a>删除已安装的MySQL</h2><p><code>yum</code> 方式可以不删mariad除 <code>mariadb</code> ，安装的 <code>MySQL</code> 会覆盖掉之前存在的 <code>mariadb</code></p>
-<ul>
-<li>检查 <code>MariaDB</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -qa|grep mariadb</span><br><span class="line">mariadb-server-5.5.60-1.el7_5.x86_64</span><br><span class="line">mariadb-5.5.60-1.el7_5.x86_64</span><br><span class="line">mariadb-libs-5.5.60-1.el7_5.x86_64</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>删除 <code>MariDB</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -e --nodeps mariadb-server</span><br><span class="line">shell&gt; rpm -e --nodeps mariadb</span><br><span class="line">shell&gt; rpm -e --nodeps mariadb-libs</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>检查 <code>MySQL</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -qa|grep mysql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>删除 <code>MySQL</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -e --nodeps xxx</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>清除余项</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; whereis mysql</span><br><span class="line">mysql: /usr/lib64/mysql /usr/share/mysql</span><br><span class="line">#删除上面的文件夹</span><br><span class="line">rm -rf /usr/lib64/mysql</span><br><span class="line">rm -rf /usr/share/mysql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>删除配置</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm –rf /usr/my.cnf</span><br><span class="line">rm -rf /root/.mysql_sercret</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>剩余配置检查</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chkconfig --list | grep -i mysql</span><br><span class="line">chkconfig --del mysqld</span><br><span class="line">#根据以上列表删除，如：mysqld</span><br></pre></td></tr></table></figure>
-
-<h2 id="YUM方式"><a href="#YUM方式" class="headerlink" title="YUM方式"></a>YUM方式</h2><h3 id="添加-MySQL-YUM-Repository"><a href="#添加-MySQL-YUM-Repository" class="headerlink" title="添加 MySQL YUM Repository"></a>添加 MySQL YUM Repository</h3><p><code>CentOS 7</code> 开始，<code>Mariadb</code> 成为 <code>YUM</code> 源种默认的数据库安装包，如果想安装官方 <code>MySQL</code> 版本需适用 <code>MySQL</code> 提供的 <code>YUM</code> 源。</p>
-<ul>
-<li>下载 <code>MySQL</code> 源</li>
-</ul>
-<p>官网地址：<a href="https://dev.mysql.com/downloads/repo/yum/" target="_blank" rel="noopener">https://dev.mysql.com/downloads/repo/yum/</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#查看系统版本</span><br><span class="line">shell&gt; cat /etc/redhat-release</span><br><span class="line">CentOS Linux release 7.7.1908 (Core)</span><br><span class="line"></span><br><span class="line">#选择对应版本进行下载,这里为CentOS 7 </span><br><span class="line">shell&gt; wget https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>安装 <code>MySQL</code> 源</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># CentOS7当前最新的MySQL源安装</span><br><span class="line">sudo rpm -Uvh mysql80-community-release-el7-3.noarch.rpm</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>检查是否安装成功</li>
-</ul>
-<p>1、执行成功后会在 <code>/etc/yum.repos.d/</code> 目录下生成两个 <code>repo</code>  文件：<code>mysql-community.repo</code> 、<code>mysql-community-source.repo</code>。</p>
-<p>2、通过 <code>yum repolist</code> 可以看到 <code>mysql</code> 相关资源</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; yum repolist enabled | grep &quot;mysql.*-community.*&quot;</span><br><span class="line">mysql-connectors-community/x86_64 MySQL Connectors Community                 131</span><br><span class="line">mysql-tools-community/x86_64      MySQL Tools Community                      100</span><br><span class="line">mysql80-community/x86_64          MySQL 8.0 Community Server                 145</span><br></pre></td></tr></table></figure>
-
-<h3 id="选择-MySQL版本"><a href="#选择-MySQL版本" class="headerlink" title="选择 MySQL版本"></a>选择 MySQL版本</h3><p>使用 <code>MySQL Yum Repository</code> 安装 <code>MySQL</code> 默认选择当前最新的稳定版本，如果希望安装其他版本需切换一下版本。</p>
-<ul>
-<li>查看当前 <code>MySQL Yum Repository</code> 中所有的 <code>MySQL</code> 版本(每个版本在不同子仓库中)</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; yum repolist all | grep mysql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>切换版本为  <code>MySQL5.7</code></p>
-<p>方法1：使用 <code>yum-config-manager</code></p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; sudo yum-config-manager --disable mysql80-community</span><br><span class="line">shell&gt; sudo yum-config-manager --enable mysql57-community</span><br><span class="line"></span><br><span class="line"># 报错</span><br><span class="line">sudo: yum-config-manager: command not found</span><br><span class="line"># 解决</span><br><span class="line">yum -y install yum-utils</span><br></pre></td></tr></table></figure>
-
-<pre><code>方法2：直接编辑 `/etc/yum.repos.d/mysql-community.repo`</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># enabled=0禁用</span><br><span class="line">[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/$basearch/</span><br><span class="line">enabled=0</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql</span><br><span class="line"></span><br><span class="line"># enabled=1启用</span><br><span class="line">[mysql57-community]</span><br><span class="line">name=MySQL 5.7 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-5.7-community/el/7/$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>检查当前启用的 <code>MySQL</code>仓库</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; yum repolist enabled | grep mysq</span><br><span class="line">mysql-connectors-community/x86_64 MySQL Connectors Community                 131</span><br><span class="line">mysql-tools-community/x86_64      MySQL Tools Community                      100</span><br><span class="line">mysql57-community/x86_64          MySQL 5.7 Community Server                 384</span><br></pre></td></tr></table></figure>
-
-<p><em>如果同时启用了多个仓库，安装时会选择最新版本</em></p>
-<h3 id="安装MySQL"><a href="#安装MySQL" class="headerlink" title="安装MySQL"></a>安装MySQL</h3><p>该命令会安装 <code>MySQL</code> 服务器 ( <code>mysql-community-server</code> ) 及其所需的依赖、相关组件，包括 <code>mysql-community-client</code>、<code>mysql-community-common</code> 、<code>mysql-community-libs</code> 等</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; sudo yum install mysql-community-server</span><br></pre></td></tr></table></figure>
-
-<h3 id="启停MySQL"><a href="#启停MySQL" class="headerlink" title="启停MySQL"></a>启停MySQL</h3><p><strong>CentOS 7</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#启动</span><br><span class="line">sudo systemctl start mysqld.service</span><br><span class="line">#查看状态</span><br><span class="line">sudo systemctl status mysqld.service</span><br><span class="line">#停止</span><br><span class="line">sudo systemctl stop mysqld.service</span><br><span class="line">#重启</span><br><span class="line">sudo systemctl restart mysqld.service</span><br></pre></td></tr></table></figure>
-
-<p><strong>CentOS 6</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#启动</span><br><span class="line">sudo service mysqld start</span><br><span class="line">#查看状态</span><br><span class="line">sudo service mysqld status</span><br><span class="line">#停止</span><br><span class="line">sudo service mysqld stop</span><br><span class="line">#重启</span><br><span class="line">sudo service mysqld restart</span><br></pre></td></tr></table></figure>
-
-<h3 id="设置用户"><a href="#设置用户" class="headerlink" title="设置用户"></a>设置用户</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; sudo grep &apos;temporary password&apos; /var/log/mysqld.log</span><br><span class="line">shell&gt; mysql -uroot -p</span><br><span class="line">#修改root用户密码</span><br><span class="line">ALTER USER &apos;root&apos;@&apos;localhost&apos; IDENTIFIED BY &apos;XXX&apos;;</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
-
-<p>设置开机自启动</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; systemctl enable mysqld</span><br><span class="line">shell&gt; systemctl daemon-reload</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1810,7 +1729,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-count">104</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

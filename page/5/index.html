@@ -281,6 +281,228 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/27/CentOS-MySQL-Download/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/12/27/CentOS-MySQL-Download/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-27T17:25:18+08:00">
+                2019-12-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>title: CentOS安装MySQL<br>date: 2019-12-27 17:25:18<br>tags: [MySQL]</p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>Linux</code> 上安装软件常用方式：</p>
+<ul>
+<li>源码编译</li>
+<li>压缩包解压（一般为 <code>tar.gz</code>）</li>
+<li>编译好的安装包（RPM、DPKG等）</li>
+<li>在线安装（YUM、APT等）</li>
+</ul>
+<p>便捷性：</p>
+<p>YUM &gt; RPM &gt; tar.gz &gt; 源码</p>
+<p>通用性:</p>
+<p>源码 &gt; tar.gz &gt; RPM &gt; YUM</p>
+<p>如：使用压缩包解压的方式安装，虽然需要自己额外进行一些配置工作，但掌握方法后各个平台都基本适用，YUM方式虽然简单，但平台和网络受限，必要时需添加一些特定的YUM源。</p>
+<h2 id="删除已安装的MySQL"><a href="#删除已安装的MySQL" class="headerlink" title="删除已安装的MySQL"></a>删除已安装的MySQL</h2><p><code>yum</code> 方式可以不删mariad除 <code>mariadb</code> ，安装的 <code>MySQL</code> 会覆盖掉之前存在的 <code>mariadb</code></p>
+<ul>
+<li>检查 <code>MariaDB</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -qa|grep mariadb</span><br><span class="line">mariadb-server-5.5.60-1.el7_5.x86_64</span><br><span class="line">mariadb-5.5.60-1.el7_5.x86_64</span><br><span class="line">mariadb-libs-5.5.60-1.el7_5.x86_64</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>删除 <code>MariDB</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -e --nodeps mariadb-server</span><br><span class="line">shell&gt; rpm -e --nodeps mariadb</span><br><span class="line">shell&gt; rpm -e --nodeps mariadb-libs</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查 <code>MySQL</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -qa|grep mysql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>删除 <code>MySQL</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; rpm -e --nodeps xxx</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>清除余项</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; whereis mysql</span><br><span class="line">mysql: /usr/lib64/mysql /usr/share/mysql</span><br><span class="line">#删除上面的文件夹</span><br><span class="line">rm -rf /usr/lib64/mysql</span><br><span class="line">rm -rf /usr/share/mysql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>删除配置</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm –rf /usr/my.cnf</span><br><span class="line">rm -rf /root/.mysql_sercret</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>剩余配置检查</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chkconfig --list | grep -i mysql</span><br><span class="line">chkconfig --del mysqld</span><br><span class="line">#根据以上列表删除，如：mysqld</span><br></pre></td></tr></table></figure>
+
+<h2 id="YUM方式"><a href="#YUM方式" class="headerlink" title="YUM方式"></a>YUM方式</h2><h3 id="添加-MySQL-YUM-Repository"><a href="#添加-MySQL-YUM-Repository" class="headerlink" title="添加 MySQL YUM Repository"></a>添加 MySQL YUM Repository</h3><p><code>CentOS 7</code> 开始，<code>Mariadb</code> 成为 <code>YUM</code> 源种默认的数据库安装包，如果想安装官方 <code>MySQL</code> 版本需适用 <code>MySQL</code> 提供的 <code>YUM</code> 源。</p>
+<ul>
+<li>下载 <code>MySQL</code> 源</li>
+</ul>
+<p>官网地址：<a href="https://dev.mysql.com/downloads/repo/yum/" target="_blank" rel="noopener">https://dev.mysql.com/downloads/repo/yum/</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#查看系统版本</span><br><span class="line">shell&gt; cat /etc/redhat-release</span><br><span class="line">CentOS Linux release 7.7.1908 (Core)</span><br><span class="line"></span><br><span class="line">#选择对应版本进行下载,这里为CentOS 7 </span><br><span class="line">shell&gt; wget https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>安装 <code>MySQL</code> 源</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># CentOS7当前最新的MySQL源安装</span><br><span class="line">sudo rpm -Uvh mysql80-community-release-el7-3.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查是否安装成功</li>
+</ul>
+<p>1、执行成功后会在 <code>/etc/yum.repos.d/</code> 目录下生成两个 <code>repo</code>  文件：<code>mysql-community.repo</code> 、<code>mysql-community-source.repo</code>。</p>
+<p>2、通过 <code>yum repolist</code> 可以看到 <code>mysql</code> 相关资源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; yum repolist enabled | grep &quot;mysql.*-community.*&quot;</span><br><span class="line">mysql-connectors-community/x86_64 MySQL Connectors Community                 131</span><br><span class="line">mysql-tools-community/x86_64      MySQL Tools Community                      100</span><br><span class="line">mysql80-community/x86_64          MySQL 8.0 Community Server                 145</span><br></pre></td></tr></table></figure>
+
+<h3 id="选择-MySQL版本"><a href="#选择-MySQL版本" class="headerlink" title="选择 MySQL版本"></a>选择 MySQL版本</h3><p>使用 <code>MySQL Yum Repository</code> 安装 <code>MySQL</code> 默认选择当前最新的稳定版本，如果希望安装其他版本需切换一下版本。</p>
+<ul>
+<li>查看当前 <code>MySQL Yum Repository</code> 中所有的 <code>MySQL</code> 版本(每个版本在不同子仓库中)</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; yum repolist all | grep mysql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>切换版本为  <code>MySQL5.7</code></p>
+<p>方法1：使用 <code>yum-config-manager</code></p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; sudo yum-config-manager --disable mysql80-community</span><br><span class="line">shell&gt; sudo yum-config-manager --enable mysql57-community</span><br><span class="line"></span><br><span class="line"># 报错</span><br><span class="line">sudo: yum-config-manager: command not found</span><br><span class="line"># 解决</span><br><span class="line">yum -y install yum-utils</span><br></pre></td></tr></table></figure>
+
+<pre><code>方法2：直接编辑 `/etc/yum.repos.d/mysql-community.repo`</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># enabled=0禁用</span><br><span class="line">[mysql80-community]</span><br><span class="line">name=MySQL 8.0 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-8.0-community/el/7/$basearch/</span><br><span class="line">enabled=0</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql</span><br><span class="line"></span><br><span class="line"># enabled=1启用</span><br><span class="line">[mysql57-community]</span><br><span class="line">name=MySQL 5.7 Community Server</span><br><span class="line">baseurl=http://repo.mysql.com/yum/mysql-5.7-community/el/7/$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查当前启用的 <code>MySQL</code>仓库</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; yum repolist enabled | grep mysq</span><br><span class="line">mysql-connectors-community/x86_64 MySQL Connectors Community                 131</span><br><span class="line">mysql-tools-community/x86_64      MySQL Tools Community                      100</span><br><span class="line">mysql57-community/x86_64          MySQL 5.7 Community Server                 384</span><br></pre></td></tr></table></figure>
+
+<p><em>如果同时启用了多个仓库，安装时会选择最新版本</em></p>
+<h3 id="安装MySQL"><a href="#安装MySQL" class="headerlink" title="安装MySQL"></a>安装MySQL</h3><p>该命令会安装 <code>MySQL</code> 服务器 ( <code>mysql-community-server</code> ) 及其所需的依赖、相关组件，包括 <code>mysql-community-client</code>、<code>mysql-community-common</code> 、<code>mysql-community-libs</code> 等</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; sudo yum install mysql-community-server</span><br></pre></td></tr></table></figure>
+
+<h3 id="启停MySQL"><a href="#启停MySQL" class="headerlink" title="启停MySQL"></a>启停MySQL</h3><p><strong>CentOS 7</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#启动</span><br><span class="line">sudo systemctl start mysqld.service</span><br><span class="line">#查看状态</span><br><span class="line">sudo systemctl status mysqld.service</span><br><span class="line">#停止</span><br><span class="line">sudo systemctl stop mysqld.service</span><br><span class="line">#重启</span><br><span class="line">sudo systemctl restart mysqld.service</span><br></pre></td></tr></table></figure>
+
+<p><strong>CentOS 6</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#启动</span><br><span class="line">sudo service mysqld start</span><br><span class="line">#查看状态</span><br><span class="line">sudo service mysqld status</span><br><span class="line">#停止</span><br><span class="line">sudo service mysqld stop</span><br><span class="line">#重启</span><br><span class="line">sudo service mysqld restart</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置用户"><a href="#设置用户" class="headerlink" title="设置用户"></a>设置用户</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; sudo grep &apos;temporary password&apos; /var/log/mysqld.log</span><br><span class="line">shell&gt; mysql -uroot -p</span><br><span class="line">#修改root用户密码</span><br><span class="line">ALTER USER &apos;root&apos;@&apos;localhost&apos; IDENTIFIED BY &apos;XXX&apos;;</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+
+<p>设置开机自启动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; systemctl enable mysqld</span><br><span class="line">shell&gt; systemctl daemon-reload</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/11/MySQL-Explain2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1944,158 +2166,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/14/MySQL-troubleshooting-step/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/11/14/MySQL-troubleshooting-step/" itemprop="url">MySQL故障排查</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-14T16:25:43+08:00">
-                2019-11-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h3><p>数据库连接不上</p>
-<p>业务查询慢，执行 <code>SQL</code> 操作没有反应</p>
-<h3 id="登录数据库"><a href="#登录数据库" class="headerlink" title="登录数据库"></a>登录数据库</h3><p>1）远程客户端是否能连接上数据库.</p>
-<ul>
-<li><p>查看会话连接数</p>
-</li>
-<li><p>查看线程状态</p>
-<p>检查是不是有线程阻塞，有没有锁（ <code>Locked</code> ）占用</p>
-<p><a href="https://huiraoo.github.io/blog/2019/11/15/mysql-live-session/" target="_blank" rel="noopener">线程状态</a></p>
-</li>
-</ul>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/troubleshooting1.png" alt></p>
-<p>2)  通过服务器登录数据库，查看 <code>mysqld</code> 进行是否存在</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">ps</span> <span class="bullet">-ef</span> <span class="string">| grep mysqld</span></span><br><span class="line"><span class="string">root      64511  64440  0 10:27 pts/2    00:00:00 grep --color=auto mysqld</span></span><br><span class="line"><span class="string">root      79355      1  0 Aug31 ?        00:00:00 /bin/sh /usr/local/mysql/bin/mysqld_safe --datadir=/data/mysql --pid-file=/data/mysql/mysql.pid</span></span><br><span class="line"><span class="string">mysql     79981  79355 99 Aug31 ?        2-01:38:14 /usr/local/mysql/bin/mysqld --basedir=/usr/local/mysql --datadir=/data/mysql --plugin-dir=/usr/local/mysql/lib/plugin --user=mysql --log-error=/data/mysql/error.log --pid-file=/data/mysql/mysql.pid --socket=/data/mysql/mysql.sock --port=3306</span></span><br></pre></td></tr></table></figure>
-
-<p>进程不存在，可能是服务器断电导致进行未自启动，启动 <code>mysql</code> 进程</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#使用 init.d</span></span><br><span class="line"><span class="string">$</span> <span class="string">/etc/init.d/mysqld</span> <span class="string">start</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#使用mysqld_safe</span></span><br><span class="line"><span class="string">$</span> <span class="string">mysqld_safe</span> <span class="bullet">--defaults-file=/etc/my.cnf</span> <span class="bullet">--user=mysql</span> <span class="string">&amp;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#使用service</span></span><br><span class="line"><span class="string">$</span> <span class="string">systemctl</span> <span class="string">start</span> <span class="string">mysqld</span></span><br><span class="line"><span class="string">$</span> <span class="string">service</span> <span class="string">mysql</span> <span class="string">start</span></span><br></pre></td></tr></table></figure>
-
-<p>3）登录 <code>MySQL</code> 查看线程状态，查看是否有锁占用，或者线程大量阻塞的情况。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -S /data/mysql/mysql.sock -usre -p&apos;sre@@p$i&apos;</span><br><span class="line">mysql&gt; show processlist;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>有锁占用或线程阻塞</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 删除正在执行锁表的线程</span></span><br><span class="line"><span class="string">kill</span> <span class="string">id;</span> </span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询出时间大于10的线程, 复制查询结果，批量执行</span></span><br><span class="line"><span class="string">select</span> <span class="string">concat('kill</span> <span class="string">', id, '</span><span class="string">;')</span> <span class="string">from</span> <span class="string">information_schema.processlist</span> <span class="string">where</span> <span class="string">time</span> <span class="string">&gt; 10;</span></span><br></pre></td></tr></table></figure>
-
-<p>快速杀掉大量会话连接</p>
-<p><code>kill.sh</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"># !/bin/sh</span><br><span class="line"></span><br><span class="line">#############################################################################</span><br><span class="line"># Kill all processlist According to status.</span><br><span class="line"># -h: 主机IP</span><br><span class="line"># -u: 用户名</span><br><span class="line"># -p: 密码</span><br><span class="line">#############################################################################</span><br><span class="line"></span><br><span class="line">host = &apos;&apos;</span><br><span class="line">user = &apos;&apos;</span><br><span class="line">pwd  = &apos;&apos;</span><br><span class="line">status = &apos;&apos;</span><br><span class="line"></span><br><span class="line">while :</span><br><span class="line">do</span><br><span class="line">  n=`mysqladmin processlist -h$host -u$user -p$pwd | grep -i $status | wc -l`</span><br><span class="line">  date=`date +%Y%m%d\[%H:%M:%S]`</span><br><span class="line">  echo $n</span><br><span class="line"></span><br><span class="line">  if [ &quot;$n&quot; -gt 10 ]</span><br><span class="line">  then</span><br><span class="line">  for i in `mysqladmin processlist -h$host -u$user -p$pwd | grep -i $status | awk &apos;&#123;print $2&#125;&apos;`</span><br><span class="line">  do</span><br><span class="line">  	mysqladmin processlist -h$host -u$user -p$pwd kill $i</span><br><span class="line">  done</span><br><span class="line"></span><br><span class="line">  echo &quot;$status is too many need killed it &quot; &gt;&gt; /tmp/kill.log</span><br><span class="line">  echo &quot;$date : $n&quot; &gt;&gt; /tmp/kill.log</span><br><span class="line">  fi</span><br><span class="line">  sleep 1</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
-
-<p>4）查看磁盘空间</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[root@cosmoim-d-fslg ~]# df -h</span><br><span class="line">Filesystem                               Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/mapper/centos_cosmoim--fslg01-root  100G  8.5G   92G   9% /</span><br><span class="line">devtmpfs                                  16G     0   16G   0% /dev</span><br><span class="line">tmpfs                                     16G     0   16G   0% /dev/shm</span><br><span class="line">tmpfs                                     16G   65M   16G   1% /run</span><br><span class="line">tmpfs                                     16G     0   16G   0% /sys/fs/cgroup</span><br><span class="line">/dev/sda1                               1014M  190M  825M  19% /boot</span><br><span class="line">/dev/mapper/centos_cosmoim--fslg01-var    60G  286M   60G   1% /var</span><br><span class="line">/dev/mapper/centos_cosmoim--fslg01-tmp    60G   33M   60G   1% /tmp</span><br><span class="line">/dev/mapper/centos_cosmoim--fslg01-data  864G  114G  751G  14% /data</span><br><span class="line">tmpfs                                    3.2G     0  3.2G   0% /run/user/1001</span><br><span class="line">tmpfs                                    3.2G     0  3.2G   0% /run/user/0</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2146,7 +2216,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-count">104</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

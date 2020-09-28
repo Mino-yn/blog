@@ -281,6 +281,151 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/23/ssh免密登录（单向）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/08/23/ssh免密登录（单向）/" itemprop="url">ssh免密登录</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-23T09:17:03+08:00">
+                2019-08-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="ssh登录与文件传输"><a href="#ssh登录与文件传输" class="headerlink" title="ssh登录与文件传输"></a>ssh登录与文件传输</h2><p>使用一台服务器登录另一台服务器，可直接使用SSH协议进行<strong>登录</strong>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">格式：ssh [-l login_name] [-p port] [user@]hostname</span><br><span class="line"></span><br><span class="line">ssh 192.168.0.11                       #不指定用户，默认使用当前宿主用户名登录</span><br><span class="line">ssh root@192.168.0.11                  # 指定用户登录</span><br><span class="line">ssh -l root 192.168.0.11</span><br><span class="line">ssh root@192.168.0.11 -p 2222          # 指定端口，默认端口22</span><br><span class="line">ssh root@192.168.0.11 &quot;ls /usr/local&quot;  # 远程登录后执行某命令</span><br></pre></td></tr></table></figure>
+
+<p>可以利用scp<strong>远程传输文件</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">格式：scp [file|folder] [user@host]:[remote_folder] [-P port]</span><br><span class="line"></span><br><span class="line">scp username@servername:/path/filename                   #从服务器上下载文件</span><br><span class="line">scp -r username@servername:remote_dir/local_dir          #从服务器上下载整个目录</span><br><span class="line">scp /path/local_filename username@servername:/path       #上传本地文件至服务器</span><br><span class="line">scp  -r /tmp/local_dir username@servername:remote_dir    #上传目录至服务器</span><br><span class="line">scp -P 60022 -r /local_dir username@servername:remote_dir  #指定端口，默认端口22</span><br></pre></td></tr></table></figure>
+
+<h2 id="设置免密登录"><a href="#设置免密登录" class="headerlink" title="设置免密登录"></a>设置免密登录</h2><p>但以上操作每次都需要输入目标服务器的密码，操作起来比较麻烦，且不适合集群服务器的批量操作。我们可以通过配置rsa私钥和公钥的方式实现免密ssh登录。</p>
+<p>这里介绍免密登录的单向配置，如果想实现双向的互信免密登录，再反向配置一遍即可。</p>
+<p>若想实现从A到B的免密登录，则A为源服务器，B为目标服务器。</p>
+<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><p>1、获取源服务器的<strong>公钥</strong>     ~/.ssh/id_rsa.pub</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># cat ~/.ssh/id_rsa.pub</span><br><span class="line">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCp7KnYj1baMhQn4FPfV6YiMogWw5cu57kfGoZYMdp8KNyJ5zmqz7UZUfmURYeoiMQB7v8oY3zVq13X8Gmmw/rzROS/vR/mqSbbnSruHh+x42oVtjZz67/UtFLTO1DT/+YmT+XkrkuI2Cx6CxWFQgThLXMNStYif3Rl0+aKC7Gb0hlPwoNT+UPHMLAW7Y2x+R7I8Tdvt75jSI4TANq8QzG+/Iy9tZiG80VC2KbgGdTkDLDZrIoftfVWihm4Ec29uJocpbxMRNpMTb7yn12ySWbY7mJ2fpqGAh+s1toF94ASPfg4Hlv6Y6lx2QumePKKIGQh1bWEOirxKljUbVfqD6NF root@hlhtapp29</span><br></pre></td></tr></table></figure>
+
+<p>2、将源服务器生成的公钥添加到目标服务器中的authorized_keys列表中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># vi ~/.ssh/authorized_keys</span><br><span class="line">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCp7KnYj1baMhQn4FPfV6YiMogWw5cu57kfGoZYMdp8KNyJ5zmqz7UZUfmURYeoiMQB7v8oY3zVq13X8Gmmw/rzROS/vR/mqSbbnSruHh+x42oVtjZz67/UtFLTO1DT/+YmT+XkrkuI2Cx6CxWFQgThLXMNStYif3Rl0+aKC7Gb0hlPwoNT+UPHMLAW7Y2x+R7I8Tdvt75jSI4TANq8QzG+/Iy9tZiG80VC2KbgGdTkDLDZrIoftfVWihm4Ec29uJocpbxMRNpMTb7yn12ySWbY7mJ2fpqGAh+s1toF94ASPfg4Hlv6Y6lx2QumePKKIGQh1bWEOirxKljUbVfqD6NF root@hlhtapp29</span><br></pre></td></tr></table></figure>
+
+<p>3、如果源服务器没有公钥，或目标服务器中没有authorized_keys文件，可通过执行ssh-keygen生成新的密钥。</p>
+<p><strong>注意</strong>：若服务器中原本存在公钥和私钥，执行ssh-keygen命令会生成新的公钥和私钥对原有的密钥进行覆盖，可能导致之前配置的互信不可用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"># ssh-keygen</span><br><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file in which to save the key (/root/.ssh/id_rsa): </span><br><span class="line">/root/.ssh/id_rsa already exists.</span><br><span class="line">Overwrite (y/n)? y</span><br><span class="line">Enter passphrase (empty for no passphrase): </span><br><span class="line">Enter same passphrase again: </span><br><span class="line">Your identification has been saved in /root/.ssh/id_rsa.    ##id_rsa:私钥  </span><br><span class="line">Your public key has been saved in /root/.ssh/id_rsa.pub.    ##id_rsa.pub:公钥</span><br><span class="line">The key fingerprint is:</span><br><span class="line">SHA256:4qHMkrfb8bchDuoYV1DjGFy3JYzegeCidBa5yRvmBAU root@CSB-service-2</span><br><span class="line">The key&apos;s randomart image is:</span><br><span class="line">+---[RSA 2048]----+</span><br><span class="line">| Eo++o++o .      |</span><br><span class="line">| . oo=ooo+       |</span><br><span class="line">| .+o*.....       |</span><br><span class="line">|..oO .. .        |</span><br><span class="line">|. + o + S        |</span><br><span class="line">|   * + o         |</span><br><span class="line">|  + * + . .      |</span><br><span class="line">|   * + = ...     |</span><br><span class="line">|  ..=.. o...     |</span><br><span class="line">+----[SHA256]-----+</span><br></pre></td></tr></table></figure>
+
+<p><strong>服务器初始化</strong></p>
+<p>若目标服务器未初始化，首先进行服务器初始化，提升权限，开启22端口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"># /bin/bash</span><br><span class="line"></span><br><span class="line">if [ $(id -u) != &quot;0&quot; ]; then</span><br><span class="line">errorLog &quot;错误：请用root账户运行此脚本&quot;</span><br><span class="line">exit 1</span><br><span class="line">fi</span><br><span class="line">echo &quot;提升权限...&quot;</span><br><span class="line">if [[ ! `cat /etc/sudoers | grep -v grep | grep haieradmin` ]] ; then</span><br><span class="line">    echo &quot;需要提升权限。。。&quot;</span><br><span class="line">    sed -i &apos;/## Allow root to run any commands anywhere / a\haieradmin ALL=(ALL) NOPASSWD:ALL&apos; /etc/sudoers</span><br><span class="line">    if [[ ! `cat /etc/sudoers | grep -v grep | grep haieradmin` ]] ; then</span><br><span class="line">        echo &quot;权限提升失败...&quot;</span><br><span class="line">    else</span><br><span class="line">        echo &quot;权限提升成功...&quot;</span><br><span class="line">    fi</span><br><span class="line">else</span><br><span class="line">    echo &quot;haieradmin已经是sudoers&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">echo &quot;开启22端口访问...&quot;</span><br><span class="line">firewall-cmd --permanent --zone=public --add-port=22/tcp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line"></span><br><span class="line">echo &quot;删除hosts.deny...&quot;</span><br><span class="line">sed -i &apos;s/sshd:all/ /g&apos; /etc/hosts.deny</span><br><span class="line"></span><br><span class="line">echo &quot;追加hosts.allow...&quot;</span><br><span class="line">if [[ `cat /etc/hosts.allow | grep -v 10.138.*.*` ]]; then</span><br><span class="line">    echo &quot;追加10.138.*.*&quot;</span><br><span class="line">    echo &quot;sshd:10.138.*.*&quot; &gt;&gt; /etc/hosts.allow</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<p><strong>配置免密脚本下载</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/shell/sshFreeLogin.sh</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/23/Common-SQL/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1325,6 +1470,8 @@
 <p>8、设置开机自启动</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">shell&gt; cd /usr/local/mysql/bin</span><br><span class="line">shell&gt; cp mysql mysqladmin mysqlbinlog mysqld mysqld_safe mysqldump /usr/bin/</span><br><span class="line"></span><br><span class="line">shell&gt; vi /usr/local/mysql/support-files/mysql.server</span><br><span class="line">`mysqld_pid_file_path`=/data/mysql/mysql.pid</span><br><span class="line"></span><br><span class="line">shell&gt; cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</span><br><span class="line">shell&gt; chmod +x /etc/init.d/mysqld</span><br><span class="line">shell&gt; chkconfig --add mysqld</span><br><span class="line">shell&gt; chkconfig mysqld on</span><br><span class="line">shell&gt; chkconfig --list</span><br></pre></td></tr></table></figure>
 
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@dzspdb-1</span> <span class="string">init.d]#</span> <span class="string">chkconfig</span> <span class="string">mysqld</span> <span class="string">on</span></span><br><span class="line"><span class="attr">Note:</span> <span class="string">Forwarding</span> <span class="string">request</span> <span class="string">to</span> <span class="string">'systemctl enable mysqld.service'</span><span class="string">.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#centos7系统，是systemctl来管理服务</span></span><br><span class="line"><span class="comment">#设置 mysql开机启动自动</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">enable</span> <span class="string">mysql</span></span><br><span class="line"><span class="comment">#查看 centos7的开机启动项目</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">list-unit-files</span> <span class="string">|grep</span> <span class="string">mysql</span></span><br></pre></td></tr></table></figure>
+
 <p>9、设置用户</p>
 <p>数据库启动成功成功后，进入数据库的初始密码会在  /data/mysql/error.log  下面</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /data/mysql/error.log | grep password</span><br></pre></td></tr></table></figure>
@@ -1731,163 +1878,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/09/introduction-to-Linux/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/08/09/introduction-to-Linux/" itemprop="url">Linux入门基础</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-09T09:48:11+08:00">
-                2019-08-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Linux目录介绍"><a href="#Linux目录介绍" class="headerlink" title="Linux目录介绍"></a>Linux目录介绍</h2><p><strong>/etc：</strong>(etcetera) 系统配置文件存放的目录，不建议在此目录下存放可执行文件。</p>
-<p><strong>/usr：</strong>(unix shared resources) 应用程序存放目录，</p>
-<ul>
-<li>/usr/bin ：存放应用程序，</li>
-<li>/usr/share ：存放共享数据，</li>
-<li>/usr/lib： 存放不能直接运行的，却是许多程序运行所必需的一些函数库文件。</li>
-<li>/usr/local:存放软件升级包。</li>
-</ul>
-<p><strong>/root：</strong> 系统管理员root的家目录，系统第一个启动的分区为/，所以最好将/root和/放置在一个分区下。</p>
-<h2 id="Linux指令"><a href="#Linux指令" class="headerlink" title="Linux指令"></a>Linux指令</h2><p><strong>cd命令：</strong></p>
-<p>用于切换当前目录，它的参数是要切换到的目录的路径，可以是绝对路径，也可以是相对路径。</p>
-<ul>
-<li><p>cd /root/Docements         # 切换到目录/root/Docements  </p>
-</li>
-<li><p>cd ./path                             # 切换到当前目录下的path目录中，“.”表示当前目录    </p>
-</li>
-<li><p>cd ../path                            # 切换到上层目录中的path目录中，“..”表示上一层目录</p>
-</li>
-</ul>
-<p><strong>ls命令：</strong></p>
-<p>ls命令是用来查看文件与目录的命令，list之意，它的参数非常多，下面就列出一些常用的参数 。</p>
-<ul>
-<li><p>-l ：一般直接使用ll，列出长数据串，包含文件的属性与权限数据等</p>
-</li>
-<li><p>-a ：列出全部的文件，连同隐藏文件（开头为.的文件）一起列出来（常用）  </p>
-</li>
-<li><p>-d ：仅列出目录本身，而不是列出目录的文件数据  </p>
-</li>
-<li><p>-h ：将文件容量以较易读的方式（GB，kB等）列出来  </p>
-</li>
-<li><p>-R ：连同子目录的内容一起列出（递归列出），等于该目录下的所有文件都会显示出来  </p>
-</li>
-</ul>
-<p><strong>pwd</strong>：查看用户当前目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">df -h                #查看磁盘占用比例</span><br><span class="line">ls -lht              #查看目录下所有文件大小总量</span><br><span class="line">du -sh * |sort -nr   #将当前目录下的文件从大到小排序  -n：从小到大排序</span><br><span class="line">tail -f 文件名        #动态查看日志信息</span><br><span class="line">tail -n 20 文件名     #查看最后一部分日志</span><br><span class="line">rm -rf               #删除文件</span><br><span class="line">top                  #动态查看cpu状态</span><br><span class="line"></span><br><span class="line">#服务器创建新用户</span><br><span class="line">$sudo useradd -m -s /bin/bash userName    // 在/home目录下新建userName目录</span><br><span class="line">$sudo passwd userName                     //设置密码</span><br></pre></td></tr></table></figure>
-
-<h3 id="Linux常用指令"><a href="#Linux常用指令" class="headerlink" title="Linux常用指令"></a>Linux常用指令</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 8核 * 32G * 600GB</span></span><br><span class="line"><span class="comment"># 查看系统CPU</span></span><br><span class="line"><span class="string">cat</span> <span class="string">/proc/cpuinfo</span> <span class="string">| grep "cores"|uniq</span></span><br><span class="line"><span class="string"># 显示系统内存</span></span><br><span class="line"><span class="string">free -g</span></span><br><span class="line"><span class="string"># 显示系统硬盘</span></span><br><span class="line"><span class="string">fdisk -l | grep Disk</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看所有安装的软件包</span></span><br><span class="line"><span class="string">rpm -qa |grep xtrabackup  </span></span><br><span class="line"><span class="string"># 删除安装包</span></span><br><span class="line"><span class="string">rpm -e 文件名</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 授权+执行</span></span><br><span class="line"><span class="string">chmod +x getip</span></span><br><span class="line"><span class="string">./getip</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下的文件数量</span></span><br><span class="line"><span class="string">ls -l |grep  "^-" | wc -l   </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下各文件、文件夹的大小</span></span><br><span class="line"><span class="string">du -h –max-depth=1 *</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#删除软链</span></span><br><span class="line"><span class="string">rm -rf  ./test_chk_ln</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 后台执行任务</span></span><br><span class="line"><span class="string">nohup 执行的任务指令 &amp;</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/09/install-docker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2088,7 +2078,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-count">104</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

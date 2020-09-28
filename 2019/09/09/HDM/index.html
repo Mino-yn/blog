@@ -91,7 +91,7 @@
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HDM2.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/restart-dbgateway.png">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HDM04.png">
-<meta property="og:updated_time" content="2020-06-30T06:45:13.052Z">
+<meta property="og:updated_time" content="2020-09-22T06:26:22.475Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL实例接入阿里云HDM">
 <meta name="twitter:description" content="背景由于内网限制，需要通过搭建代理服务器 Squid 进行访问。 公司一般出于安全考虑， 在同一局域网中只有一台机器可以访问外网，运维进行了整体的限制， 但是在后面的工作中，需要在机器上安装一些软件，及命令，所以其他的机器需要访问外网来简化工作， 但又不能打乱原有运维的设置，所以需要在能访问外网的机器上做个代理。 实践接入HDM服务器可以访问外网 1234#在opt目录下操作cd /opt">
@@ -376,7 +376,13 @@
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HDM3.png" alt></p>
 <h3 id="授权验证"><a href="#授权验证" class="headerlink" title="授权验证"></a>授权验证</h3><p>该步骤主要是输入数据库账号和密码，帮助集中式DBGateway通过数据库账号和密码以只读的方式获取数据库监控数据。</p>
 <p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/HDM2.png" alt></p>
-<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><h3 id="判断-DBGateway-进程是否存活"><a href="#判断-DBGateway-进程是否存活" class="headerlink" title="判断 DBGateway 进程是否存活"></a>判断 DBGateway 进程是否存活</h3><p>只用于判断 DBGateway 进程是否存活，无法判断其是否正常工作。</p>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><h3 id="无法解析域名"><a href="#无法解析域名" class="headerlink" title="无法解析域名"></a>无法解析域名</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Error! Can not connect to master-hdm-cn-hangzhou.aliyuncs.com:80, please check your network environment.</span><br><span class="line">[root@localhost opt]# ping hdm-dbgateway-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com</span><br><span class="line">ping: hdm-dbgateway-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com: Name or service not known</span><br><span class="line"></span><br><span class="line">#提示 unknown host 说明无法解析该域名</span><br><span class="line">telnet: master-hdm-cn-hangzhou.aliyuncs.com: Name or service not known</span><br><span class="line">master-hdm-cn-hangzhou.aliyuncs.com: Unknown host</span><br></pre></td></tr></table></figure>
+
+<p><strong>方法一</strong></p>
+<p>修改 <code>vi /etc/resolv.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">增加如下内容:</span><br><span class="line">nameserver 114.114.114.114 (电信的DNS)</span><br><span class="line">nameserver 8.8.8.8（googel的DNS）</span><br><span class="line">就可以实现ping通外网了</span><br></pre></td></tr></table></figure>
+
+<h3 id="判断-DBGateway-进程是否存活"><a href="#判断-DBGateway-进程是否存活" class="headerlink" title="判断 DBGateway 进程是否存活"></a>判断 DBGateway 进程是否存活</h3><p>只用于判断 DBGateway 进程是否存活，无法判断其是否正常工作。</p>
 <p><strong>方法一</strong>：在HDM产品页面，DBGateway管理子界面上当前状态显示为“正常”即表示 DBGateway 进程存活。</p>
 <p><strong>方法二</strong>：在DBGateway所在服务器上执行以下命令判断。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/opt/dbgateway/bin/dbgateway-manager -d status</span><br></pre></td></tr></table></figure>
@@ -531,7 +537,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-count">104</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -577,7 +583,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践"><span class="nav-number">2.</span> <span class="nav-text">实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#接入HDM"><span class="nav-number">2.1.</span> <span class="nav-text">接入HDM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#授权验证"><span class="nav-number">2.2.</span> <span class="nav-text">授权验证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见问题"><span class="nav-number">3.</span> <span class="nav-text">常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#判断-DBGateway-进程是否存活"><span class="nav-number">3.1.</span> <span class="nav-text">判断 DBGateway 进程是否存活</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重启-DBGateway"><span class="nav-number">3.2.</span> <span class="nav-text">重启 DBGateway</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#显示IP有误"><span class="nav-number">3.3.</span> <span class="nav-text">显示IP有误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器重启DBgateway状态异常"><span class="nav-number">3.4.</span> <span class="nav-text">服务器重启DBgateway状态异常</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#问题描述"><span class="nav-number">3.4.1.</span> <span class="nav-text">问题描述</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践"><span class="nav-number">2.</span> <span class="nav-text">实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#接入HDM"><span class="nav-number">2.1.</span> <span class="nav-text">接入HDM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#授权验证"><span class="nav-number">2.2.</span> <span class="nav-text">授权验证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见问题"><span class="nav-number">3.</span> <span class="nav-text">常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#无法解析域名"><span class="nav-number">3.1.</span> <span class="nav-text">无法解析域名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#判断-DBGateway-进程是否存活"><span class="nav-number">3.2.</span> <span class="nav-text">判断 DBGateway 进程是否存活</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重启-DBGateway"><span class="nav-number">3.3.</span> <span class="nav-text">重启 DBGateway</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#显示IP有误"><span class="nav-number">3.4.</span> <span class="nav-text">显示IP有误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器重启DBgateway状态异常"><span class="nav-number">3.5.</span> <span class="nav-text">服务器重启DBgateway状态异常</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#问题描述"><span class="nav-number">3.5.1.</span> <span class="nav-text">问题描述</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
