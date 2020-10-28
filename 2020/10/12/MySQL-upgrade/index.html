@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="操作步骤关闭 MySQL 服务 1mysqladmin -uroot -p&amp;apos;xxxxxx&amp;apos; shutdown  下载新版本 MySQL 安装包，并解压至 /user/local/ 目录下 1wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/mysql-5.7.23-el7-x86_64.tar.gztar -zxvf mysql-">
+<meta name="description" content="操作步骤关闭 MySQL 服务 1mysqladmin -uroot -p&amp;apos;xxxxxx&amp;apos; shutdown  下载新版本 MySQL 安装包，并解压至 /user/local/ 目录下 12wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/mysql-5.7.23-el7-x86_64.tar.gztar -zxvf mysql">
 <meta name="keywords" content="MySQL">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL5.5 -&gt; 5.7升级">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2020/10/12/MySQL-upgrade/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
-<meta property="og:description" content="操作步骤关闭 MySQL 服务 1mysqladmin -uroot -p&amp;apos;xxxxxx&amp;apos; shutdown  下载新版本 MySQL 安装包，并解压至 /user/local/ 目录下 1wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/mysql-5.7.23-el7-x86_64.tar.gztar -zxvf mysql-">
+<meta property="og:description" content="操作步骤关闭 MySQL 服务 1mysqladmin -uroot -p&amp;apos;xxxxxx&amp;apos; shutdown  下载新版本 MySQL 安装包，并解压至 /user/local/ 目录下 12wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/mysql-5.7.23-el7-x86_64.tar.gztar -zxvf mysql">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-10-28T05:59:26.888Z">
+<meta property="og:updated_time" content="2020-10-28T06:04:14.058Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL5.5 -&gt; 5.7升级">
-<meta name="twitter:description" content="操作步骤关闭 MySQL 服务 1mysqladmin -uroot -p&amp;apos;xxxxxx&amp;apos; shutdown  下载新版本 MySQL 安装包，并解压至 /user/local/ 目录下 1wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/mysql-5.7.23-el7-x86_64.tar.gztar -zxvf mysql-">
+<meta name="twitter:description" content="操作步骤关闭 MySQL 服务 1mysqladmin -uroot -p&amp;apos;xxxxxx&amp;apos; shutdown  下载新版本 MySQL 安装包，并解压至 /user/local/ 目录下 12wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/mysql-5.7.23-el7-x86_64.tar.gztar -zxvf mysql">
 
 
 
@@ -356,10 +356,10 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -uroot -p&apos;xxxxxx&apos; shutdown</span><br></pre></td></tr></table></figure>
 
 <p>下载新版本 <code>MySQL</code> 安装包，并解压至 <code>/user/local/</code> 目录下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/mysql-5.7.23-el7-x86_64.tar.gztar -zxvf mysql-5.7.23-el7-x86_64.tar.gz -C /usr/local/</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/mysql-5.7.23-el7-x86_64.tar.gz</span><br><span class="line">tar -zxvf mysql-5.7.23-el7-x86_64.tar.gz -C /usr/local/</span><br></pre></td></tr></table></figure>
 
 <p>取消旧版本 <code>mysql</code> 的软连接，并为新版本 <code>mysql</code> 软连接</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/unlink mysqlln -s /usr/local/mysql-5.7.23-el7-x86_64 /usr/local/mysqlchown mysql:mysql -R /usr/local/mysql</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/</span><br><span class="line">unlink mysql</span><br><span class="line">ln -s /usr/local/mysql-5.7.23-el7-x86_64 /usr/local/mysql</span><br><span class="line">chown mysql:mysql -R /usr/local/mysql</span><br></pre></td></tr></table></figure>
 
 <p>启动新版本的 <code>MySQL</code> 服务，可能会出错，因为旧版本的某些参数被新版本抛弃，出错后查看日志信息把对应的参数设置从<code>/etc/my.cnf</code>中注销，然后重新启动 <code>MySQL</code> 服务即可</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql --basedir=/usr/local/mysql --datadir=/data/mysql</span><br></pre></td></tr></table></figure>
@@ -368,10 +368,10 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysql_upgrade -uroot -p&apos;xxxxxx&apos;</span><br></pre></td></tr></table></figure>
 
 <p>6、升级完以后重启一下 <code>MySQL</code> </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -uroot -p&apos;xxxxxx&apos; shutdown/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql --basedir=/usr/local/mysql --datadir=/data/mysqlmysql --version# mysql  Ver 14.14 Distrib 5.7.23, for el7 (x86_64) using  EditLine wrapper</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -uroot -p&apos;xxxxxx&apos; shutdown</span><br><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql --basedir=/usr/local/mysql --datadir=/data/mysqlmysql </span><br><span class="line">--version</span><br><span class="line"># mysql  Ver 14.14 Distrib 5.7.23, for el7 (x86_64) using  EditLine wrapper</span><br></pre></td></tr></table></figure>
 
 <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a><strong>问题</strong></h2><p>在升级 <code>mysql5.5</code>到 <code>mysql5.7</code> 的时候，替换 <code>mysql</code> 的 <code>base</code> 目录后，用<code>mysqld_safe</code> 命令无法启动，错误日志无记录：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/usr/local/mysql/data/dzsp/my.cnf  --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data/dzsp</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/usr/local/mysql/data/dzsp/my.cnf --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data/dzsp</span><br></pre></td></tr></table></figure>
 
 <p>尝试使用 <code>mysqld</code> 直接启动</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysqld --defaults-file=/usr/local/mysql/data/dzsp/my.cnf --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data/dzsp --plugin-dir=/usr/local/mysql/lib/plugin --user=mysql --log-error=dzspdb1.err --pid-file=dzspdb1.pid --socket=/tmp/mysql-dzsp.sock --port=3306</span><br></pre></td></tr></table></figure>
@@ -510,7 +510,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-count">106</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

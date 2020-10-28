@@ -281,148 +281,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/07/case4-backup-failed/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/11/07/case4-backup-failed/" itemprop="url">案例4 · MySQL备份失败</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-07T14:19:29+08:00">
-                2019-11-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p>供应商反应，xx系统备份作业卡住，请求协助查看数据库读写是否正常，如果是主从，查看主从是否同步。</p>
-<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><p>1、查看从库状态，发现从库的两个线程 <code>Slave_IO_Running</code> 和 <code>Slave_SQL_Running</code> 均为 yes 状态。即主从的复制链路是正常的，但是   <code>Seconds_Behind_Master</code> 在不断的增大，主从的复制延迟不断加大。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.0.51</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-binlog.000561</span><br><span class="line">          Read_Master_Log_Pos: 456352268</span><br><span class="line">               Relay_Log_File: relay-log.001401</span><br><span class="line">                Relay_Log_Pos: 241706776</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.000554</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB:</span><br><span class="line">          Replicate_Ignore_DB:</span><br><span class="line">           Replicate_Do_Table:</span><br><span class="line">       Replicate_Ignore_Table:</span><br><span class="line">      Replicate_Wild_Do_Table:</span><br><span class="line">  Replicate_Wild_Ignore_Table:</span><br><span class="line">                   Last_Errno: 0</span><br><span class="line">                   Last_Error:</span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 241706557</span><br><span class="line">              Relay_Log_Space: 8638198834</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File:</span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File:</span><br><span class="line">           Master_SSL_CA_Path:</span><br><span class="line">              Master_SSL_Cert:</span><br><span class="line">            Master_SSL_Cipher:</span><br><span class="line">               Master_SSL_Key:</span><br><span class="line">        Seconds_Behind_Master: 173350</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">                Last_IO_Errno: 0</span><br><span class="line">                Last_IO_Error:</span><br><span class="line">               Last_SQL_Errno: 0</span><br><span class="line">               Last_SQL_Error:</span><br><span class="line">  Replicate_Ignore_Server_Ids:</span><br><span class="line">             Master_Server_Id: 3306100</span><br><span class="line">                  Master_UUID: e1db90f2-fce1-11e8-86d2-005056b1d631</span><br><span class="line">             Master_Info_File: /data/mysql/master.info</span><br><span class="line">                    SQL_Delay: 0</span><br><span class="line">          SQL_Remaining_Delay: NULL</span><br><span class="line">      Slave_SQL_Running_State: Reading event from the relay log</span><br><span class="line">           Master_Retry_Count: 86400</span><br><span class="line">                  Master_Bind:</span><br><span class="line">      Last_IO_Error_Timestamp:</span><br><span class="line">     Last_SQL_Error_Timestamp:</span><br><span class="line">               Master_SSL_Crl:</span><br><span class="line">           Master_SSL_Crlpath:</span><br><span class="line">           Retrieved_Gtid_Set:</span><br><span class="line">            Executed_Gtid_Set:</span><br><span class="line">                Auto_Position: 0</span><br><span class="line">         Replicate_Rewrite_DB:</span><br><span class="line">                 Channel_Name:</span><br><span class="line">           Master_TLS_Version:</span><br></pre></td></tr></table></figure>
-
-<p>2、查看当前数据库线程状态无明显异常。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show processlist;</span><br><span class="line">+--------+-------------+-------------------+--------------------+-------------+---------+---------------------------------------------------------------+--------------------------------+</span><br><span class="line">| Id     | User        | Host              | db                 | Command     | Time    | State                                                         | Info                           |</span><br><span class="line">+--------+-------------+-------------------+--------------------+-------------+---------+---------------------------------------------------------------+--------------------------------+</span><br><span class="line">|     55 | system user |                   | NULL               | Connect     | 9392470 | Waiting for master to send event                              | NULL                           |</span><br><span class="line">|     56 | system user |                   | NULL               | Connect     |  173622 | Reading event from the relay log                              | NULL                           |</span><br><span class="line">| 378492 | repl        | 10.200.62.4:39052 | NULL               | Binlog Dump | 3624063 | Master has sent all binlog to slave; waiting for more updates | NULL                           |</span><br><span class="line">| 608750 | cvbak       | localhost         | NULL               | Query       |  127066 | Waiting for table flush                                       | FLUSH /*!40101 LOCAL */ TABLES |</span><br><span class="line">| 617031 | root        | localhost         | NULL               | Query       |       0 | starting                                                      | show processlist               |</span><br><span class="line">| 617070 | hdm         | 10.133.0.52:52864 | information_schema | Sleep       |       3 |                                                               | NULL                           |</span><br><span class="line">+--------+-------------+-------------------+--------------------+-------------+---------+---------------------------------------------------------------+--------------------------------+</span><br><span class="line">6 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
-
-<p>3、使用 <code>show open tables where In_use = 1;</code> 查看当前正在使用的表，发现有一张表一直处于  <code>In_use</code> 状态.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show open tables where In_use = 1;</span><br><span class="line">+----------+-----------------------+--------+-------------+</span><br><span class="line">| Database | Table                 | In_use | Name_locked |</span><br><span class="line">+----------+-----------------------+--------+-------------+</span><br><span class="line">| tdmetl   | odsgvs_tax_center_cpo |      1 |           0 |</span><br><span class="line">+----------+-----------------------+--------+-------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
-
-<p>4、根据从库状态的 <code>Relay_Log_Pos</code> 解析 <code>relay-log.001401</code>，发现在对表 <code>odsgvs_tax_center_cpo</code> 执行大量的 <code>Delete_rows</code> 操作。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@tdds-mysql-s mysql]# mysqlbinlog -vvv --base64-output=decode-rows  relay-log.001401 --start-position=241706776 | more</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=1*/;</span><br><span class="line">/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;</span><br><span class="line">DELIMITER /*!*/;</span><br><span class="line"># at 241706776</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241706622 CRC32 0x346b0eca      Anonymous_GTID  last_committed=61       sequence_number=62      rbr_only=yes</span><br><span class="line">/*!50718 SET TRANSACTION ISOLATION LEVEL READ COMMITTED*//*!*/;</span><br><span class="line">SET @@SESSION.GTID_NEXT= &apos;ANONYMOUS&apos;/*!*/;</span><br><span class="line"># at 241706841</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241706696 CRC32 0x9ba8f516      Query   thread_id=13233783      exec_time=0     error_code=0</span><br><span class="line">SET TIMESTAMP=1572656709/*!*/;</span><br><span class="line">SET @@session.pseudo_thread_id=13233783/*!*/;</span><br><span class="line">SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=0, @@session.unique_checks=1, @@session.autocommit=1/*!*/;</span><br><span class="line">SET @@session.sql_mode=1436549128/*!*/;</span><br><span class="line">SET @@session.auto_increment_increment=1, @@session.auto_increment_offset=1/*!*/;</span><br><span class="line">/*!\C utf8 *//*!*/;</span><br><span class="line">SET @@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=33/*!*/;</span><br><span class="line">SET @@session.lc_time_names=0/*!*/;</span><br><span class="line">SET @@session.collation_database=DEFAULT/*!*/;</span><br><span class="line">BEGIN</span><br><span class="line">/*!*/;</span><br><span class="line"># at 241706915</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241706842 CRC32 0xc6476297      Table_map: `tdmetl`.`odsgvs_tax_center_cpo` mapped to number 172320</span><br><span class="line"># at 241707061</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241715049 CRC32 0xca58a8bf      Delete_rows: table id 172320</span><br><span class="line"># at 241715268</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241723194 CRC32 0xa8aae720      Delete_rows: table id 172320</span><br><span class="line"># at 241723413</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241731146 CRC32 0xc0240197      Delete_rows: table id 172320</span><br><span class="line"># at 241731365</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241739309 CRC32 0xfeafd008      Delete_rows: table id 172320</span><br><span class="line"># at 241739528</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241747304 CRC32 0x3366f85c      Delete_rows: table id 172320</span><br><span class="line"># at 241747523</span><br><span class="line">#191102  9:05:09 server id 3306100  end_log_pos 241755470 CRC32 0x014525ce      Delete_rows: table id 172320</span><br><span class="line"># at 241755689</span><br></pre></td></tr></table></figure>
-
-<p>5、查看 <code>odsgvs_tax_center_cpo</code> 表结构，发现表的数据量很大，且无主键。确定原因：<strong>对无主键的表执行大量的删除或更新操作，导致从库卡住。</strong></p>
-<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>1、对表添加自增主键</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE &apos;xxxx&apos; ADD id int UNSIGNED primary key AUTO_INCREMENT;</span><br></pre></td></tr></table></figure>
-
-<p>2、大表删除使用 <code>truncate</code> 命令。</p>
-<p>具体解决步骤</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1、停止从库的slave</span><br><span class="line">2、给 odsgvs_tax_center_cpo 表添加主键</span><br><span class="line">4、重启slave</span><br><span class="line">5、使用 pt-slave-restart 在后台跳过错误</span><br><span class="line">nohup ./pt-slave-restart -usre -p&apos;sre@@p$i&apos;  &gt; myout.file 2&gt;&amp;1 &amp;</span><br><span class="line">6、稳定一段时间后查看其主从复制状态，以及主从库 odsgvs_tax_center_cpo 表的数据量是否一致。</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/06/shell-quick-start2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2027,6 +1885,146 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/26/pt-query-digest/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/26/pt-query-digest/" itemprop="url">pt-query-digest</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-26T16:30:07+08:00">
+                2019-09-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="pt-query-digest简介"><a href="#pt-query-digest简介" class="headerlink" title="pt-query-digest简介"></a>pt-query-digest简介</h2><h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p><code>pt-query-digest</code>提供慢日志分析功能，可以统计出查询执行时间、次数、占比等，并把分析结果输出到文件中，然后借助分析结果找出问题进行优化。</p>
+<h3 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest [OPTIONS] [FILES] [DSN]</span><br><span class="line">--create-review-table    #当使用--review参数把分析结果输出到表中时，如果没有表就自动创建。</span><br><span class="line">--create-history-table   #当使用--history参数把分析结果输出到表中时，如果没有表就自动创建。</span><br><span class="line">--filter                 #对输入的慢查询按指定的字符串进行匹配过滤后再进行分析</span><br><span class="line">--limit                  #限制输出结果百分比或数量，默认值是20,即将最慢的20条语句输出，如果是50%则按总响应时间占比从大到小排序，输出到总和达到50%位置截止。</span><br><span class="line">--host                   #mysql服务器地址</span><br><span class="line">--user                   #mysql用户名</span><br><span class="line">--password               #mysql用户密码</span><br><span class="line">--history                #将分析结果保存到表中，分析结果比较详细，下次再使用--history时，如果存在相同的语句，且查询所在的时间区间和历史表中的不同，则会记录到数据表中，可以通过查询同一CHECKSUM来比较某类型查询的历史变化。</span><br><span class="line">--review                 #将分析结果保存到表中，这个分析只是对查询条件进行参数化，一个类型的查询一条记录，比较简单。当下次使用--review时，如果存在相同的语句分析，就不会记录到数据表中。</span><br><span class="line">--output                 #分析结果输出类型，值可以是report(标准分析报告)、slowlog(Mysql slow log)、json、json-anon，一般使用report，以便于阅读。</span><br><span class="line">--since                  #从什么时间开始分析，值为字符串，可以是指定的某个”yyyy-mm-dd [hh:mm:ss]”格式的时间点，也可以是简单的一个时间值：s(秒)、h(小时)、m(分钟)、d(天)，如12h就表示从12小时前开始统计。</span><br><span class="line">--until                  #截止时间，配合—since可以分析一段时间内的慢查询。</span><br></pre></td></tr></table></figure>
+
+<h2 id="pt-query-digest使用"><a href="#pt-query-digest使用" class="headerlink" title="pt-query-digest使用"></a>pt-query-digest使用</h2><h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>分析慢查询日志</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
+
+<p>分析最近12个小时内的查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest --since=12h  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
+
+<p> 分析最近指定范围内的查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest dzspdb-slow.log --since &apos;2019-08-25 10:00:00&apos; --until &apos;2019-09-25 10:00:00&apos; &gt; dzsp_slow_report.log</span><br></pre></td></tr></table></figure>
+
+<h3 id="输出结果分析"><a href="#输出结果分析" class="headerlink" title="输出结果分析"></a>输出结果分析</h3><h4 id="第一部分"><a href="#第一部分" class="headerlink" title="第一部分"></a>第一部分</h4><p>总体统计结果</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">执行日志分析的用户时间、系统时间、占用物理内存大小，占用虚拟内存大小</span></span><br><span class="line"><span class="comment">#7.7s user time, 90ms system time, 47.24M rss, 241.67M vsz</span></span><br><span class="line"><span class="string">工具执行时间</span></span><br><span class="line"><span class="comment">#Current date: Fri Sep 27 09:51:51 2019</span></span><br><span class="line"><span class="string">运行pt-query-digest的主机名</span></span><br><span class="line"><span class="comment">#Hostname: console</span></span><br><span class="line"><span class="string">被分析的文件</span></span><br><span class="line"><span class="comment">#Files: slow_query.log</span></span><br><span class="line"><span class="string">total：语句总数量、unique:唯一语句的数量、QPS:每秒查询率、concurrency:并发数</span></span><br><span class="line"><span class="comment"># Overall: 7.61k total, 891 unique, 0.00 QPS, 0.02x concurrency __________</span></span><br><span class="line"><span class="string">查询执行的时间范围</span></span><br><span class="line"><span class="comment"># Time range: 2018-12-21T14:35:34 to 2019-09-27T07:08:57</span></span><br><span class="line">     <span class="string">属性</span>              <span class="string">总计</span>     <span class="string">最小</span>     <span class="string">最大</span>    <span class="string">平均</span>     <span class="number">95</span><span class="string">%</span>  <span class="string">标准方差</span>   <span class="string">中值</span></span><br><span class="line"><span class="comment"># Attribute          total     min     max     avg     95%  stddev  median</span></span><br><span class="line"><span class="comment"># ============     ======= ======= ======= ======= ======= ======= =======</span></span><br><span class="line"><span class="comment"># Exec time        515373s      5s   6210s     68s    246s    216s     14s</span></span><br><span class="line"><span class="comment"># Lock time           808s       0    163s   106ms     5ms      3s   761us</span></span><br><span class="line"><span class="comment"># Rows sent        152.88M       0  15.14M  20.57k   1.39k 291.76k    0.99</span></span><br><span class="line"><span class="comment"># Rows examine     182.52G       0 867.98M  24.55M  72.18M  44.34M   3.68M</span></span><br><span class="line"><span class="comment"># Query size        30.21M       6  66.00k   4.06k  18.47k   5.67k  793.42</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">----------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="string">Exec</span> <span class="string">time</span>          <span class="string">语句执行时间</span></span><br><span class="line"><span class="string">Lock</span> <span class="string">time</span>          <span class="string">锁占用时间</span> </span><br><span class="line"><span class="string">Rows</span> <span class="string">sent</span>          <span class="string">发送到客户端的行数</span></span><br><span class="line"><span class="string">Rows</span> <span class="string">examine</span>       <span class="string">select语句扫描行数</span></span><br><span class="line"><span class="string">Query</span> <span class="string">size</span>         <span class="string">查询的字符数</span></span><br><span class="line"><span class="string">unique</span>             <span class="string">唯一查询数量，即对查询条件进行参数化以后，总共有多少个不同的查询</span></span><br><span class="line"><span class="number">95</span><span class="string">%</span>                <span class="string">把所有值从小到大排列，位置位于95%的那个数，这个数一般最具有参考价值</span></span><br><span class="line"><span class="string">median</span>             <span class="string">中位数，把所有值从小到大排列，位置位于中间那个数</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="第二部分"><a href="#第二部分" class="headerlink" title="第二部分"></a>第二部分</h4><p>查询分组统计结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># Profile</span><br><span class="line"># Rank Query ID                    Response time     Calls R/Call    V/M   Item</span><br><span class="line"># ==== =========================== ================= ===== ========= ===== =====</span><br><span class="line">#    1 0xFFF66E9B3D962FA319C806... 211420.4504 41.0%   260  813.1556 25.32 ROLLBACK</span><br><span class="line">#    2 0x73AFBACFEBF3942B3B02FB...  30241.2515  5.9%   156  193.8542  0.26 INSERT SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT d_etl_odsgvs_faglflext_all tdmetl.odsgvs_faglflext_all</span><br><span class="line">#    3 0xE1EA5439ED76CBFAA1C5A3...  24517.0767  4.8%     4 6129.2692  1.79 SELECT v_gvs_zgvs_bseg_edw</span><br><span class="line">#    4 0xE562308914915E2720E128...  21322.3718  4.1%  1282   16.6321  8.55 SELECT tdmetl.gvs_zgvs_bseg_edw</span><br><span class="line">#    5 0x0159EC63419857F0EC9D5B...  17472.3139  3.4%    71  246.0889  1.03 SELECT </span><br><span class="line">-----------------------------------------------------------------------------------------</span><br><span class="line">Rank            所有语句的排名，默认按查询时间降序排列，通过--order-by指定</span><br><span class="line">Query ID        语句的ID，（去掉多余空格和文本字符，计算hash值）</span><br><span class="line">Response        总的响应时间，单位s</span><br><span class="line">time            该查询在本次分析中总的时间占比</span><br><span class="line">calls           执行次数，即本次分析总共有多少条这种类型的查询语句</span><br><span class="line">R/Call          平均每次执行的响应时间</span><br><span class="line">V/M             响应时间Variance-to-mean(方差/平均值)的比率</span><br><span class="line">Item            查询对象</span><br></pre></td></tr></table></figure>
+
+<h4 id="第三部分"><a href="#第三部分" class="headerlink" title="第三部分"></a>第三部分</h4><p>每一种查询的详细统计结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"># Query 1: 0.00 QPS, 0.05x concurrency, ID 0xFFF66E9B3D962FA319C8068B5C1997CD at byte 3105049</span><br><span class="line"># This item is included in the report because it matches --limit.</span><br><span class="line"># Scores: V/M = 25.32</span><br><span class="line"># Time range: 2019-02-15T18:37:47 to 2019-04-03T21:18:48</span><br><span class="line"># Attribute    pct   total     min     max     avg     95%  stddev  median</span><br><span class="line"># ============ === ======= ======= ======= ======= ======= ======= =======</span><br><span class="line"># Count          3     260</span><br><span class="line"># Exec time     41 211420s    322s   1078s    813s   1013s    143s    793s</span><br><span class="line"># Lock time      0       0       0       0       0       0       0       0</span><br><span class="line"># Rows sent      0       0       0       0       0       0       0       0</span><br><span class="line"># Rows examine   0       0       0       0       0       0       0       0</span><br><span class="line"># Query size     0   2.03k       8       8       8       8       0       8</span><br><span class="line"># String:</span><br><span class="line"># Databases    tdmetl</span><br><span class="line"># Hosts        10.138.225.51 (140/53%), 10.138.225.43 (69/26%)... 3 more</span><br><span class="line"># Users        tdmsetldev</span><br><span class="line"># Query_time distribution</span><br><span class="line">#   1us</span><br><span class="line">#  10us</span><br><span class="line"># 100us</span><br><span class="line">#   1ms</span><br><span class="line">#  10ms</span><br><span class="line"># 100ms</span><br><span class="line">#    1s</span><br><span class="line">#  10s+  ################################################################</span><br><span class="line">rollback\G</span><br><span class="line">-------------------------------------------------------------------------------------</span><br><span class="line">查询的详细统计结果，最上面的表格列出了执行次数、最大、最小、平均、95%等各项目的统计。</span><br><span class="line">ID：查询的ID号，和查询分组统计结果的Query ID对应</span><br><span class="line">Databases：数据库名</span><br><span class="line">Users：各个用户执行的次数（占比）</span><br><span class="line">Query_time distribution ：查询时间分布, 长短体现区间占比</span><br><span class="line">Tables：查询中涉及到的表，此例中未涉及</span><br><span class="line">Explain： SQL语句  此例中未涉及</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2077,7 +2075,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-count">106</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
