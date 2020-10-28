@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>腾讯云CloudLite认证</title>
+    <title>MySQL5.5 -> 5.7升级</title>
+    <url>/blog/2020/10/28/MySQL-upgrade-1/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>云数据库MySQL介绍</title>
     <url>/blog/2020/10/19/tencent-cloud/</url>
     <content><![CDATA[<h3 id="云数据库MySQL介绍"><a href="#云数据库MySQL介绍" class="headerlink" title="云数据库MySQL介绍"></a>云数据库MySQL介绍</h3><h4 id="腾讯云云数据库MySQL架构"><a href="#腾讯云云数据库MySQL架构" class="headerlink" title="腾讯云云数据库MySQL架构"></a>腾讯云云数据库MySQL架构</h4><p><strong>高可用版</strong></p>
 <ul>
@@ -29,7 +34,65 @@
 <li>单节点部署，性价比高</li>
 </ul>
 <h4 id="数据库实例"><a href="#数据库实例" class="headerlink" title="数据库实例"></a>数据库实例</h4><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/tencentCloud.png" alt></p>
+<p><strong>复制方式</strong></p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/tencentCloud0.png" alt></p>
+<h4 id="TXSQL内核"><a href="#TXSQL内核" class="headerlink" title="TXSQL内核"></a>TXSQL内核</h4><ul>
+<li><p>基于 <code>Oracle</code> 官方 <code>MySQL</code> 内核版本进行深入定制开发，提供了类似 <code>MySQL</code> 企业版的诸多功能，如：企业级透明数据加密、审计、线程池、加密函数、备份恢复等。</p>
+</li>
+<li><p>对 <code>InnoDB</code> 存储引擎、查询优化、复制性能等方面进行了优化</p>
+</li>
+</ul>
 ]]></content>
+      <tags>
+        <tag>腾讯云CLoudLite</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL5.5 -> 5.7升级</title>
+    <url>/blog/2020/10/12/MySQL-upgrade/</url>
+    <content><![CDATA[<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><p>关闭 <code>MySQL</code> 服务</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqladmin -uroot -p&apos;xxxxxx&apos; shutdown</span><br></pre></td></tr></table></figure>
+
+<p>下载新版本 <code>MySQL</code> 安装包，并解压至 <code>/user/local/</code> 目录下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/mysql-5.7.23-el7-x86_64.tar.gztar -zxvf mysql-5.7.23-el7-x86_64.tar.gz -C /usr/local/</span><br></pre></td></tr></table></figure>
+
+<p>取消旧版本 <code>mysql</code> 的软连接，并为新版本 <code>mysql</code> 软连接</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cd /usr/local/unlink mysqlln -s /usr/local/mysql-5.7.23-el7-x86_64 /usr/local/mysqlchown mysql:mysql -R /usr/local/mysql</span><br></pre></td></tr></table></figure>
+
+<p>启动新版本的 <code>MySQL</code> 服务，可能会出错，因为旧版本的某些参数被新版本抛弃，出错后查看日志信息把对应的参数设置从<code>/etc/my.cnf</code>中注销，然后重新启动 <code>MySQL</code> 服务即可</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql --basedir=/usr/local/mysql --datadir=/data/mysql</span><br></pre></td></tr></table></figure>
+
+<p>5、升级系统表数据字典信息，该过程中会出现许多 <code>error</code> ，提示“ALTER TABLE ** FROCE”，这些错误不用担心mysql在后面会自动修复，但是修复时间可能会有点长，当出现“Upgrade process completed successfully.”说明升级成功</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysql_upgrade -uroot -p&apos;xxxxxx&apos;</span><br></pre></td></tr></table></figure>
+
+<p>6、升级完以后重启一下 <code>MySQL</code> </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqladmin -uroot -p&apos;xxxxxx&apos; shutdown/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql --basedir=/usr/local/mysql --datadir=/data/mysqlmysql --version# mysql  Ver 14.14 Distrib 5.7.23, for el7 (x86_64) using  EditLine wrapper</span><br></pre></td></tr></table></figure>
+
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a><strong>问题</strong></h2><p>在升级 <code>mysql5.5</code>到 <code>mysql5.7</code> 的时候，替换 <code>mysql</code> 的 <code>base</code> 目录后，用<code>mysqld_safe</code> 命令无法启动，错误日志无记录：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/usr/local/mysql/data/dzsp/my.cnf  --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data/dzsp</span><br></pre></td></tr></table></figure>
+
+<p>尝试使用 <code>mysqld</code> 直接启动</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysqld --defaults-file=/usr/local/mysql/data/dzsp/my.cnf --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data/dzsp --plugin-dir=/usr/local/mysql/lib/plugin --user=mysql --log-error=dzspdb1.err --pid-file=dzspdb1.pid --socket=/tmp/mysql-dzsp.sock --port=3306</span><br></pre></td></tr></table></figure>
+
+<p>控制台输出：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/usr/lib64/libstdc++.so.6: version &apos;GLIBCXX_3.4.15&apos; not found (required by ...)</span><br></pre></td></tr></table></figure>
+
+<p> <a href="https://mino-yn.github.io/blog/2019/12/10/Linux-GLIBCXX/">升级GLIBCXX</a></p>
+<p>重新使用<code>mysqld_safe</code> 启动，启动成功。</p>
+<p><strong>总结</strong></p>
+<ul>
+<li><p>根因：当前的 <code>GCC</code> 版本中，没有 <code>GLIBCXX_3.4.15</code> ，须要安装更高版本。</p>
+<p><code>mysql_safe</code> 启动数据库会调用 <code>mysqld</code> ,然后 <code>MySQL5.7</code> 的 <code>mysqld</code> 命令需要 <code>GLIBCXX_3.4.15</code> </p>
+</li>
+<li><p>遇到需要移动 <code>data</code>  目录的情况，可通过创建软链接的方式直接指向新的目录，不要直接移动。</p>
+</li>
+<li><p><code>ibdata1</code> 和 <code>ibdata2</code> 文件存放了表结构，不可直接删除</p>
+</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
   </entry>
   <entry>
     <title>COSMOCYGL数据归档</title>

@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="腾讯云CLoudLite,">
 
 
 
@@ -80,16 +80,18 @@
 
 
 <meta name="description" content="云数据库MySQL介绍腾讯云云数据库MySQL架构高可用版  一主一备，实时热备，提供宕机自动检测和故障自动转移 主备复制方式：异步（默认）、半同步、 可用性达99.95%  金融版  一主二备三节点模式，实时热备，确保数据强一致性，提供金融级可靠性和高可用性 主备复制方式：强同步 可用性达99.99%  单节点高IO版  单物理节点部署，性价比高  底层存储使用本地SSD硬盘，IO性能强大，目前">
+<meta name="keywords" content="腾讯云CLoudLite">
 <meta property="og:type" content="article">
-<meta property="og:title" content="腾讯云CloudLite认证">
+<meta property="og:title" content="云数据库MySQL介绍">
 <meta property="og:url" content="https://mino-yn.github.io/blog/2020/10/19/tencent-cloud/index.html">
 <meta property="og:site_name" content="Mino&#39;s blog">
 <meta property="og:description" content="云数据库MySQL介绍腾讯云云数据库MySQL架构高可用版  一主一备，实时热备，提供宕机自动检测和故障自动转移 主备复制方式：异步（默认）、半同步、 可用性达99.95%  金融版  一主二备三节点模式，实时热备，确保数据强一致性，提供金融级可靠性和高可用性 主备复制方式：强同步 可用性达99.99%  单节点高IO版  单物理节点部署，性价比高  底层存储使用本地SSD硬盘，IO性能强大，目前">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/tencentCloud.png">
-<meta property="og:updated_time" content="2020-10-20T03:44:44.088Z">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/tencentCloud0.png">
+<meta property="og:updated_time" content="2020-10-28T05:33:28.412Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="腾讯云CloudLite认证">
+<meta name="twitter:title" content="云数据库MySQL介绍">
 <meta name="twitter:description" content="云数据库MySQL介绍腾讯云云数据库MySQL架构高可用版  一主一备，实时热备，提供宕机自动检测和故障自动转移 主备复制方式：异步（默认）、半同步、 可用性达99.95%  金融版  一主二备三节点模式，实时热备，确保数据强一致性，提供金融级可靠性和高可用性 主备复制方式：强同步 可用性达99.99%  单节点高IO版  单物理节点部署，性价比高  底层存储使用本地SSD硬盘，IO性能强大，目前">
 <meta name="twitter:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/tencentCloud.png">
 
@@ -127,7 +129,7 @@
 
 
 
-  <title>腾讯云CloudLite认证 | Mino's blog</title>
+  <title>云数据库MySQL介绍 | Mino's blog</title>
   
 
 
@@ -303,7 +305,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">腾讯云CloudLite认证</h1>
+          <h1 class="post-title" itemprop="name headline">云数据库MySQL介绍</h1>
         
 
         <div class="post-meta">
@@ -379,6 +381,14 @@
 <li>单节点部署，性价比高</li>
 </ul>
 <h4 id="数据库实例"><a href="#数据库实例" class="headerlink" title="数据库实例"></a>数据库实例</h4><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/tencentCloud.png" alt></p>
+<p><strong>复制方式</strong></p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/tencentCloud0.png" alt></p>
+<h4 id="TXSQL内核"><a href="#TXSQL内核" class="headerlink" title="TXSQL内核"></a>TXSQL内核</h4><ul>
+<li><p>基于 <code>Oracle</code> 官方 <code>MySQL</code> 内核版本进行深入定制开发，提供了类似 <code>MySQL</code> 企业版的诸多功能，如：企业级透明数据加密、审计、线程池、加密函数、备份恢复等。</p>
+</li>
+<li><p>对 <code>InnoDB</code> 存储引擎、查询优化、复制性能等方面进行了优化</p>
+</li>
+</ul>
 
       
     </div>
@@ -394,6 +404,12 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/blog/tags/腾讯云CLoudLite/" rel="tag"># 腾讯云CLoudLite</a>
+          
+        </div>
+      
 
       
       
@@ -403,8 +419,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2020/09/28/COSMOCYGL-archiver/" rel="next" title="COSMOCYGL数据归档">
-                <i class="fa fa-chevron-left"></i> COSMOCYGL数据归档
+              <a href="/blog/2020/10/12/MySQL-upgrade/" rel="next" title="MySQL5.5 -> 5.7升级">
+                <i class="fa fa-chevron-left"></i> MySQL5.5 -> 5.7升级
               </a>
             
           </div>
@@ -412,6 +428,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2020/10/28/MySQL-upgrade-1/" rel="prev" title="MySQL5.5 -> 5.7升级">
+                MySQL5.5 -> 5.7升级 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -488,7 +508,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-count">107</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -501,7 +521,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/blog/tags/index.html">
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -534,7 +554,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#云数据库MySQL介绍"><span class="nav-number">1.</span> <span class="nav-text">云数据库MySQL介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#腾讯云云数据库MySQL架构"><span class="nav-number">1.1.</span> <span class="nav-text">腾讯云云数据库MySQL架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据库实例"><span class="nav-number">1.2.</span> <span class="nav-text">数据库实例</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#云数据库MySQL介绍"><span class="nav-number">1.</span> <span class="nav-text">云数据库MySQL介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#腾讯云云数据库MySQL架构"><span class="nav-number">1.1.</span> <span class="nav-text">腾讯云云数据库MySQL架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据库实例"><span class="nav-number">1.2.</span> <span class="nav-text">数据库实例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TXSQL内核"><span class="nav-number">1.3.</span> <span class="nav-text">TXSQL内核</span></a></li></ol></li></ol></div>
             
 
           </div>

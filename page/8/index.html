@@ -281,6 +281,283 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/26/pt-query-digest/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/26/pt-query-digest/" itemprop="url">pt-query-digest</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-26T16:30:07+08:00">
+                2019-09-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="pt-query-digest简介"><a href="#pt-query-digest简介" class="headerlink" title="pt-query-digest简介"></a>pt-query-digest简介</h2><h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p><code>pt-query-digest</code>提供慢日志分析功能，可以统计出查询执行时间、次数、占比等，并把分析结果输出到文件中，然后借助分析结果找出问题进行优化。</p>
+<h3 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest [OPTIONS] [FILES] [DSN]</span><br><span class="line">--create-review-table    #当使用--review参数把分析结果输出到表中时，如果没有表就自动创建。</span><br><span class="line">--create-history-table   #当使用--history参数把分析结果输出到表中时，如果没有表就自动创建。</span><br><span class="line">--filter                 #对输入的慢查询按指定的字符串进行匹配过滤后再进行分析</span><br><span class="line">--limit                  #限制输出结果百分比或数量，默认值是20,即将最慢的20条语句输出，如果是50%则按总响应时间占比从大到小排序，输出到总和达到50%位置截止。</span><br><span class="line">--host                   #mysql服务器地址</span><br><span class="line">--user                   #mysql用户名</span><br><span class="line">--password               #mysql用户密码</span><br><span class="line">--history                #将分析结果保存到表中，分析结果比较详细，下次再使用--history时，如果存在相同的语句，且查询所在的时间区间和历史表中的不同，则会记录到数据表中，可以通过查询同一CHECKSUM来比较某类型查询的历史变化。</span><br><span class="line">--review                 #将分析结果保存到表中，这个分析只是对查询条件进行参数化，一个类型的查询一条记录，比较简单。当下次使用--review时，如果存在相同的语句分析，就不会记录到数据表中。</span><br><span class="line">--output                 #分析结果输出类型，值可以是report(标准分析报告)、slowlog(Mysql slow log)、json、json-anon，一般使用report，以便于阅读。</span><br><span class="line">--since                  #从什么时间开始分析，值为字符串，可以是指定的某个”yyyy-mm-dd [hh:mm:ss]”格式的时间点，也可以是简单的一个时间值：s(秒)、h(小时)、m(分钟)、d(天)，如12h就表示从12小时前开始统计。</span><br><span class="line">--until                  #截止时间，配合—since可以分析一段时间内的慢查询。</span><br></pre></td></tr></table></figure>
+
+<h2 id="pt-query-digest使用"><a href="#pt-query-digest使用" class="headerlink" title="pt-query-digest使用"></a>pt-query-digest使用</h2><h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>分析慢查询日志</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
+
+<p>分析最近12个小时内的查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest --since=12h  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
+
+<p> 分析最近指定范围内的查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest dzspdb-slow.log --since &apos;2019-08-25 10:00:00&apos; --until &apos;2019-09-25 10:00:00&apos; &gt; dzsp_slow_report.log</span><br></pre></td></tr></table></figure>
+
+<h3 id="输出结果分析"><a href="#输出结果分析" class="headerlink" title="输出结果分析"></a>输出结果分析</h3><h4 id="第一部分"><a href="#第一部分" class="headerlink" title="第一部分"></a>第一部分</h4><p>总体统计结果</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">执行日志分析的用户时间、系统时间、占用物理内存大小，占用虚拟内存大小</span></span><br><span class="line"><span class="comment">#7.7s user time, 90ms system time, 47.24M rss, 241.67M vsz</span></span><br><span class="line"><span class="string">工具执行时间</span></span><br><span class="line"><span class="comment">#Current date: Fri Sep 27 09:51:51 2019</span></span><br><span class="line"><span class="string">运行pt-query-digest的主机名</span></span><br><span class="line"><span class="comment">#Hostname: console</span></span><br><span class="line"><span class="string">被分析的文件</span></span><br><span class="line"><span class="comment">#Files: slow_query.log</span></span><br><span class="line"><span class="string">total：语句总数量、unique:唯一语句的数量、QPS:每秒查询率、concurrency:并发数</span></span><br><span class="line"><span class="comment"># Overall: 7.61k total, 891 unique, 0.00 QPS, 0.02x concurrency __________</span></span><br><span class="line"><span class="string">查询执行的时间范围</span></span><br><span class="line"><span class="comment"># Time range: 2018-12-21T14:35:34 to 2019-09-27T07:08:57</span></span><br><span class="line">     <span class="string">属性</span>              <span class="string">总计</span>     <span class="string">最小</span>     <span class="string">最大</span>    <span class="string">平均</span>     <span class="number">95</span><span class="string">%</span>  <span class="string">标准方差</span>   <span class="string">中值</span></span><br><span class="line"><span class="comment"># Attribute          total     min     max     avg     95%  stddev  median</span></span><br><span class="line"><span class="comment"># ============     ======= ======= ======= ======= ======= ======= =======</span></span><br><span class="line"><span class="comment"># Exec time        515373s      5s   6210s     68s    246s    216s     14s</span></span><br><span class="line"><span class="comment"># Lock time           808s       0    163s   106ms     5ms      3s   761us</span></span><br><span class="line"><span class="comment"># Rows sent        152.88M       0  15.14M  20.57k   1.39k 291.76k    0.99</span></span><br><span class="line"><span class="comment"># Rows examine     182.52G       0 867.98M  24.55M  72.18M  44.34M   3.68M</span></span><br><span class="line"><span class="comment"># Query size        30.21M       6  66.00k   4.06k  18.47k   5.67k  793.42</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">----------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="string">Exec</span> <span class="string">time</span>          <span class="string">语句执行时间</span></span><br><span class="line"><span class="string">Lock</span> <span class="string">time</span>          <span class="string">锁占用时间</span> </span><br><span class="line"><span class="string">Rows</span> <span class="string">sent</span>          <span class="string">发送到客户端的行数</span></span><br><span class="line"><span class="string">Rows</span> <span class="string">examine</span>       <span class="string">select语句扫描行数</span></span><br><span class="line"><span class="string">Query</span> <span class="string">size</span>         <span class="string">查询的字符数</span></span><br><span class="line"><span class="string">unique</span>             <span class="string">唯一查询数量，即对查询条件进行参数化以后，总共有多少个不同的查询</span></span><br><span class="line"><span class="number">95</span><span class="string">%</span>                <span class="string">把所有值从小到大排列，位置位于95%的那个数，这个数一般最具有参考价值</span></span><br><span class="line"><span class="string">median</span>             <span class="string">中位数，把所有值从小到大排列，位置位于中间那个数</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="第二部分"><a href="#第二部分" class="headerlink" title="第二部分"></a>第二部分</h4><p>查询分组统计结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># Profile</span><br><span class="line"># Rank Query ID                    Response time     Calls R/Call    V/M   Item</span><br><span class="line"># ==== =========================== ================= ===== ========= ===== =====</span><br><span class="line">#    1 0xFFF66E9B3D962FA319C806... 211420.4504 41.0%   260  813.1556 25.32 ROLLBACK</span><br><span class="line">#    2 0x73AFBACFEBF3942B3B02FB...  30241.2515  5.9%   156  193.8542  0.26 INSERT SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT d_etl_odsgvs_faglflext_all tdmetl.odsgvs_faglflext_all</span><br><span class="line">#    3 0xE1EA5439ED76CBFAA1C5A3...  24517.0767  4.8%     4 6129.2692  1.79 SELECT v_gvs_zgvs_bseg_edw</span><br><span class="line">#    4 0xE562308914915E2720E128...  21322.3718  4.1%  1282   16.6321  8.55 SELECT tdmetl.gvs_zgvs_bseg_edw</span><br><span class="line">#    5 0x0159EC63419857F0EC9D5B...  17472.3139  3.4%    71  246.0889  1.03 SELECT </span><br><span class="line">-----------------------------------------------------------------------------------------</span><br><span class="line">Rank            所有语句的排名，默认按查询时间降序排列，通过--order-by指定</span><br><span class="line">Query ID        语句的ID，（去掉多余空格和文本字符，计算hash值）</span><br><span class="line">Response        总的响应时间，单位s</span><br><span class="line">time            该查询在本次分析中总的时间占比</span><br><span class="line">calls           执行次数，即本次分析总共有多少条这种类型的查询语句</span><br><span class="line">R/Call          平均每次执行的响应时间</span><br><span class="line">V/M             响应时间Variance-to-mean(方差/平均值)的比率</span><br><span class="line">Item            查询对象</span><br></pre></td></tr></table></figure>
+
+<h4 id="第三部分"><a href="#第三部分" class="headerlink" title="第三部分"></a>第三部分</h4><p>每一种查询的详细统计结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"># Query 1: 0.00 QPS, 0.05x concurrency, ID 0xFFF66E9B3D962FA319C8068B5C1997CD at byte 3105049</span><br><span class="line"># This item is included in the report because it matches --limit.</span><br><span class="line"># Scores: V/M = 25.32</span><br><span class="line"># Time range: 2019-02-15T18:37:47 to 2019-04-03T21:18:48</span><br><span class="line"># Attribute    pct   total     min     max     avg     95%  stddev  median</span><br><span class="line"># ============ === ======= ======= ======= ======= ======= ======= =======</span><br><span class="line"># Count          3     260</span><br><span class="line"># Exec time     41 211420s    322s   1078s    813s   1013s    143s    793s</span><br><span class="line"># Lock time      0       0       0       0       0       0       0       0</span><br><span class="line"># Rows sent      0       0       0       0       0       0       0       0</span><br><span class="line"># Rows examine   0       0       0       0       0       0       0       0</span><br><span class="line"># Query size     0   2.03k       8       8       8       8       0       8</span><br><span class="line"># String:</span><br><span class="line"># Databases    tdmetl</span><br><span class="line"># Hosts        10.138.225.51 (140/53%), 10.138.225.43 (69/26%)... 3 more</span><br><span class="line"># Users        tdmsetldev</span><br><span class="line"># Query_time distribution</span><br><span class="line">#   1us</span><br><span class="line">#  10us</span><br><span class="line"># 100us</span><br><span class="line">#   1ms</span><br><span class="line">#  10ms</span><br><span class="line"># 100ms</span><br><span class="line">#    1s</span><br><span class="line">#  10s+  ################################################################</span><br><span class="line">rollback\G</span><br><span class="line">-------------------------------------------------------------------------------------</span><br><span class="line">查询的详细统计结果，最上面的表格列出了执行次数、最大、最小、平均、95%等各项目的统计。</span><br><span class="line">ID：查询的ID号，和查询分组统计结果的Query ID对应</span><br><span class="line">Databases：数据库名</span><br><span class="line">Users：各个用户执行的次数（占比）</span><br><span class="line">Query_time distribution ：查询时间分布, 长短体现区间占比</span><br><span class="line">Tables：查询中涉及到的表，此例中未涉及</span><br><span class="line">Explain： SQL语句  此例中未涉及</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/26/pt-slave-restart/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/26/pt-slave-restart/" itemprop="url">pt-slave-restart</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-26T16:29:40+08:00">
+                2019-09-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="pt-slave-restart简介"><a href="#pt-slave-restart简介" class="headerlink" title="pt-slave-restart简介"></a>pt-slave-restart简介</h2><h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p><code>pt-slave-restart</code>是一个在MySQL主从复制出错后，可以监控跳过特定错误并自动重启主从复制的工具。</p>
+<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p><code>pt-slave-restart</code>监控一个或者多个MySQL主从复制的slave，并试图跳过引起错误的语句。它以指数变化的休眠时间智能地检查 slave。你可以指定要跳过的错误，然后运行slave一直到一个确定的binlog位置。</p>
+<p><code>pt-slave-restart</code>一旦检测到slave有错误就会打印一行信息。默认情况下该信息包括：timestamp、connection information、relay_log_file、relay_log_pos、last_errno。可以使用<code>--verbose</code>选项添加更多信息，也可以使用<code>--quiet</code>选项阻止所有输出。</p>
+<p><strong>sleep</strong></p>
+<p><code>pt-slave-restart</code> 在检测slave的过程中智能的进行休眠，所以当前的休眠时间是会改变的，设定策略：</p>
+<ul>
+<li>初始的sleep 时间通过<code>--sleep</code>给出。</li>
+<li>若检测发现错误，将sleep时间改成之前的一半。</li>
+<li>若检测没有发现错误，将sleep时间改成之前的两倍。</li>
+<li>通过<code>--min-sleep</code>和<code>--max-sleep</code>参数限定sleep时间的下界和上界。</li>
+<li>一旦检测到错误，<code>pt-slave-restart</code>假定接下来很可能发生另一个错误,因此它将比较当前的sleep时间和初始的sleep时间，选取更小的值作为新的sleep时间。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">从Percona Toolkit 2.2.8版本起，pt-slave-restart开始支持由MySQL 5.6.5版本引入的GTID复制（保证了每个在主库上提交的事务在集群中有一个唯一的ID）。</span><br><span class="line">注意：</span><br><span class="line">当采用多线程复制（slave_parallel_workers &gt; 0）时，pt-slave-restart不能跳过事务。pt-slave-restart不能确定GTID事件是哪个特定slave线程执行失败的事务。</span><br><span class="line">默认行为是跳过来自master的下一个事务。由于每个服务器都有它自己的UUID，因此写可以来自不同的服务器。</span><br><span class="line">参考–master-uuid。</span><br></pre></td></tr></table></figure>
+
+<h3 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span><span class="bullet">-host=xxx</span> <span class="bullet">--user=xxx</span> <span class="bullet">--password=xxx</span>   <span class="comment">#连接实例信息，缩写-h xxx -u xxx -p xxx</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-port</span>               <span class="comment">#连接的端口号，缩写 -P</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-help</span>               <span class="comment">#显示帮助并退出</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-always</span>             <span class="comment">#永不停止slave线程，启用后pt-slave-restart将不允许手动停止从服务器</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-ask-pass</span>           <span class="comment">#替换`-p`命令，不显示密码输入</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-error-numbers</span>      <span class="comment">#指定要跳过哪些错误，可用`,`进行分隔</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-error-text</span>         <span class="comment">#根据错误信息进行匹配跳过</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-log`</span>               <span class="comment">#输出到文件</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-recurse</span>            <span class="comment">#在主端执行，监控从端</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-runtime</span>  <span class="string">`</span>         <span class="comment">#工具执行多长时间后退出：默认秒， m=minute,h=hours,d=days</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-slave-user</span>         <span class="comment">#从库账号，在主库运行时使用</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-slave-password`</span>    <span class="comment">#从库密码，在主库运行时使用</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-skip-count</span>         <span class="comment">#一次跳过错误的个数，默认为1</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-master-uuid</span>        <span class="comment">#级联复制的时候，指定跳过上级或者上上级事务的错误</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-until-master</span>       <span class="comment">#到达指定的master_log_pos,file位置后停止，格式：”file:pos“</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-until-relay</span>        <span class="comment">#和上面一样，但根据relay_log的位置来停止</span></span><br><span class="line"><span class="bullet">-</span><span class="bullet">-sleep</span>              <span class="comment">#检查slave间隔的初始sleep秒数，默认为1</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="pt-slave-restart使用"><a href="#pt-slave-restart使用" class="headerlink" title="pt-slave-restart使用"></a>pt-slave-restart使用</h2><h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#跳过指定错误</span></span><br><span class="line"><span class="string">pt-slave-restart</span> <span class="bullet">--user=root</span> <span class="bullet">--ask-pass</span> <span class="string">socket=/data/mysql/3304/tmp/mysql3304.sock</span>  <span class="bullet">--error-numbers=1062</span></span><br><span class="line"><span class="comment">#后台跳过错误</span></span><br><span class="line"><span class="string">nohup</span> <span class="string">./pt-slave-restart</span> <span class="bullet">-usre</span> <span class="bullet">-p'sre@@p$i'</span>  <span class="string">&gt; myout.file 2&gt;&amp;1 &amp;</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/26/MySQL-SQL/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1511,354 +1788,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/12/Master-slave-replication/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/09/12/Master-slave-replication/" itemprop="url">使用Xtrabackup搭建MySQL主从</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-12T17:39:34+08:00">
-                2019-09-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="数据迁移"><a href="#数据迁移" class="headerlink" title="数据迁移"></a>数据迁移</h3><h4 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h4><p>1.主从，<a href="https://mino-yn.github.io/blog/2019/09/11/Xtrabackup/">安装 XtraBackup</a></p>
-<p>2.<a href="https://mino-yn.github.io/blog/2019/08/23/ssh%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88%E5%8D%95%E5%90%91%EF%BC%89/">配置主从互信</a></p>
-<p>3.主库，全备数据并传输到从服务器</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#备份主库：</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=root --password=XXX --no-timestamp /data/backup</span><br><span class="line"></span><br><span class="line">#传输到从库：</span><br><span class="line">scp -r /data/backup/* root@10.133.7.19:/data/backup</span><br></pre></td></tr></table></figure>
-
-<p>4.从库，恢复全备数据</p>
-<ul>
-<li>主库和从库的数据库版本需一致</li>
-<li>MySQL配置文件内容尽可能保持一致</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#停止MySQL服务</span></span><br><span class="line"><span class="string">mysqladmin</span> <span class="bullet">-uroot</span> <span class="bullet">-pHaier@123</span> <span class="string">shutdown</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#备份上应用日志，一般没有看到报错且最后显示 OK 就没有问题</span></span><br><span class="line"><span class="string">innobackupex</span> <span class="bullet">--defaults-file=/etc/my.cnf</span> <span class="bullet">--apply-log</span> <span class="string">/data/backup</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">#将原MySQL数据目录改名</span></span><br><span class="line"><span class="string">mv</span> <span class="string">mysql</span> <span class="string">mysql_bak</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#重建Mysql数据目录</span></span><br><span class="line"><span class="string">mkdir</span> <span class="string">mysql</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#恢复数据,将备份还原到 my.cnf 指定的 datadir 中，不指定 --defaults-file，默认 /etc/my.cnf</span></span><br><span class="line"><span class="comment">#--move-back 不保留备份，相当于 mv</span></span><br><span class="line"><span class="comment">#--copy-back 保留备份，相当于cp</span></span><br><span class="line"><span class="string">innobackupex</span> <span class="bullet">--copy-back</span> <span class="string">/data/backup</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#对新目录进行授权</span></span><br><span class="line"><span class="string">chown</span> <span class="bullet">-R</span> <span class="attr">mysql:mysql</span> <span class="string">mysql</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#重启MySQL服务，如果MySQL数据库启动失败，查看确认新的数据目录权限用户是否为mysql</span></span><br><span class="line"><span class="string">/usr/local/mysql/bin/mysqld_safe</span> <span class="bullet">--defaults-file=/etc/my.cnf</span> <span class="bullet">--user=mysql</span> <span class="string">&gt;/dev/null</span> <span class="string">&amp;</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="时间预估"><a href="#时间预估" class="headerlink" title="时间预估"></a>时间预估</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">文件大小：185 GB</span><br><span class="line">备份时间：25 min</span><br><span class="line">传输时间：30 min   ---以100MB/s的传输速度为基准</span><br><span class="line">恢复时间：1h 10 min</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">10.159.39.80 -&gt; 10.199.96.192</span><br><span class="line">文件大小：227G</span><br><span class="line">备份时间：32min</span><br><span class="line">传输时间：35min</span><br><span class="line">恢复时间：26min</span><br></pre></td></tr></table></figure>
-
-<h3 id="搭建主从关系"><a href="#搭建主从关系" class="headerlink" title="搭建主从关系"></a>搭建主从关系</h3><p>修改从库参数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">server-id                 = 3306101</span><br><span class="line">log-bin                   = /data/mysql/mysql-bin</span><br><span class="line">read_only                 = 1</span><br><span class="line">log_slave_updates         = 1</span><br></pre></td></tr></table></figure>
-
-<p>从库，建立复制关系</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@GPCMS-DB-M</span> <span class="string">backup]#</span> <span class="string">cat</span> <span class="string">xtrabackup_binlog_info</span></span><br><span class="line"><span class="string">mysql-binlog.000297</span>	<span class="number">900834433</span></span><br><span class="line"></span><br><span class="line"><span class="string">CHANGE</span> <span class="string">MASTER</span> <span class="string">TO</span> <span class="string">MASTER_HOST='10.133.7.18',</span></span><br><span class="line"><span class="string">MASTER_USER='repl',</span></span><br><span class="line"><span class="string">MASTER_PASSWORD='Changeme_123',</span></span><br><span class="line"><span class="string">MASTER_PORT=3306,</span></span><br><span class="line"><span class="string">MASTER_LOG_FILE='mysql-binlog.000297',</span> <span class="string">MASTER_LOG_POS=900834433,</span></span><br><span class="line"><span class="string">MASTER_CONNECT_RETRY=10;</span></span><br><span class="line"></span><br><span class="line"><span class="string">MySQL</span> <span class="string">[(none)]&gt;</span> <span class="string">start</span> <span class="string">slave;</span></span><br><span class="line"><span class="string">Query</span> <span class="string">OK,</span> <span class="number">0</span> <span class="string">rows</span> <span class="string">affected</span> <span class="string">(0.00</span> <span class="string">sec)</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="错误分析"><a href="#错误分析" class="headerlink" title="错误分析"></a>错误分析</h3><h4 id="案例一"><a href="#案例一" class="headerlink" title="案例一"></a>案例一</h4><p>恢复数据完成后，重启数据库失败，<code>error.log</code>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[ERROR] Can&apos;t open the mysql.plugin table. Please run mysql_upgrade to create it.</span><br><span class="line">[ERROR] Fatal error: Can&apos;t open and lock privilege tables: Table &apos;mysql.host&apos; doesn&apos;t exist</span><br></pre></td></tr></table></figure>
-
-<p><strong>解决</strong></p>
-<p>备份目录下缺失数据库文件目录，从<code>/data/backup</code> 或主库 <code>/data/mysql</code> 目录下将缺失的数据目录文件传输到从库相应位置。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scp -r root@10.199.96.192:/data/mysql/link /data/mysql</span><br><span class="line">scp -r root@10.199.96.192:/data/mysql /data/mysql</span><br><span class="line">scp -r root@10.199.96.192:/data/mysql/performance_schema /data/mysql</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/11/Xtrabackup/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/09/11/Xtrabackup/" itemprop="url">Percona XtraBackup安装实践</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-11T17:25:50+08:00">
-                2019-09-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Percona XtraBackup 是开源免费的 MySQL 数据库热备份软件，它能对 InnoDB 和 XtraDB 存储引擎的数据库非阻塞地备份（对于 MyISAM 的备份 同样需要加表锁）。XtraBackup 支持所有的 Percona Server、MySQL、MariaDB 和 Drizzle。</p>
-<p><strong>物理备份</strong></p>
-<p><strong>XtraBackup优势 ：</strong></p>
-<p>1、无需停止数据库进行 InnoDB 热备，备份过程中不会锁表，不影响现有业务。</p>
-<p>2、增量备份 MySQL。</p>
-<p>3、流压缩到传输到其它服务器。</p>
-<p>4、能比较容易地创建主从同步。</p>
-<p>5、备份MySQL时不会增大服务器负载。</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p><code>Xtrabackup</code> 包括两个工具: <code>xtrabackup</code>、<code>innobackupex</code>  ，其主要区别如下:</p>
-<ul>
-<li>xtrabackup: 只能备份innodb和xtradb两种引擎的表，不能备份myisam引擎的表</li>
-<li>innobackupex: 是一个封装了xtrabackup的Perl脚本，支持同时备份innodb和myisam，但在对myisam备份时需要加一个全局的读锁。还有就是myisam不支持增量备份。</li>
-</ul>
-<h3 id="全库备份过程"><a href="#全库备份过程" class="headerlink" title="全库备份过程"></a>全库备份过程</h3><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Xtrabackup4.png" alt></p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/Xtrabackup5.png" alt></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">1 首先会启动一个xtrabackup_log后台检测的进程，实时检测mysql redo的变化，一旦发现redo有新的日志写入，立刻将日志写入到日志文件xtrabackup_log中</span><br><span class="line"></span><br><span class="line">2 复制innodb的数据文件和系统表空间文件idbdata1到对应的以默认时间戳为备份目录的地方</span><br><span class="line"></span><br><span class="line">3 复制结束后，执行flush table with read lock操作</span><br><span class="line"></span><br><span class="line">4 复制.frm .myd .myi文件</span><br><span class="line"></span><br><span class="line">5 并且在这一时刻获得binary log 的位置</span><br><span class="line"></span><br><span class="line">6 将表进行解锁unlock tables</span><br><span class="line"></span><br><span class="line">7 停止xtrabackup_log进程</span><br></pre></td></tr></table></figure>
-
-<h3 id="全库恢复的过程"><a href="#全库恢复的过程" class="headerlink" title="全库恢复的过程"></a>全库恢复的过程</h3><p>这一阶段会启动xtrabackup内嵌的innodb实例，将xtrabackup日志xtrabackup_Log进行回放，将提交的事务信息变更应用到innodb数据或表空间，同时回滚未提交的事务。</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Xtrabackup6.png" alt></p>
-<h3 id="文件功能"><a href="#文件功能" class="headerlink" title="文件功能"></a>文件功能</h3><p><a href="http://www.fordba.com/xtrabackup-produce-file-intruduction.html" target="_blank" rel="noopener">Percona Xtrabackup 备份生成的几个文件功能说明</a></p>
-<p><code>Percona Xtrabackup</code> 备份过程中，生成的几个文件功能说明</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Xtrabackup 使用过程中主要生成的文件</span></span><br><span class="line"><span class="string">xtrabackup_binlog_info</span></span><br><span class="line"><span class="string">xtrabackup_binlog_pos_innodb</span></span><br><span class="line"><span class="string">xtrabackup_checkpoints</span></span><br><span class="line"><span class="string">xtrabackup_info</span></span><br><span class="line"><span class="string">xtrabackup_logfile</span></span><br><span class="line"><span class="string">xtrabackup_slave_info</span></span><br><span class="line"><span class="string">backup-my.cnf</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>backup-my.cnf</code> : 启动备份集所需要的最小参数</li>
-<li><code>xtrabackup_binlog_info</code> : 备份完成的时间点的 <code>binlog</code> 位点</li>
-<li><code>xtrabackup_checkpoints</code> : 备份类型是全量备份还是增量备份，当前备份集的状态，是否已经prepare过。如果是全量备份，backup_type = full-backuped，如果是增量是backup_type = incremental。全量备份备份集的状态在 <code>apply log</code> 后由 <code>full-backuped</code> 变成了 <code>full-prepared</code></li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">backup_type</span> <span class="string">=</span> <span class="string">full-backuped</span></span><br><span class="line"><span class="string">from_lsn</span> <span class="string">=</span> <span class="number">0</span>    <span class="comment"># 由于是全量备份，所以数据是从LSN=0开始的</span></span><br><span class="line"><span class="string">to_lsn</span> <span class="string">=</span> <span class="number">2142987473</span></span><br><span class="line"><span class="string">last_lsn</span> <span class="string">=</span> <span class="number">2142987473</span></span><br><span class="line"><span class="string">compact</span> <span class="string">=</span> <span class="number">0</span></span><br><span class="line"><span class="string">recover_binlog_info</span> <span class="string">=</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>xtrabackup_info</code>  记录备份的时候的一些参数，脚本版本，数据库版本，备份时间，binlog，是否压缩，备份增量还是全量等信息</li>
-<li><code>xtrabackup_binlog_pos_innodb</code> : <code>apply log</code>完成后生成,记录的 innodb 和 xtradb 的 binlog 位点，所以如果存在多种存储引擎，需要利用 xtrabackup_binlog_info 来确定备份的完成那个时刻的 binlog 位点.</li>
-<li><code>xtrabackup_logfile</code> : 记录从备份开始到备份结束所有的 redo 日志，xtrabackup 在 apply log 的时候需要读取该文件，进行 redo 前滚。</li>
-<li><code>xtrabackup_slave_info</code> : 记录的是主库的 <code>binlog</code> 信息，该信息可以用来通过从库创建一个从库，然后指向主库！非常棒！该信息需要在备份的时候加上  –slave-info .</li>
-</ul>
-<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><p>1）下载 Percona-XtraBackup，采用从阿里云oss下载的方式</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar    #本地上传</span><br><span class="line">tar xvf Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line">- percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br><span class="line">- percona-xtrabackup-24-debuginfo-2.4.12-1.el7.x86_64.rpm</span><br><span class="line">- percona-xtrabackup-test-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<p>2）rpm 方式安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<p>报错信息：提示缺少依赖</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">warning: percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">	libev.so.4()(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br><span class="line">	perl(DBD::mysql) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br><span class="line">	perl(Digest::MD5) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br><span class="line">	rsync is needed by percona-xtrabackup-24-2.4.9-1.el7.x86_64</span><br></pre></td></tr></table></figure>
-
-<p>解决方法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget https://mino-yn.oss-cn-qingdao.aliyuncs.com/libev-4.15-1.el6.x86_64.rpm</span><br><span class="line">yum -y install perl-DBD-MySQL</span><br><span class="line">yum -y install perl-Digest-MD5</span><br><span class="line">yum -y install rsync perl l perl-Digest-MD5</span><br><span class="line">rpm -ivh libev-4.15-1.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<h3 id="安装脚本"><a href="#安装脚本" class="headerlink" title="安装脚本"></a>安装脚本</h3><p>通过建立执行脚本<code>install_xtrabackup.sh</code> 进行安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line"># Install XtraBackup</span><br><span class="line">cd /usr/local/src</span><br><span class="line">wget http://10.190.177.9:8085/Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line">tar xvf Percona-XtraBackup-2.4.12-el7-x86_64-bundle.tar</span><br><span class="line"></span><br><span class="line">wget http://10.190.177.9:8085/libev-4.15-1.el6.x86_64.rpm</span><br><span class="line">yum -y install perl-DBD-MySQL</span><br><span class="line">yum -y install perl-Digest-MD5</span><br><span class="line">rpm -ivh libev-4.15-1.el6.x86_64.rpm</span><br><span class="line">rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line">xtrabackup --version</span><br></pre></td></tr></table></figure>
-
-<h2 id="其他问题"><a href="#其他问题" class="headerlink" title="其他问题"></a>其他问题</h2><h3 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h3><h4 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h4><p>使用<code>yum</code> 命令安装依赖包<code>percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</code>时报错</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">yum</span> <span class="bullet">-y</span> <span class="string">install</span> <span class="string">percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup1.png" alt></p>
-<p>报错提示<code>mariadb-libs</code> 与之前安装的 MySQL 发生冲突，查看 MySQL 安装包目录</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup2.png" alt></p>
-<p>检查后发现报错是由MySQL组件未安装完全导致的，之前安装MySQL时是通过 RPM 包的方式，为了省事只安装了部分组件便直接使用，未安装 MySQL 的<code>shared</code> 和<code>embedded</code> 组件。</p>
-<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a><strong>解决方法</strong></h4><p>为了方便，将未安装的 MySQL 组件安装上</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup3.png" alt></p>
-<p>将报错的<code>yum</code>命令重新执行，查看xtrabackup版本</p>
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/0.png" alt></p>
-<p>安装成功</p>
-<h3 id="问题二"><a href="#问题二" class="headerlink" title="问题二"></a>问题二</h3><h4 id="问题现象-1"><a href="#问题现象-1" class="headerlink" title="问题现象"></a>问题现象</h4><p>执行<code>rpm</code> 命令安装xtrabackup时报错冲突。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup_5.png" alt></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#搜索指定rpm包是否安装</span><br><span class="line">rpm -qa |grep xtrabackup</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/xtrabackup_6.png" alt></p>
-<h4 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h4><p>服务器上安装过<code>Percona XtraBackup2.2</code>, 但从mysql5.7开始，必须使用xtrabackup2.4以上版本才能完成备份,老的版本执行会报错，已不适用。将老版本卸载后重新安装.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -e 要删除的软件包</span><br></pre></td></tr></table></figure>
-
-<h3 id="问题三"><a href="#问题三" class="headerlink" title="问题三"></a>问题三</h3><h4 id="问题现象-2"><a href="#问题现象-2" class="headerlink" title="问题现象"></a>问题现象</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 src]# rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpmwarning: percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEYerror: Failed dependencies:	libc.so.6(GLIBC_2.14)(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64	libstdc++.so.6(GLIBCXX_3.4.15)(64bit) is needed by percona-xtrabackup-24-2.4.12-1.el7.x86_64</span><br></pre></td></tr></table></figure>
-
-<h4 id="解决方法："><a href="#解决方法：" class="headerlink" title="解决方法："></a><strong>解决方法</strong>：</h4><p>查看操作系统版本，<code>CentOS 6</code> 下载 <code>el6</code> 的安装包即可。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">cat</span> <span class="string">/etc/redhat-release</span></span><br><span class="line"><span class="string">CentOS</span> <span class="string">release</span> <span class="number">6.5</span> <span class="string">(Final)</span></span><br><span class="line"><span class="string">$</span> <span class="string">wget</span> <span class="attr">http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-xtrabackup-24-2.4.12-1.el6.x86_64.rpm</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>Tips：不要轻易在真实生产环境中直接安装，因为升级的过程中比较容易出现系统出错。</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1909,7 +1838,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-count">107</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1922,7 +1851,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/blog/tags/index.html">
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
