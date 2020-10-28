@@ -281,6 +281,157 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/31/scp-backstage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/12/31/scp-backstage/" itemprop="url">Linux下SCP后台运行传输文件</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-31T15:31:30+08:00">
+                2019-12-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>传输一个大文件另一台服务器，当传输速率不高时有时需要传输几个小时，至十几个小时，为了避免由于其他原因导致传输的中断，需要将 <code>scp</code> 放到后台中运行。后台执行我们常用 <code>nohup command &amp;</code> 但是<code>scp</code> 需要输入密码，所以无法直接使用 <code>nohup</code> 。</p>
+<h3 id="方法一、配置互信"><a href="#方法一、配置互信" class="headerlink" title="方法一、配置互信"></a>方法一、配置互信</h3><ul>
+<li><a href="https://mino-yn.github.io/blog/2019/08/23/ssh%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88%E5%8D%95%E5%90%91%EF%BC%89/">配置互信</a></li>
+<li>后台执行 <code>scp</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#可以使用-l控制传输速度，传输过程中占用过大带宽，影响其他服务器。(100000/8/1024=12M)</span><br><span class="line">nohup scp -l 100000 test.tar root@172.172.230.211:/data &amp;</span><br></pre></td></tr></table></figure>
+
+<h3 id="方法二、bg命令转后台执行"><a href="#方法二、bg命令转后台执行" class="headerlink" title="方法二、bg命令转后台执行"></a>方法二、bg命令转后台执行</h3><ul>
+<li>运行 <code>scp</code> 命令</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup scp -P 60022 -r /TRS/back/* root@47.95.110.25:/backup</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>输入密码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#此时输完密码进程会挂起，还是在前台执行</span><br><span class="line">nohup: ignoring input and appending output to `nohup.out&apos;</span><br><span class="line">root@47.95.110.25&apos;s password:</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>输入 <code>ctrl+z</code> 暂停程序,出现以下提示</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[1]+  Stopped                 nohup scp -P 60022 -r /TRS/back/* root@47.95.110.25:/backup</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>执行 <code>bg</code> 使进程在后台继续运行</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@hr-jf11 TRS]# bg</span><br><span class="line">[1]+ nohup scp -P 60022 -r /TRS/back/* root@47.95.110.25:/backup</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看 <code>scp</code> 进程，进程已经在后台执行了。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep scp</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/12/27/CentOS-MySQL-Download/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2040,132 +2191,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/11/15/linux-service/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/11/15/linux-service/" itemprop="url">CentOS 6与CentOS 7启停服务</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-15T13:48:29+08:00">
-                2019-11-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>查看系统版本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lsb_release -a             #可列出所有版本信息</span><br><span class="line">cat /etc/redhat-release    #只适合Redhat系的Linux</span><br><span class="line">cat /etc/issue             #适用于所有的Linux发行版</span><br></pre></td></tr></table></figure>
-
-<h3 id="CentOS-6"><a href="#CentOS-6" class="headerlink" title="CentOS 6"></a>CentOS 6</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 设置服务自启动</span><br><span class="line">chkconfig --add mysqld          # 添加服务</span><br><span class="line">chkconfig mysqld on             # 开机自启服务</span><br><span class="line">chkconfig mysqld off            # 关闭开机自启</span><br><span class="line">chkconfig --list | grep mysqld  # 查看</span><br><span class="line"></span><br><span class="line"># 查看状态、启动、停止、重启</span><br><span class="line">service mysqld status/start/stop/restart</span><br></pre></td></tr></table></figure>
-
-<h3 id="CentOS-7"><a href="#CentOS-7" class="headerlink" title="CentOS 7"></a>CentOS 7</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable mysqld.service  # 开机自启服务</span><br><span class="line">systemctl disable mysqld.service # 关闭开机自启</span><br><span class="line"></span><br><span class="line"># 查看状态、启动、停止、重启</span><br><span class="line">systemctl status/start/stop/restart mysqld.service</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2216,7 +2241,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-count">105</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
