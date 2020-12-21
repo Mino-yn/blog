@@ -1,6 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>阿里云 · DTS</title>
+    <url>/blog/2020/12/09/DTS/</url>
+    <content><![CDATA[<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>使用阿里云的 <code>DTS</code> 服务进行数据库迁移时常因为奇奇怪怪的错误导致迁移中断，由于服务对我们展示的信息实在有限每次都要提工单，沟通成本高耗时长。这里记录一下出现过的报错和处理方法，下次再出现同样的报错可作为参考。</p>
+<h2 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h2><h3 id="报错信息"><a href="#报错信息" class="headerlink" title="报错信息"></a>报错信息</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">framework: DTS-30010: read data for 3427015737611386880 failed cause: RuntimeException: com.mysql.jdbc.exceptions.jdbc4.CommunicationsException: Application was streaming results when the connection failed. Consider raising value of &apos;net_write_timeout&apos; on the server. CommunicationsException: Application was streaming results when the connection failed. Consider raising value of &apos;net_write_timeout&apos; on the server. EOFException: Can not read response from server. Expected to read 152 bytes, read 93 bytes before connection was unexpectedly lost.</span><br></pre></td></tr></table></figure>
+
+<p><strong>原因</strong></p>
+<ul>
+<li><p>单表数据量过大，且无主键</p>
+</li>
+<li><p>表没有主键 普通索引还是可空的 这种情况<code>dts</code> 没有办法分片 任务不能并发 超过 <code>max packet</code> 还会报错</p>
+</li>
+</ul>
+<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><ul>
+<li><p>调大参数 <code>net_write_timeout</code></p>
+</li>
+<li><p>调整参数 <code>max_allowed_packet</code> 为 <code>1G</code></p>
+</li>
+<li><p>添加主键后重建任务</p>
+</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>Win10 Navicat 15 试用</title>
+    <url>/blog/2020/11/25/Navicat-15/</url>
+    <content><![CDATA[<h3 id="Win10下Navicat15-试用结束临时解决办法"><a href="#Win10下Navicat15-试用结束临时解决办法" class="headerlink" title="Win10下Navicat15 试用结束临时解决办法"></a>Win10下Navicat15 试用结束临时解决办法</h3><h4 id="1-打开注册表-注册表先备份！"><a href="#1-打开注册表-注册表先备份！" class="headerlink" title="1. 打开注册表,注册表先备份！"></a>1. 打开注册表,注册表先备份！</h4><p>Win+R&gt;&gt; Regedit</p>
+<p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Navicat.jpg" alt></p>
+<h4 id="2-删除info文件夹的上一层文件夹"><a href="#2-删除info文件夹的上一层文件夹" class="headerlink" title="2. 删除info文件夹的上一层文件夹"></a>2. 删除info文件夹的上一层文件夹</h4><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Navicat1.jpg" alt></p>
+<h4 id="3-删除PremiumSoft下面的含有Navicat名字的文件夹"><a href="#3-删除PremiumSoft下面的含有Navicat名字的文件夹" class="headerlink" title="3. 删除PremiumSoft下面的含有Navicat名字的文件夹"></a>3. 删除PremiumSoft下面的含有Navicat名字的文件夹</h4><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Navicat2.jpg" alt></p>
+<h4 id="4-继续试用"><a href="#4-继续试用" class="headerlink" title="4. 继续试用"></a>4. 继续试用</h4><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/Navicat3.jpg" alt></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>云数据库MySQL运维</title>
+    <url>/blog/2020/11/04/tencent-cloud1/</url>
+    <content><![CDATA[<h3 id="云数据库MySQL运维"><a href="#云数据库MySQL运维" class="headerlink" title="云数据库MySQL运维"></a>云数据库MySQL运维</h3>]]></content>
+      <tags>
+        <tag>腾讯云CLoudLite</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>云数据库MySQL介绍</title>
     <url>/blog/2020/10/19/tencent-cloud/</url>
     <content><![CDATA[<h3 id="云数据库MySQL介绍"><a href="#云数据库MySQL介绍" class="headerlink" title="云数据库MySQL介绍"></a>云数据库MySQL介绍</h3><h4 id="腾讯云云数据库MySQL架构"><a href="#腾讯云云数据库MySQL架构" class="headerlink" title="腾讯云云数据库MySQL架构"></a>腾讯云云数据库MySQL架构</h4><p><strong>高可用版</strong></p>
@@ -61,7 +102,7 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysql_upgrade -uroot -p&apos;xxxxxx&apos;</span><br></pre></td></tr></table></figure>
 
 <p>6、升级完以后重启一下 <code>MySQL</code> </p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqladmin -uroot -p&apos;xxxxxx&apos; shutdown</span><br><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql --basedir=/usr/local/mysql --datadir=/data/mysqlmysql </span><br><span class="line">--version</span><br><span class="line"># mysql  Ver 14.14 Distrib 5.7.23, for el7 (x86_64) using  EditLine wrapper</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysqladmin -uroot -p&apos;xxxxxx&apos; shutdown</span><br><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql --basedir=/usr/local/mysql --datadir=/data/mysql</span><br><span class="line">mysql --version</span><br><span class="line"># mysql  Ver 14.14 Distrib 5.7.23, for el7 (x86_64) using  EditLine wrapper</span><br></pre></td></tr></table></figure>
 
 <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a><strong>问题</strong></h2><p>在升级 <code>mysql5.5</code>到 <code>mysql5.7</code> 的时候，替换 <code>mysql</code> 的 <code>base</code> 目录后，用<code>mysqld_safe</code> 命令无法启动，错误日志无记录：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/usr/local/mysql/data/dzsp/my.cnf --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data/dzsp</span><br></pre></td></tr></table></figure>
@@ -3432,7 +3473,20 @@
 <h4 id="方案三"><a href="#方案三" class="headerlink" title="方案三"></a>方案三</h4><p>建立一个软连接将正确的<code>socket</code>文件，链接到提示错误的<code>socket</code>文件路径位置</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@mysql-s mysql-tdds]# ls  /data/mysql-tdds/mysql.sock</span><br><span class="line">ls: 无法访问/data/mysql-tdds/mysql.sock: 没有那个文件或目录</span><br><span class="line">[root@mysql-s mysql-tdds]# ln -s /tmp/mysql.sock /data/mysql-tdds/mysql.sock</span><br><span class="line">[root@mysql-s mysql-tdds]# ls  /data/mysql-tdds/mysql.sock</span><br><span class="line">/data/mysql-tdds/mysql.sock</span><br></pre></td></tr></table></figure>
 
-]]></content>
+<h2 id="unblock-with-‘mysqladmin-flush-hosts"><a href="#unblock-with-‘mysqladmin-flush-hosts" class="headerlink" title="unblock with ‘mysqladmin flush-hosts"></a>unblock with ‘mysqladmin flush-hosts</h2><h3 id="问题现象-2"><a href="#问题现象-2" class="headerlink" title="问题现象"></a>问题现象</h3><p>系统应用登录的时候提示连接超时，数据库状态正常，但是应用日志报无法连接数据库。</p>
+<h3 id="原因分析-2"><a href="#原因分析-2" class="headerlink" title="原因分析"></a>原因分析</h3><p><code>telnet</code> 数据库是否通</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># telnet  8.8.9.9 3306</span></span><br><span class="line"><span class="string">Trying</span> <span class="number">8.8</span><span class="number">.9</span><span class="number">.9</span><span class="string">...</span></span><br><span class="line"><span class="string">Connected</span> <span class="string">to</span> <span class="number">8.8</span><span class="number">.9</span><span class="number">.9</span><span class="string">.</span></span><br><span class="line"><span class="string">Escape</span> <span class="string">character</span> <span class="string">is</span> <span class="string">'^]'</span><span class="string">.</span></span><br><span class="line"><span class="string">gHost</span> <span class="string">'kapp'</span> <span class="string">is</span> <span class="string">blocked</span> <span class="string">because</span> <span class="string">of</span> <span class="string">many</span> <span class="string">connection</span> <span class="string">errors;</span> <span class="string">unblock</span> <span class="string">with</span> <span class="string">'mysqladmin flush-hosts'</span><span class="string">Connection</span> <span class="string">closed</span> <span class="string">by</span> <span class="string">foreign</span> <span class="string">host.</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>同一个ip在短时间内产生太多（超过mysql数据库max_connect_errors的最大值）中断的数据库连接而导致的阻塞</strong></p>
+<ul>
+<li><code>max_connect_errors</code> 是一个 <code>MySQL</code>中与安全有关的计数器值，它负责阻止过多尝试失败的客户端以防止暴力破解密码的情况。</li>
+<li><code>max_connect_errors</code> 的值与性能并无太大关系，默认是 <code>10</code> ，不知道为何改为了 <code>2</code> 。意味着如果某一客户端尝试连接此<code>MySQL</code> 服务器，但是失败（如密码错误等等）2次 ，则 <code>MySQL</code> 会无条件强制阻止此客户端连接。<br>如果希望重置此计数器的值，则必须重启<code>MySQL</code> 服务器或者执行 <code>mysql&gt; flush hosts</code> ; 命令。当这一客户端成功连接一次 <code>MySQL</code> 服务器后，针对此客户端的 <code>max_connect_errors</code> 会清零。<br>如果 <code>max_connect_errors</code> 设置过小，则网页可能提示无法连接数据库服务器。</li>
+</ul>
+<h3 id="解决方法-2"><a href="#解决方法-2" class="headerlink" title="解决方法"></a>解决方法</h3><h4 id="方案一-1"><a href="#方案一-1" class="headerlink" title="方案一"></a>方案一</h4><p>修改 <code>max_connect_errors</code>的值</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment">#进入Mysql数据库查看max_connect_errors：</span></span><br><span class="line"><span class="string">&gt; show variables like '%max_connect_errors%';</span></span><br><span class="line"><span class="string">#修改max_connect_errors的值：</span></span><br><span class="line"><span class="string">&gt; set global max_connect_errors = 100;</span></span><br><span class="line"><span class="string">#查看是否修改成功</span></span><br><span class="line"><span class="string">&gt; show variables like '%max_connect_errors%';</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="方案二-1"><a href="#方案二-1" class="headerlink" title="方案二"></a>方案二</h4><p>使用 <code>mysqladmin flush-hosts</code>命令清理一下 <code>hosts</code> 文件</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment">#在查找到的目录下使用命令修改：</span></span><br><span class="line"><span class="string">&gt; mysqladmin -u xxx -p flush-hosts</span></span><br><span class="line"><span class="string">#或</span></span><br><span class="line"><span class="string">&gt; flush hosts;</span></span><br></pre></td></tr></table></figure>]]></content>
   </entry>
   <entry>
     <title>pt-online-schema-change</title>
@@ -4114,6 +4168,18 @@
 
 <p><strong>更新缓存</strong></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yum makecache</span><br></pre></td></tr></table></figure>
+
+<h4 id="更新缓存时报错"><a href="#更新缓存时报错" class="headerlink" title="更新缓存时报错"></a><strong>更新缓存时报错</strong></h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">file:///media/CentOS/repodata/repomd.xml: [Errno 14] Could not open/read file:///media/CentOS/repodata/repomd.xml</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法：将本地源关闭</strong></p>
+<p><code>yum</code>  寻包的顺序应该先是本地源，再寻网络源。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">将/etc/yum.repos.d/CentOS-Media.repo里面的enabled=1改成enabled=0即可</span><br></pre></td></tr></table></figure>
+
+<p><strong>然后开始报其他错了</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">file:///tmp/rsyslog_v8/repodata/repomd.xml: [Errno 14] Could not open/read file:///tmp/rsyslog_v8/repodata/repomd.xml</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#看着和之前的报错很类似呀</span><br><span class="line">$ cd /etc/yum.repos.d/</span><br><span class="line">$ ls</span><br><span class="line">CentOS-Base.repo  CentOS-Base.repo.bak  CentOS-Debuginfo.repo.bak  CentOS-Media.repo  CentOS-Vault.repo.bak  rsyslog.repo</span><br><span class="line">$ vi rsyslog.repo</span><br><span class="line">[rsyslog]</span><br><span class="line">name=rsyslog</span><br><span class="line">baseurl=file:///tmp/rsyslog_v8</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">#把enabled=1改成enabled=0</span><br><span class="line">#重新执行yum makecache</span><br></pre></td></tr></table></figure>
 
 <h3 id="问题二"><a href="#问题二" class="headerlink" title="问题二"></a>问题二</h3><p><code>yum</code> 安装插件报错： [Errno -1] Metadata file does not match checksum</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@localhost src]# yum -y install perl-IO-Socket-SSL</span><br><span class="line">已加载插件：fastestmirror, langpacks</span><br><span class="line">Determining fastest mirrors</span><br><span class="line"> * base: mirrors.aliyun.com</span><br><span class="line"> * extras: mirrors.aliyun.com</span><br><span class="line"> * updates: mirrors.aliyun.com</span><br><span class="line">base                                                                                                                                                 | 3.6 kB  00:00:00</span><br><span class="line">extras                                                                                                                                               | 2.9 kB  00:00:00</span><br><span class="line">updates                                                                                                                                              | 2.9 kB  00:00:00</span><br><span class="line">extras/7/x86_64/primary_db     FAILED</span><br><span class="line">http://mirrors.aliyun.com/centos/7/extras/x86_64/repodata/42c5d8fe33ef3f1ab94d1ae257bc56201267d8af60132e3d778e586693e50a8f-primary.sqlite.bz2: [Errno -1] Metadata file does not match checksum</span><br></pre></td></tr></table></figure>
@@ -5106,49 +5172,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Linux入门基础</title>
-    <url>/blog/2019/08/09/introduction-to-Linux/</url>
-    <content><![CDATA[<h2 id="Linux目录介绍"><a href="#Linux目录介绍" class="headerlink" title="Linux目录介绍"></a>Linux目录介绍</h2><p><strong>/etc：</strong>(etcetera) 系统配置文件存放的目录，不建议在此目录下存放可执行文件。</p>
-<p><strong>/usr：</strong>(unix shared resources) 应用程序存放目录，</p>
-<ul>
-<li>/usr/bin ：存放应用程序，</li>
-<li>/usr/share ：存放共享数据，</li>
-<li>/usr/lib： 存放不能直接运行的，却是许多程序运行所必需的一些函数库文件。</li>
-<li>/usr/local:存放软件升级包。</li>
-</ul>
-<p><strong>/root：</strong> 系统管理员root的家目录，系统第一个启动的分区为/，所以最好将/root和/放置在一个分区下。</p>
-<h2 id="Linux指令"><a href="#Linux指令" class="headerlink" title="Linux指令"></a>Linux指令</h2><p><strong>cd命令：</strong></p>
-<p>用于切换当前目录，它的参数是要切换到的目录的路径，可以是绝对路径，也可以是相对路径。</p>
-<ul>
-<li><p>cd /root/Docements         # 切换到目录/root/Docements  </p>
-</li>
-<li><p>cd ./path                             # 切换到当前目录下的path目录中，“.”表示当前目录    </p>
-</li>
-<li><p>cd ../path                            # 切换到上层目录中的path目录中，“..”表示上一层目录</p>
-</li>
-</ul>
-<p><strong>ls命令：</strong></p>
-<p>ls命令是用来查看文件与目录的命令，list之意，它的参数非常多，下面就列出一些常用的参数 。</p>
-<ul>
-<li><p>-l ：一般直接使用ll，列出长数据串，包含文件的属性与权限数据等</p>
-</li>
-<li><p>-a ：列出全部的文件，连同隐藏文件（开头为.的文件）一起列出来（常用）  </p>
-</li>
-<li><p>-d ：仅列出目录本身，而不是列出目录的文件数据  </p>
-</li>
-<li><p>-h ：将文件容量以较易读的方式（GB，kB等）列出来  </p>
-</li>
-<li><p>-R ：连同子目录的内容一起列出（递归列出），等于该目录下的所有文件都会显示出来  </p>
-</li>
-</ul>
-<p><strong>pwd</strong>：查看用户当前目录</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">df -h                #查看磁盘占用比例</span><br><span class="line">ls -lht              #查看目录下所有文件大小总量</span><br><span class="line">du -sh * |sort -nr   #将当前目录下的文件从大到小排序  -n：从小到大排序</span><br><span class="line">tail -f 文件名        #动态查看日志信息</span><br><span class="line">tail -n 20 文件名     #查看最后一部分日志</span><br><span class="line">rm -rf               #删除文件</span><br><span class="line">top                  #动态查看cpu状态</span><br><span class="line"></span><br><span class="line">#服务器创建新用户</span><br><span class="line">$sudo useradd -m -s /bin/bash userName    // 在/home目录下新建userName目录</span><br><span class="line">$sudo passwd userName                     //设置密码</span><br></pre></td></tr></table></figure>
-
-<h3 id="Linux常用指令"><a href="#Linux常用指令" class="headerlink" title="Linux常用指令"></a>Linux常用指令</h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 8核 * 32G * 600GB</span></span><br><span class="line"><span class="comment"># 查看系统CPU</span></span><br><span class="line"><span class="string">cat</span> <span class="string">/proc/cpuinfo</span> <span class="string">| grep "cores"|uniq</span></span><br><span class="line"><span class="string"># 显示系统内存</span></span><br><span class="line"><span class="string">free -g</span></span><br><span class="line"><span class="string"># 显示系统硬盘</span></span><br><span class="line"><span class="string">fdisk -l | grep Disk</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看所有安装的软件包</span></span><br><span class="line"><span class="string">rpm -qa |grep xtrabackup  </span></span><br><span class="line"><span class="string"># 删除安装包</span></span><br><span class="line"><span class="string">rpm -e 文件名</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 授权+执行</span></span><br><span class="line"><span class="string">chmod +x getip</span></span><br><span class="line"><span class="string">./getip</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下的文件数量</span></span><br><span class="line"><span class="string">ls -l |grep  "^-" | wc -l   </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下各文件、文件夹的大小</span></span><br><span class="line"><span class="string">du -h –max-depth=1 *</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#删除软链</span></span><br><span class="line"><span class="string">rm -rf  ./test_chk_ln</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 后台执行任务</span></span><br><span class="line"><span class="string">nohup 执行的任务指令 &amp;</span></span><br></pre></td></tr></table></figure>
-
-]]></content>
-  </entry>
-  <entry>
     <title>Docker · 安装</title>
     <url>/blog/2019/08/09/install-docker/</url>
     <content><![CDATA[<h2 id="Docker安装说明"><a href="#Docker安装说明" class="headerlink" title="Docker安装说明"></a>Docker安装说明</h2><p>Docker 是一个开源的商业产品，有两个版本：社区版（Community Edition，缩写为 CE）和企业版（Enterprise Edition，缩写为 EE）。企业版包含了一些收费服务，个人开发者一般用不到。</p>
@@ -5194,6 +5217,49 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 出现以下内容则表示docker仓库配置成功：</span></span><br><span class="line"><span class="string">Loaded</span> <span class="attr">plugins:</span> <span class="string">fastestmirror</span></span><br><span class="line"><span class="string">adding</span> <span class="string">repo</span> <span class="attr">from:</span> <span class="attr">http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span></span><br><span class="line"><span class="string">grabbing</span> <span class="string">file</span> <span class="attr">http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span> <span class="string">to</span> <span class="string">/etc/yum.repos.d/docker-ce.repo</span></span><br><span class="line"><span class="string">repo</span> <span class="string">saved</span> <span class="string">to</span> <span class="string">/etc/yum.repos.d/docker-ce.repo</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+  </entry>
+  <entry>
+    <title>Linux入门基础</title>
+    <url>/blog/2019/08/09/introduction-to-Linux/</url>
+    <content><![CDATA[<h2 id="Linux目录介绍"><a href="#Linux目录介绍" class="headerlink" title="Linux目录介绍"></a>Linux目录介绍</h2><p><strong>/etc：</strong>(etcetera) 系统配置文件存放的目录，不建议在此目录下存放可执行文件。</p>
+<p><strong>/usr：</strong>(unix shared resources) 应用程序存放目录，</p>
+<ul>
+<li>/usr/bin ：存放应用程序，</li>
+<li>/usr/share ：存放共享数据，</li>
+<li>/usr/lib： 存放不能直接运行的，却是许多程序运行所必需的一些函数库文件。</li>
+<li>/usr/local:存放软件升级包。</li>
+</ul>
+<p><strong>/root：</strong> 系统管理员root的家目录，系统第一个启动的分区为/，所以最好将/root和/放置在一个分区下。</p>
+<h2 id="Linux指令"><a href="#Linux指令" class="headerlink" title="Linux指令"></a>Linux指令</h2><p><strong>cd命令：</strong></p>
+<p>用于切换当前目录，它的参数是要切换到的目录的路径，可以是绝对路径，也可以是相对路径。</p>
+<ul>
+<li><p>cd /root/Docements         # 切换到目录/root/Docements  </p>
+</li>
+<li><p>cd ./path                             # 切换到当前目录下的path目录中，“.”表示当前目录    </p>
+</li>
+<li><p>cd ../path                            # 切换到上层目录中的path目录中，“..”表示上一层目录</p>
+</li>
+</ul>
+<p><strong>ls命令：</strong></p>
+<p>ls命令是用来查看文件与目录的命令，list之意，它的参数非常多，下面就列出一些常用的参数 。</p>
+<ul>
+<li><p>-l ：一般直接使用ll，列出长数据串，包含文件的属性与权限数据等</p>
+</li>
+<li><p>-a ：列出全部的文件，连同隐藏文件（开头为.的文件）一起列出来（常用）  </p>
+</li>
+<li><p>-d ：仅列出目录本身，而不是列出目录的文件数据  </p>
+</li>
+<li><p>-h ：将文件容量以较易读的方式（GB，kB等）列出来  </p>
+</li>
+<li><p>-R ：连同子目录的内容一起列出（递归列出），等于该目录下的所有文件都会显示出来  </p>
+</li>
+</ul>
+<p><strong>pwd</strong>：查看用户当前目录</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">df -h                #查看磁盘占用比例</span><br><span class="line">ls -lht              #查看目录下所有文件大小总量</span><br><span class="line">du -sh * |sort -nr   #将当前目录下的文件从大到小排序  -n：从小到大排序</span><br><span class="line">tail -f 文件名        #动态查看日志信息</span><br><span class="line">tail -n 20 文件名     #查看最后一部分日志</span><br><span class="line">rm -rf               #删除文件</span><br><span class="line">top                  #动态查看cpu状态</span><br><span class="line"></span><br><span class="line">#服务器创建新用户</span><br><span class="line">$sudo useradd -m -s /bin/bash userName    // 在/home目录下新建userName目录</span><br><span class="line">$sudo passwd userName                     //设置密码</span><br></pre></td></tr></table></figure>
+
+<h3 id="Linux常用指令"><a href="#Linux常用指令" class="headerlink" title="Linux常用指令"></a>Linux常用指令</h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 8核 * 32G * 600GB</span></span><br><span class="line"><span class="comment"># 查看系统CPU</span></span><br><span class="line"><span class="string">cat</span> <span class="string">/proc/cpuinfo</span> <span class="string">| grep "cores"|uniq</span></span><br><span class="line"><span class="string"># 显示系统内存</span></span><br><span class="line"><span class="string">free -g</span></span><br><span class="line"><span class="string"># 显示系统硬盘</span></span><br><span class="line"><span class="string">fdisk -l | grep Disk</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看所有安装的软件包</span></span><br><span class="line"><span class="string">rpm -qa |grep xtrabackup  </span></span><br><span class="line"><span class="string"># 删除安装包</span></span><br><span class="line"><span class="string">rpm -e 文件名</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 授权+执行</span></span><br><span class="line"><span class="string">chmod +x getip</span></span><br><span class="line"><span class="string">./getip</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下的文件数量</span></span><br><span class="line"><span class="string">ls -l |grep  "^-" | wc -l   </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 查看当前目录下各文件、文件夹的大小</span></span><br><span class="line"><span class="string">du -h –max-depth=1 *</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#删除软链</span></span><br><span class="line"><span class="string">rm -rf  ./test_chk_ln</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 后台执行任务</span></span><br><span class="line"><span class="string">nohup 执行的任务指令 &amp;</span></span><br></pre></td></tr></table></figure>
 
 ]]></content>
   </entry>

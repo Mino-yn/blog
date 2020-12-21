@@ -281,6 +281,409 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/18/mysql-install/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/18/mysql-install/" itemprop="url">mysql install</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-18T16:23:59+08:00">
+                2019-09-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/17/MySQL-Trusteeship/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/17/MySQL-Trusteeship/" itemprop="url">数据库托管流程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-17T15:20:12+08:00">
+                2019-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="接入堡垒机"><a href="#接入堡垒机" class="headerlink" title="接入堡垒机"></a>接入堡垒机</h4><ol>
+<li><p>首先登录至目标服务器（加入托管的数据库所在服务器），若无法登录需先申请登录目标服务器的特权账号。</p>
+</li>
+<li><p>配置从跳板机到目标服务器的<a href="https://mino-yn.github.io/blog/2019/08/23/ssh免密登录（单向）/">免密登录</a>。</p>
+</li>
+<li><p>提供目标服务器的ip和备注信息，将服务器加入堡垒机</p>
+</li>
+</ol>
+<h4 id="设置MySQL用户"><a href="#设置MySQL用户" class="headerlink" title="设置MySQL用户"></a>设置MySQL用户</h4><ol>
+<li><p>通过堡垒机登录需要托管的MySQL数据库</p>
+</li>
+<li><p>创建MySQL用户：sre 、hdm</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#创建用户sre，赋予全局权限</span><br><span class="line">CREATE USER &apos;hdm&apos;@&apos;%&apos; IDENTIFIED BY PASSWORD &apos;*14533888C6CA3952B3957903FF7E69469C7E3A2B&apos;;</span><br><span class="line">GRANT SHOW DATABASES, PROCESS, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO &apos;hdm&apos;@&apos;%&apos;;</span><br><span class="line">GRANT SELECT ON *.* TO &apos;hdm&apos;@&apos;%&apos;;</span><br><span class="line"></span><br><span class="line">#创建用户hdm，用于接入阿里云HDM</span><br><span class="line">CREATE USER &apos;sre&apos;@&apos;%&apos; IDENTIFIED BY PASSWORD &apos;*66CC8D8F94978869E17ABDA6FD2E1A5D817E619E&apos;;</span><br><span class="line">GRANT all privileges on *.* to &apos;sre&apos;@&apos;%&apos; WITH GRANT OPTION;</span><br></pre></td></tr></table></figure>
+
+<h4 id="接入HDM"><a href="#接入HDM" class="headerlink" title="接入HDM"></a>接入HDM</h4><p>将目标服务器的<a href="https://mino-yn.github.io/blog/2019/09/09/HDM/">数据库实例接入HDM</a>，方便对数据库状态进行监控</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/12/Master-slave-replication/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2019/09/12/Master-slave-replication/" itemprop="url">使用Xtrabackup搭建MySQL主从</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-12T17:39:34+08:00">
+                2019-09-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="数据迁移"><a href="#数据迁移" class="headerlink" title="数据迁移"></a>数据迁移</h3><h4 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h4><p>1.主从，<a href="https://mino-yn.github.io/blog/2019/09/11/Xtrabackup/">安装 XtraBackup</a></p>
+<p>2.<a href="https://mino-yn.github.io/blog/2019/08/23/ssh%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95%EF%BC%88%E5%8D%95%E5%90%91%EF%BC%89/">配置主从互信</a></p>
+<p>3.主库，全备数据并传输到从服务器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#备份主库：</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=root --password=XXX --no-timestamp /data/backup</span><br><span class="line"></span><br><span class="line">#传输到从库：</span><br><span class="line">scp -r /data/backup/* root@10.133.7.19:/data/backup</span><br></pre></td></tr></table></figure>
+
+<p>4.从库，恢复全备数据</p>
+<ul>
+<li>主库和从库的数据库版本需一致</li>
+<li>MySQL配置文件内容尽可能保持一致</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#停止MySQL服务</span></span><br><span class="line"><span class="string">mysqladmin</span> <span class="bullet">-uroot</span> <span class="bullet">-pHaier@123</span> <span class="string">shutdown</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#备份上应用日志，一般没有看到报错且最后显示 OK 就没有问题</span></span><br><span class="line"><span class="string">innobackupex</span> <span class="bullet">--defaults-file=/etc/my.cnf</span> <span class="bullet">--apply-log</span> <span class="string">/data/backup</span> </span><br><span class="line"></span><br><span class="line"><span class="comment">#将原MySQL数据目录改名</span></span><br><span class="line"><span class="string">mv</span> <span class="string">mysql</span> <span class="string">mysql_bak</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#重建Mysql数据目录</span></span><br><span class="line"><span class="string">mkdir</span> <span class="string">mysql</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#恢复数据,将备份还原到 my.cnf 指定的 datadir 中，不指定 --defaults-file，默认 /etc/my.cnf</span></span><br><span class="line"><span class="comment">#--move-back 不保留备份，相当于 mv</span></span><br><span class="line"><span class="comment">#--copy-back 保留备份，相当于cp</span></span><br><span class="line"><span class="string">innobackupex</span> <span class="bullet">--copy-back</span> <span class="string">/data/backup</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#对新目录进行授权</span></span><br><span class="line"><span class="string">chown</span> <span class="bullet">-R</span> <span class="attr">mysql:mysql</span> <span class="string">mysql</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#重启MySQL服务，如果MySQL数据库启动失败，查看确认新的数据目录权限用户是否为mysql</span></span><br><span class="line"><span class="string">/usr/local/mysql/bin/mysqld_safe</span> <span class="bullet">--defaults-file=/etc/my.cnf</span> <span class="bullet">--user=mysql</span> <span class="string">&gt;/dev/null</span> <span class="string">&amp;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="时间预估"><a href="#时间预估" class="headerlink" title="时间预估"></a>时间预估</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">文件大小：185 GB</span><br><span class="line">备份时间：25 min</span><br><span class="line">传输时间：30 min   ---以100MB/s的传输速度为基准</span><br><span class="line">恢复时间：1h 10 min</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">10.159.39.80 -&gt; 10.199.96.192</span><br><span class="line">文件大小：227G</span><br><span class="line">备份时间：32min</span><br><span class="line">传输时间：35min</span><br><span class="line">恢复时间：26min</span><br></pre></td></tr></table></figure>
+
+<h3 id="搭建主从关系"><a href="#搭建主从关系" class="headerlink" title="搭建主从关系"></a>搭建主从关系</h3><p>修改从库参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">server-id                 = 3306101</span><br><span class="line">log-bin                   = /data/mysql/mysql-bin</span><br><span class="line">read_only                 = 1</span><br><span class="line">log_slave_updates         = 1</span><br></pre></td></tr></table></figure>
+
+<p>从库，建立复制关系</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@GPCMS-DB-M</span> <span class="string">backup]#</span> <span class="string">cat</span> <span class="string">xtrabackup_binlog_info</span></span><br><span class="line"><span class="string">mysql-binlog.000297</span>	<span class="number">900834433</span></span><br><span class="line"></span><br><span class="line"><span class="string">CHANGE</span> <span class="string">MASTER</span> <span class="string">TO</span> <span class="string">MASTER_HOST='10.133.7.18',</span></span><br><span class="line"><span class="string">MASTER_USER='repl',</span></span><br><span class="line"><span class="string">MASTER_PASSWORD='Changeme_123',</span></span><br><span class="line"><span class="string">MASTER_PORT=3306,</span></span><br><span class="line"><span class="string">MASTER_LOG_FILE='mysql-binlog.000297',</span> <span class="string">MASTER_LOG_POS=900834433,</span></span><br><span class="line"><span class="string">MASTER_CONNECT_RETRY=10;</span></span><br><span class="line"></span><br><span class="line"><span class="string">MySQL</span> <span class="string">[(none)]&gt;</span> <span class="string">start</span> <span class="string">slave;</span></span><br><span class="line"><span class="string">Query</span> <span class="string">OK,</span> <span class="number">0</span> <span class="string">rows</span> <span class="string">affected</span> <span class="string">(0.00</span> <span class="string">sec)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="错误分析"><a href="#错误分析" class="headerlink" title="错误分析"></a>错误分析</h3><h4 id="案例一"><a href="#案例一" class="headerlink" title="案例一"></a>案例一</h4><p>恢复数据完成后，重启数据库失败，<code>error.log</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[ERROR] Can&apos;t open the mysql.plugin table. Please run mysql_upgrade to create it.</span><br><span class="line">[ERROR] Fatal error: Can&apos;t open and lock privilege tables: Table &apos;mysql.host&apos; doesn&apos;t exist</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决</strong></p>
+<p>备份目录下缺失数据库文件目录，从<code>/data/backup</code> 或主库 <code>/data/mysql</code> 目录下将缺失的数据目录文件传输到从库相应位置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scp -r root@10.199.96.192:/data/mysql/link /data/mysql</span><br><span class="line">scp -r root@10.199.96.192:/data/mysql /data/mysql</span><br><span class="line">scp -r root@10.199.96.192:/data/mysql/performance_schema /data/mysql</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/09/11/Xtrabackup/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1355,6 +1758,18 @@
 <p><strong>更新缓存</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yum makecache</span><br></pre></td></tr></table></figure>
 
+<h4 id="更新缓存时报错"><a href="#更新缓存时报错" class="headerlink" title="更新缓存时报错"></a><strong>更新缓存时报错</strong></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">file:///media/CentOS/repodata/repomd.xml: [Errno 14] Could not open/read file:///media/CentOS/repodata/repomd.xml</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法：将本地源关闭</strong></p>
+<p><code>yum</code>  寻包的顺序应该先是本地源，再寻网络源。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">将/etc/yum.repos.d/CentOS-Media.repo里面的enabled=1改成enabled=0即可</span><br></pre></td></tr></table></figure>
+
+<p><strong>然后开始报其他错了</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">file:///tmp/rsyslog_v8/repodata/repomd.xml: [Errno 14] Could not open/read file:///tmp/rsyslog_v8/repodata/repomd.xml</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#看着和之前的报错很类似呀</span><br><span class="line">$ cd /etc/yum.repos.d/</span><br><span class="line">$ ls</span><br><span class="line">CentOS-Base.repo  CentOS-Base.repo.bak  CentOS-Debuginfo.repo.bak  CentOS-Media.repo  CentOS-Vault.repo.bak  rsyslog.repo</span><br><span class="line">$ vi rsyslog.repo</span><br><span class="line">[rsyslog]</span><br><span class="line">name=rsyslog</span><br><span class="line">baseurl=file:///tmp/rsyslog_v8</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">#把enabled=1改成enabled=0</span><br><span class="line">#重新执行yum makecache</span><br></pre></td></tr></table></figure>
+
 <h3 id="问题二"><a href="#问题二" class="headerlink" title="问题二"></a>问题二</h3><p><code>yum</code> 安装插件报错： [Errno -1] Metadata file does not match checksum</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost src]# yum -y install perl-IO-Socket-SSL</span><br><span class="line">已加载插件：fastestmirror, langpacks</span><br><span class="line">Determining fastest mirrors</span><br><span class="line"> * base: mirrors.aliyun.com</span><br><span class="line"> * extras: mirrors.aliyun.com</span><br><span class="line"> * updates: mirrors.aliyun.com</span><br><span class="line">base                                                                                                                                                 | 3.6 kB  00:00:00</span><br><span class="line">extras                                                                                                                                               | 2.9 kB  00:00:00</span><br><span class="line">updates                                                                                                                                              | 2.9 kB  00:00:00</span><br><span class="line">extras/7/x86_64/primary_db     FAILED</span><br><span class="line">http://mirrors.aliyun.com/centos/7/extras/x86_64/repodata/42c5d8fe33ef3f1ab94d1ae257bc56201267d8af60132e3d778e586693e50a8f-primary.sqlite.bz2: [Errno -1] Metadata file does not match checksum</span><br></pre></td></tr></table></figure>
 
@@ -1565,474 +1980,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/29/my-cnf/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/08/29/my-cnf/" itemprop="url">MySQL的配置文件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-29T15:46:02+08:00">
-                2019-08-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>my.cnf是数据库的配置文件，my.cnf文件就是把在命令行上启动MySQL时后面的参数用my.cnf配置好，使得在下载启动时无需再命令上加参数。</p>
-<p>MySQL的很多性能优化工作、主从复制等都是在调整参数以适应不同时期不同数量级的数据，因此理解my.cnf中的参数非常重要，只有理解了参数设置，才能对数据库进行某些方面的调优工作。</p>
-<p>my.cnf文件，分为Client section 和 Server section两块</p>
-<h3 id="Client-section"><a href="#Client-section" class="headerlink" title="Client section"></a>Client section</h3><p>配置MySQL客户端参数，常见参数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[client]             #客户端设置，客户端默认的连接参数</span><br><span class="line">port                      = 3306                       #连接服务器默认端口            </span><br><span class="line">socket                    = /data/mysql/mysql.sock     #用于本地连接的套接字文件，与服务端配置相同</span><br><span class="line">default-character-set     = utf8mb4                #编码</span><br></pre></td></tr></table></figure>
-
-<h3 id="Server-section"><a href="#Server-section" class="headerlink" title="Server section"></a>Server section</h3><p>可以通过 show variables like ‘%参数名%’ 来查看MySQL数据库中的参数。</p>
-<p>MySQL Server端核心参数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">innodb_buffer_pool                   #缓存被访问过的表和索引文件，一般设置为物理内存的50%-80%</span><br><span class="line">innodb_buffer_pool_instance          #把innodb_buffer_pool划分为多个实例，提高并发性</span><br><span class="line">innodb_buffer_pool_load_at_startup   #开启这两个参数后可将热数据快速加载回来 </span><br><span class="line">innodb_buffer_pool_dump_at_shutdown </span><br><span class="line">innodb_data_file_path                #指定系统表空间文件的路径和ibdata1文件的大小，建议1G</span><br><span class="line">innodb_thread_concurrency            #InnoDB内核最大并发线程数，默认为0，代表不受限制</span><br><span class="line">max_connections                      #MySQL数据库的最大连接数	</span><br><span class="line">expire_logs_days                     #binlog的过期时间，单位：天</span><br><span class="line">slow_query_log                       #慢查询日志的开关，生产环境需开启慢查询</span><br><span class="line">long_query_time                      #慢查询时间，单位：秒  SQL语句超过该参数所设时间，将被记录至慢查询日志</span><br><span class="line">server-id                            #标识MySQL主从结构中的唯一标识，搭建主从环境时，两台机器的server-id不能一样</span><br><span class="line">binlog_format                        #二进制日志格式，Binlog格式：statement、row、mixed 生产环境建议使用row</span><br><span class="line">lower_case_table_names               #表名是否区分大小写，0:区分 1:不区分，以小写储存</span><br></pre></td></tr></table></figure>
-
-<h3 id="参数类型"><a href="#参数类型" class="headerlink" title="参数类型"></a>参数类型</h3><p>MySQL数据库将参数分为两类：1、动态参数  2、静态参数</p>
-<h4 id="动态参数"><a href="#动态参数" class="headerlink" title="动态参数"></a>动态参数</h4><p>在MySQL实例的运行过程中，可以对动态参数进行在线修改，可通过 set global 或 set session 两个命令进行设置</p>
-<p><strong>global：</strong> 全局参数，用global进行修改，退出当前会话后仍然生效，但重启数据库，参数仍会失效。</p>
-<p><strong>session：</strong> 只针对当前会话生效，退出后设置的参数立即失效。</p>
-<h4 id="静态参数："><a href="#静态参数：" class="headerlink" title="静态参数："></a>静态参数：</h4><p>在线无法修改参数，只能将需要修改的参数写到配置文件中，重启数据库才可以</p>
-<h3 id="my-cnf"><a href="#my-cnf" class="headerlink" title="my.cnf"></a>my.cnf</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">[client]     #客户端设置，客户端默认的连接参数</span><br><span class="line">port                      = 3306                     #连接服务器默认端口            </span><br><span class="line">socket                    = /data/mysql/mysql.sock   #用于本地连接的套接字文件，与服务端配置相同</span><br><span class="line"></span><br><span class="line">[mysqld]     #服务端基本设置</span><br><span class="line">port                      = 3306                     #指定MySQL开放的端口</span><br><span class="line">socket                    = /data/mysql/mysql.sock   #套接字文件</span><br><span class="line">pid_file                  = /data/mysql/mysql.pid    #pid文件所在目录</span><br><span class="line">basedir                   = /usr/local/mysql         #MySQL的安装目录</span><br><span class="line">datadir                   = /data/mysql              #MySQL数据文件存放目录</span><br><span class="line">character_set_server      = utf8                     #服务端默认编码</span><br><span class="line"></span><br><span class="line"># LOG        #日志设置</span><br><span class="line">slow_query_log            = 1                        #慢查询日志的开关</span><br><span class="line">long_query_time           = 5                        #慢查询时间</span><br><span class="line">log_error                 = /data/mysql/error.log    #错误日志路径</span><br><span class="line">slow_query_log_file       = /data/mysql/slow.log     #慢查询日志路径</span><br><span class="line"></span><br><span class="line"># INNODB</span><br><span class="line">innodb_data_home_dir      = /data/mysql              #innodb引擎的共享表空间数据文件根目录</span><br><span class="line">innodb_buffer_pool_size   = 10240M                   #缓存被访问过的表和索引文件，位于主内存中</span><br><span class="line">innodb_log_file_size      = 1G                       #Redo log日志的大小</span><br><span class="line">innodb_data_file_path     = ibdata1:1G:autoextend    #指定innodb共享表空间文件的路径和ibdatal文件的大小</span><br><span class="line"></span><br><span class="line"># OTHER</span><br><span class="line">max_connections           = 3000                     #MySQL数据库的最大连接数</span><br><span class="line">interactive_timeout       = 600                      #服务器关闭交互式连接前等待活动的时间</span><br><span class="line">wait_timeout              = 600                      #服务器关闭非交互式连接前等待活动的时间</span><br><span class="line">lower_case_table_names    = 1                        #表名是否区分大小写，0区分大小写，1不区分。默认：0 </span><br><span class="line">log_timestamps            = SYSTEM                   #控制 error log、slow_log、genera log等记录日志的显示时间为系统时间</span><br><span class="line">explicit_defaults_for_timestamp = 1                  #未指定timestamp列为not null时允许向timestamp列插入null值</span><br><span class="line">skip-ssl                                             #关闭ssl功能</span><br><span class="line">skip-name-resolve                                    #禁用DNS解析</span><br><span class="line"></span><br><span class="line"># REPLICATION</span><br><span class="line">server-id                 = 3306100                  #用于表示MySQL主从关系的唯一标识，搭建主从环境时，两台机器的server-id不能一样</span><br><span class="line">log-bin                   = /data/mysql/mysql-bin    #二进制文件路径</span><br><span class="line">sync_binlog               = 0                        #MySQL不控制binlog的刷新，由文件系统自己控制它的缓存的刷新。</span><br><span class="line">max_binlog_size           = 1024M                    #最大二进制日志文件大小</span><br><span class="line">binlog-format             = row                      #二进制日志的格式，有statement、row、mixed三种，生产环境使用row格式更安全，不会出现跨库复制丢数据的情况</span><br><span class="line">expire_logs_days          = 15                       #binlog的过期时间，单位为天</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/29/MySQL索引/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/08/29/MySQL索引/" itemprop="url">MySQL索引</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-29T13:37:51+08:00">
-                2019-08-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="认识索引"><a href="#认识索引" class="headerlink" title="认识索引"></a>认识索引</h2><p>索引<strong>是一个排序的列表</strong>，列表中存储着<strong>索引的值</strong>和包含这个值的<strong>数据所在行的物理地址</strong>，索引就好比书的<strong>目录页</strong>，在数据十分庞大的时候，索引可以大大加快查询的速度。因为使用索引后可以不用扫描全表来定位某行的数据，而是先通过<strong>索引表</strong>（是一个文件，需要占据物理空间）找到该行数据对应的<strong>物理地址</strong>然后访问相应的数据。</p>
-<p><strong>对于InnoDB存储引擎：</strong></p>
-<ul>
-<li>.frm 后缀的文件存储的是表结构。</li>
-<li>.ibd后缀的文件存放索引文件和数据(需要开启<code>innodb_file_per_table</code>参数)</li>
-</ul>
-<p>当对一张表建立索引时，索引文件的大小也会改变，当数据表中的数据因为增删改操作发生变化时，索引文件也会变化，但这个过程是由MySQL进行自动维护实现的，无需人为介入。这也是为什么不恰当的索引会影响MySQL性能的原因。</p>
-<p><strong>总结：</strong></p>
-<ul>
-<li>索引是按照特定的数据结构把数据表中的数据放在索引文件中，以便于快速查找；</li>
-<li>索引存在于磁盘中，会占据物理空间。</li>
-</ul>
-<p><strong>优点：</strong></p>
-<ul>
-<li>提高数据检索效率</li>
-<li>提高聚合函数效率</li>
-<li>提高排序效率</li>
-<li>使用覆盖索引可避免回表</li>
-</ul>
-<p><strong>创建索引注意事项：</strong></p>
-<ul>
-<li>选择性低的字段不要创建索引</li>
-<li>很少查询的字段不要创建索引</li>
-<li>大数据类型不要创建索引</li>
-<li>尽量避免使用null，含有空值的列很难进行查询优化，可以使用空字符串代替</li>
-</ul>
-<h2 id="索引分类"><a href="#索引分类" class="headerlink" title="索引分类"></a>索引分类</h2><h3 id="聚集索引和普通索引"><a href="#聚集索引和普通索引" class="headerlink" title="聚集索引和普通索引"></a>聚集索引和普通索引</h3><p>MySQL数据库的B+tree索引分为两大类：<strong>1、聚集索引   2、普通索引</strong></p>
-<p><strong>聚集索引</strong>叶子结点存放表中<strong>所有行记录</strong>的信息，表中存储的数据按照索引的顺序存储，检索效率比非聚集索引高，但对数据更新影响较大，创建表时需显示的为表<strong>创建一个主键</strong>（聚集索引）。表中存储的数据按照索引的顺序存储，<strong>检索效率高</strong>，但对数据更新影响较大。</p>
-<p><strong>普通索引</strong>数据存储在一个地方，索引存储在另一个地方，索引带有指针指向数据的存储位置。普通索引的叶子结点<strong>不包含所有行的数据记录</strong>，只有自己本身的键值和主键的值。普通索引检索效率比聚集索引低，但对数据更新影响较小。</p>
-<h3 id="主键索引"><a href="#主键索引" class="headerlink" title="主键索引"></a>主键索引</h3><p>主键索引其实就是聚集索引，<strong>每张表有且仅有一个主键</strong>，主键可由表的一个或多个字段组成。最好选择与表的其他字段不相关的列或者是业务不相关的列。一般会设为 int 而且是 AUTO_INCREMENT自增类型的。</p>
-<p><strong>总结：</strong></p>
-<ul>
-<li>主键值唯一</li>
-<li>不包含null值</li>
-<li>为提高存取效率，需使用自增键作为主键</li>
-</ul>
-<h3 id="唯一索引"><a href="#唯一索引" class="headerlink" title="唯一索引"></a>唯一索引</h3><p>与普通索引类似,但是唯一索引要求索引列的值是<strong>唯一</strong>的,但可以<strong>允许有空值</strong>。 建立唯一索引一个比较重要的作用是避免数据出现重复。</p>
-<p><strong>总结：</strong></p>
-<ul>
-<li>索引列值唯一</li>
-<li>可以包含null值</li>
-<li>唯一索引可以有多个</li>
-</ul>
-<h3 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h3><p>当能通过检索索引就可以读取想要的数据，那就不需要再到数据表中读取行了。如果一个索引包含了（或覆盖了）满足查询语句中字段与条件的数据该索引就叫做覆盖索引。</p>
-<p>不是所有类型的索引都可成为覆盖索引，覆盖索引必须要存储索引的列，而哈希索引、空间索引和全文索引等都不存储索引列的值，都不能作为覆盖索引。</p>
-<p>当发起一个被索引覆盖的查询时，在EXPLAIN的Extra列可以看到“Using index”的信息</p>
-<h3 id="前缀索引"><a href="#前缀索引" class="headerlink" title="前缀索引"></a>前缀索引</h3><p>对于BLOB、TEXT或很长的VARCHAR类型的列，可为其前几个字符建立索引，该索引称为前缀索引</p>
-<ul>
-<li><p>优点：索引更小，查询更快</p>
-</li>
-<li><p>缺点：不能在order by 或 group by中使用索引，也不能将其用作覆盖索引。</p>
-</li>
-</ul>
-<h3 id="联合索引"><a href="#联合索引" class="headerlink" title="联合索引"></a>联合索引</h3><p>对多个字段同时建立的索引（有顺序，ABC，ACB是完全不同的两种联合索引），使用过程中满足最左前缀原则，将选择性高的放在前面。</p>
-<p>建立联合索引(a,b,c)，相当于建立了索引a、ab、abc三个索引。</p>
-<h3 id="哈希索引"><a href="#哈希索引" class="headerlink" title="哈希索引"></a>哈希索引</h3><p>采用哈希算法，对于每一行数据，存储引擎都会对所有的索引列计算一个哈希码，哈希索引将所有的哈希码存储在索引中，同时在哈希表中保存指向每个数据行的指针。检索时只需一次哈希算法就可以定位至相应的位置，查询速度快。但哈希索引只能进行等值查询，不能进行排序、模糊查询、范围查询等。</p>
-<h2 id="相关语法"><a href="#相关语法" class="headerlink" title="相关语法"></a>相关语法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#查看表中有哪些索引</span><br><span class="line">show index from table_name</span><br><span class="line"></span><br><span class="line">#使用explain命令查看SQL语句的执行计划，示例：</span><br><span class="line">expain select*from t where name =&apos;name1&apos;;</span><br><span class="line"></span><br><span class="line">#创建普通索引</span><br><span class="line">alter table table_name add index index_name (索引字段);</span><br><span class="line">create index index_name on table_name(索引字段)</span><br><span class="line"></span><br><span class="line">#创建主键</span><br><span class="line">alter table table_name primary key (column);</span><br><span class="line"></span><br><span class="line">#创建唯一索引</span><br><span class="line">alter table table_name add unique(column);</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2019/08/28/技能树/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mino-yn">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Mino's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2019/08/28/技能树/" itemprop="url">技能树</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-28T14:40:23+08:00">
-                2019-08-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="技能树"><a href="#技能树" class="headerlink" title="技能树"></a>技能树</h2><h3 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h3><ul>
-<li>基础概念</li>
-<li>事务</li>
-<li>存储引擎</li>
-<li>InnoDB体系结构</li>
-<li>SQL执行过程</li>
-<li>information_schema</li>
-<li>performance_schema</li>
-<li>索引</li>
-<li>锁</li>
-<li>视图</li>
-<li>存储过程</li>
-<li>事件</li>
-<li>触发器</li>
-<li>分区</li>
-<li>复制</li>
-<li>备份</li>
-<li>HA</li>
-<li>SQL</li>
-</ul>
-<h3 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h3><ul>
-<li>ssh</li>
-<li>grep</li>
-<li>scp</li>
-<li>ps/kill</li>
-<li>top</li>
-<li>awk</li>
-<li>sed</li>
-</ul>
-<h3 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h3><h2 id="MySQL基本运维能力"><a href="#MySQL基本运维能力" class="headerlink" title="MySQL基本运维能力"></a>MySQL基本运维能力</h2><ul>
-<li><a href="https://mino-yn.github.io/blog/2019/08/09/Download-MySQL/">安装MySQL</a></li>
-<li>监控</li>
-<li><a href="https://mino-yn.github.io/blog/2019/08/27/MySQL%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86/">权限管理</a></li>
-<li>备份</li>
-<li>SQL优化</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2083,7 +2030,7 @@
               
                 <a href="/blog/archives/">
               
-                  <span class="site-state-item-count">106</span>
+                  <span class="site-state-item-count">109</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
