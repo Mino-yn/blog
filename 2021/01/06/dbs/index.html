@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/blog/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/blog/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="DBS简介 安装备份网关123456789101112131415161718# 检查java环境java -version# 安装网关cd /optwget -O aliyunDBSAgentInstaller.jar https://aliyun-dbs-cn-qingdao.oss-cn-qingdao.aliyuncs.com/installer/0.0.97/aliyunDBSAgent">
+<meta property="og:type" content="article">
+<meta property="og:title" content="阿里云 · DBS">
+<meta property="og:url" content="https://mino-yn.github.io/blog/2021/01/06/dbs/index.html">
+<meta property="og:site_name" content="Mino&#39;s blog">
+<meta property="og:description" content="DBS简介 安装备份网关123456789101112131415161718# 检查java环境java -version# 安装网关cd /optwget -O aliyunDBSAgentInstaller.jar https://aliyun-dbs-cn-qingdao.oss-cn-qingdao.aliyuncs.com/installer/0.0.97/aliyunDBSAgent">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/DBS0.png">
+<meta property="og:updated_time" content="2021-01-06T09:25:00.351Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="阿里云 · DBS">
+<meta name="twitter:description" content="DBS简介 安装备份网关123456789101112131415161718# 检查java环境java -version# 安装网关cd /optwget -O aliyunDBSAgentInstaller.jar https://aliyun-dbs-cn-qingdao.oss-cn-qingdao.aliyuncs.com/installer/0.0.97/aliyunDBSAgent">
+<meta name="twitter:image" content="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/DBS0.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://mino-yn.github.io/blog/2021/01/06/dbs/">
+
+
+
+
+
+  <title>阿里云 · DBS | Mino's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Mino's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mino-yn.github.io/blog/blog/2021/01/06/dbs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mino-yn">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mino's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">阿里云 · DBS</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-06T16:02:04+08:00">
+                2021-01-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="DBS简介"><a href="#DBS简介" class="headerlink" title="DBS简介"></a>DBS简介</h3><p><img src="https://mino-yn.oss-cn-qingdao.aliyuncs.com/blog/DBS0.png" alt></p>
+<h3 id="安装备份网关"><a href="#安装备份网关" class="headerlink" title="安装备份网关"></a>安装备份网关</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 检查java环境</span></span><br><span class="line"><span class="string">java</span> <span class="bullet">-version</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装网关</span></span><br><span class="line"><span class="string">cd</span> <span class="string">/opt</span></span><br><span class="line"><span class="string">wget</span> <span class="bullet">-O</span> <span class="string">aliyunDBSAgentInstaller.jar</span> <span class="attr">https://aliyun-dbs-cn-qingdao.oss-cn-qingdao.aliyuncs.com/installer/0.0.97/aliyunDBSAgentInstaller-0.0.97.jar</span> <span class="string">&amp;&amp;</span> <span class="string">sudo</span> <span class="string">java</span> <span class="bullet">-Dregion=cn-qingdao</span> <span class="bullet">-jar</span> <span class="string">aliyunDBSAgentInstaller.jar</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#创建备份账号</span></span><br><span class="line"><span class="string">GRANT</span> <span class="string">all</span> <span class="string">privileges</span> <span class="string">on</span> <span class="string">*.*</span> <span class="string">to</span> <span class="string">'backup'</span><span class="string">@'%'</span> <span class="string">identified</span> <span class="string">by</span> <span class="string">'Backup@123!'</span><span class="string">;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置超时参数</span></span><br><span class="line"><span class="string">set</span> <span class="string">global</span> <span class="string">wait_timeout=28800;</span></span><br><span class="line"><span class="string">set</span> <span class="string">global</span> <span class="string">interactive_timeout=28800;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改jvm内存</span></span><br><span class="line"><span class="string">/usr/local/aliyun/dbs_agent/bin/aliyun-dbs-agent.sh</span></span><br><span class="line"><span class="string">JVM_FLAGS="-Xmx2048m</span> <span class="attr">-XX:+HeapDumpOnOutOfMemoryError</span> <span class="string">"</span></span><br><span class="line"><span class="string">./aliyun-dbs-agent.sh restart</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo: java: command not found</span><br><span class="line">yum install -y java</span><br></pre></td></tr></table></figure>
+
+<h3 id="备份过程中遇到的问题"><a href="#备份过程中遇到的问题" class="headerlink" title="备份过程中遇到的问题"></a>备份过程中遇到的问题</h3><h4 id="逻辑备份"><a href="#逻辑备份" class="headerlink" title="逻辑备份"></a>逻辑备份</h4><h5 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h5><ul>
+<li><strong>报错信息</strong></li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">异常信息：</span> <span class="bullet">-1</span></span><br><span class="line"><span class="string">java.lang.IllegalStateException:</span> <span class="string">The</span> <span class="string">RecordSplit</span> <span class="number">5</span> <span class="string">must</span> <span class="string">be</span> <span class="string">in</span> <span class="string">FAILED</span> <span class="string">or</span> <span class="string">SUCCESS</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>原因分析</strong>：数据库表损坏</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.sql.SQLException: Table &apos;base_scan_record_t&apos; is marked as crashed and should be repaired</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>解决方法</strong>：检查并修复表</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; check table base_scan_record_t;</span><br><span class="line">+----------------------------------+-------+----------+----------+</span><br><span class="line">| Table                            | Op    | Msg_type | Msg_text |</span><br><span class="line">+----------------------------------+-------+----------+----------+</span><br><span class="line">| cosmo_im_1008.base_scan_record_t | check | status   | OK       |</span><br><span class="line">+----------------------------------+-------+----------+----------+</span><br><span class="line"></span><br><span class="line">repair table base_scan_record_t</span><br></pre></td></tr></table></figure>
+
+<h5 id="问题二"><a href="#问题二" class="headerlink" title="问题二"></a>问题二</h5><ul>
+<li><strong>增量日志备份报错</strong>：</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">startBinlogCrawler</span> <span class="string">fail,</span> <span class="string">dumpBinlog</span> <span class="string">stopped,</span> <span class="attr">reason:</span> <span class="string">@BinlogRead.cpp:92.connectDB()</span> <span class="string">[connect</span> <span class="string">to</span> <span class="number">172.16</span><span class="number">.0</span><span class="number">.1</span><span class="string">:4152</span> <span class="string">by</span> <span class="string">user</span> <span class="string">sre</span> <span class="string">failed</span> <span class="string">for</span> <span class="number">2013</span> <span class="string">,Lost</span> <span class="string">connection</span> <span class="string">to</span> <span class="string">MySQL</span> <span class="string">server</span> <span class="string">at</span> <span class="string">'reading initial communication packet'</span><span class="string">,</span> <span class="string">system</span> <span class="attr">error:</span> <span class="number">0</span><span class="string">]</span> <span class="string">@BinlogRead.cpp:156.connectDB()</span> <span class="string">[connect</span> <span class="string">to</span> <span class="string">mysql</span> <span class="string">server</span> <span class="string">failed]</span> <span class="string">@BinlogRead.cpp:566.seekBinlogInRemote()</span> <span class="string">[seek</span> <span class="string">Binlog</span> <span class="string">in</span> <span class="string">remote</span> <span class="string">mysql</span> <span class="string">server</span> <span class="string">failed</span> <span class="string">for</span> <span class="string">connect</span> <span class="string">db</span> <span class="string">failed]</span> <span class="string">@BinlogRead.cpp:700.seekBinlogByCheckpoint()</span> <span class="string">[seek</span> <span class="string">binlog</span> <span class="string">in</span> <span class="string">remote</span> <span class="string">mysql</span> <span class="string">server</span> <span class="string">failed]</span> <span class="string">@Binlog2File.cpp:408.init()</span> <span class="string">[start</span> <span class="string">from</span> <span class="string">the</span> <span class="string">end</span> <span class="string">of</span> <span class="string">exist</span> <span class="string">local</span> <span class="string">data</span> <span class="number">24655084</span><span class="string">@mysql-bin.000049</span> <span class="string">failed]</span> <span class="string">@./libBinlog2File.so(serviceStart+0x29f)</span> <span class="string">[0x7f9c0e537b67]</span> <span class="string">@./dumpBinlog(main+0x257)</span> <span class="string">[0x4018d4]</span> <span class="string">@/lib64/libc.so.6(__libc_start_main+0xf5)</span> <span class="string">[0x7f9c1137d545]</span> <span class="string">@./dumpBinlog()</span> <span class="string">[0x401079]</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>原因分析</strong>：主备进行了切换，原备份源为主库，后修改成为从库</li>
+<li><strong>解决方法</strong>：联系阿里云工作人员进行后台处理</li>
+</ul>
+<h4 id="物理备份"><a href="#物理备份" class="headerlink" title="物理备份"></a>物理备份</h4><h5 id="问题一-1"><a href="#问题一-1" class="headerlink" title="问题一"></a>问题一</h5><ul>
+<li><strong>报错信息</strong></li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">异常信息：</span> <span class="number">999999</span></span><br><span class="line"><span class="string">DBS-999999,</span> <span class="string">message</span> <span class="string">:Unable</span> <span class="string">to</span> <span class="string">find</span> <span class="string">'completed OK!'</span> <span class="string">at</span> <span class="string">the</span> <span class="string">end</span> <span class="string">of</span> <span class="string">the</span> <span class="attr">file:</span> <span class="string">/usr/local/aliyun/dbs_agent/dbbackup/2020-08-06/1ib0xmr67jbl0_dbbackup.log,</span> <span class="attr">msg:</span> <span class="number">200807</span> <span class="number">02</span><span class="string">:51:07</span> <span class="string">[04]</span> <span class="string">...done</span> <span class="attr">Error:</span> <span class="string">failed</span> <span class="string">to</span> <span class="string">execute</span> <span class="string">query</span> <span class="string">SET</span> <span class="string">SESSION</span> <span class="string">lock_wait_timeout=31536000:</span> <span class="string">MySQL</span> <span class="string">server</span> <span class="string">has</span> <span class="string">gone</span> <span class="string">away</span> <span class="string">.</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>原因分析</strong>：怀疑是 MySQL 连接超时导致的，MySQL 连接超时是由两个参数控制的<code>interactive_timeout</code>、<code>wait_timeout</code>，它的意思是某个 MySQL 长连接很久没有新的请求发起，达到了 server 端的 timeout，被 server 强行关闭。此后再通过这个 connection 发起查询的时候，就会报错 server has gone away。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">MySQL [(none)]&gt; show variables like &apos;%timeout%&apos;;</span><br><span class="line">+-----------------------------+----------+</span><br><span class="line">| Variable_name               | Value    |</span><br><span class="line">+-----------------------------+----------+</span><br><span class="line">| connect_timeout             | 10       |</span><br><span class="line">| delayed_insert_timeout      | 300      |</span><br><span class="line">| innodb_flush_log_at_timeout | 1        |</span><br><span class="line">| innodb_lock_wait_timeout    | 50       |</span><br><span class="line">| innodb_rollback_on_timeout  | OFF      |</span><br><span class="line">| interactive_timeout         | 300      |</span><br><span class="line">| lock_wait_timeout           | 31536000 |</span><br><span class="line">| net_read_timeout            | 30       |</span><br><span class="line">| net_write_timeout           | 60       |</span><br><span class="line">| rpl_stop_slave_timeout      | 31536000 |</span><br><span class="line">| slave_net_timeout           | 3600     |</span><br><span class="line">| wait_timeout                | 300      |</span><br><span class="line">+-----------------------------+----------+</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>解决方法</strong>：设置 <code>interactive_timeout</code>、<code>wait_timeout</code> 参数为<code>28800</code> </li>
+</ul>
+<h5 id="问题二-1"><a href="#问题二-1" class="headerlink" title="问题二"></a>问题二</h5><ul>
+<li><strong>异常报错</strong>：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">999999: DBS-999999, message :Upload files to oss: urumz5gygew1/full/vbt0gyzeqh4k failed, msg: Java heap space.</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>解决方法：</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/aliyun/dbs_agent/bin</span><br><span class="line">./aliyun-dbs-agent.sh stop/start</span><br></pre></td></tr></table></figure>
+
+<h5 id="问题三"><a href="#问题三" class="headerlink" title="问题三"></a>问题三</h5><ul>
+<li><strong>增量日志备份</strong>：</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">提醒：999999</span></span><br><span class="line"><span class="string">DBS-999999,</span> <span class="string">message</span> <span class="string">:Upload</span> <span class="string">files</span> <span class="string">to</span> <span class="attr">oss:</span> <span class="string">t4ygmdbe494h/continuous/1jetth0q6x1kp/3.trn.inc</span> <span class="string">failed,</span> <span class="attr">msg:</span> <span class="string">Could</span> <span class="string">not</span> <span class="string">read</span> <span class="string">desire</span> <span class="string">data</span> <span class="string">len,</span> <span class="attr">dataLength:</span> <span class="number">6750208.</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>安装备份网关失败：</strong></li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2020</span><span class="bullet">-08</span><span class="bullet">-26</span> <span class="number">15</span><span class="string">:28:15</span> <span class="string">ERROR</span> <span class="attr">Ping:19</span> <span class="bullet">-</span> <span class="string">hostname</span> <span class="string">dbs.cn-hangzhou.aliyuncs.com</span> <span class="string">telnet</span> <span class="attr">error:</span> <span class="string">dbs.cn-hangzhou.aliyuncs.com</span></span><br><span class="line"><span class="number">2020</span><span class="bullet">-08</span><span class="bullet">-26</span> <span class="number">15</span><span class="string">:28:15</span> <span class="string">ERROR</span> <span class="attr">Ping:19</span> <span class="bullet">-</span> <span class="string">hostname</span> <span class="string">dbs-inner.cn-qingdao.aliyuncs.com</span> <span class="string">telnet</span> <span class="attr">error:</span> <span class="string">dbs-inner.cn-qingdao.aliyuncs.com</span></span><br><span class="line"><span class="number">2020</span><span class="bullet">-08</span><span class="bullet">-26</span> <span class="number">15</span><span class="string">:28:15</span> <span class="string">ERROR</span> <span class="attr">POPTransporter:187</span> <span class="bullet">-</span> <span class="string">add</span> <span class="string">endpoint</span> <span class="string">to</span> <span class="string">default</span> <span class="string">profile</span> <span class="string">failed</span></span><br><span class="line"><span class="string">com.aliyuncs.exceptions.ClientException:</span> <span class="string">Network</span> <span class="string">is</span> <span class="string">down?</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@cosmoim-d-cqbl</span> <span class="string">logs]#</span> <span class="string">cat</span> <span class="string">/etc/resolv.conf</span></span><br><span class="line"><span class="string">nameserver</span> <span class="number">10.138</span><span class="number">.92</span><span class="number">.77</span></span><br><span class="line"><span class="string">nameserver</span> <span class="number">10.138</span><span class="number">.92</span><span class="number">.76</span></span><br><span class="line"><span class="string">nameserver</span> <span class="number">192.168</span><span class="number">.100</span><span class="number">.1</span></span><br><span class="line"><span class="string">nameserver</span> <span class="number">192.168</span><span class="number">.100</span><span class="number">.2</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">yum</span> <span class="string">provides</span> <span class="string">'*/applydeltarpm'</span>  </span><br><span class="line"><span class="string">yum</span> <span class="string">install</span> <span class="string">deltarpm</span> <span class="bullet">-y</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">yum</span> <span class="string">provides</span> <span class="string">'*/applydeltarpm'</span>  </span><br><span class="line"><span class="string">yum</span> <span class="string">install</span> <span class="string">deltarpm</span> <span class="bullet">-y</span></span><br><span class="line"></span><br><span class="line"><span class="string">yum</span> <span class="string">clean</span> <span class="string">all</span></span><br><span class="line"><span class="string">rm</span> <span class="bullet">-rf</span> <span class="string">/var/cache/yum/*</span></span><br><span class="line"><span class="string">yum</span> <span class="string">clean</span> <span class="string">metadata</span></span><br><span class="line"></span><br><span class="line"><span class="string">yum</span> <span class="string">clean</span></span><br><span class="line"><span class="string">yum</span> <span class="string">clean</span> <span class="string">all</span></span><br><span class="line"><span class="string">yum</span> <span class="string">clean</span> <span class="string">all</span></span><br><span class="line"><span class="string">yum</span> <span class="string">makecache</span></span><br><span class="line"><span class="string">yum</span> <span class="string">install</span> <span class="bullet">-y</span> <span class="string">java</span></span><br><span class="line"><span class="string">yum</span> <span class="string">install</span> <span class="string">java-1.8.0-openjdk</span> <span class="bullet">-y</span></span><br><span class="line"><span class="string">yum</span> <span class="string">install</span> <span class="string">java-1.8.0-openjdk-devel</span> <span class="bullet">-y</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="问题四"><a href="#问题四" class="headerlink" title="问题四"></a>问题四</h5><ul>
+<li><p><strong>异常报错：</strong>错误码为 <code>InvalidTimeStamp.Expired</code>，错误信息为 <code>Specified time stamp or date value is expired.</code></p>
+</li>
+<li><p><strong>解决方法</strong>：将本地环境（即调用SDK的应用程序所在的机器）的时钟调整准确即可</p>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@localhost</span> <span class="string">~]#</span> <span class="string">timedatectl</span> </span><br><span class="line">      <span class="string">Local</span> <span class="attr">time:</span> <span class="string">本地时间，与系统设置的时区有关系，北京时间简写CST</span></span><br><span class="line">  <span class="string">Universal</span> <span class="attr">time:</span> <span class="string">协调世界时，简写为UTC</span></span><br><span class="line">        <span class="string">RTC</span> <span class="attr">time:</span> <span class="string">硬件时间，默认显示时间是UTC时间</span></span><br><span class="line">       <span class="string">Time</span> <span class="attr">zone:</span> <span class="string">当前时区</span></span><br><span class="line">     <span class="string">NTP</span> <span class="attr">enabled:</span> <span class="string">是否设置NTP服务开机启动</span></span><br><span class="line"><span class="string">NTP</span> <span class="attr">synchronized:</span> <span class="string">NTP服务是否已经同步时间</span></span><br><span class="line"> <span class="string">RTC</span> <span class="string">in</span> <span class="string">local</span> <span class="attr">TZ:</span> <span class="string">硬件时间是否是本地时区</span></span><br><span class="line">      <span class="string">DST</span> <span class="attr">active:</span> <span class="string">夏令时是否可用</span> <span class="string">n/a（Not</span> <span class="string">applicable，不可用）</span></span><br><span class="line">      </span><br><span class="line"><span class="comment"># 修改时区</span></span><br><span class="line"><span class="string">[root@localhost</span> <span class="string">~]#</span> <span class="string">timedatectl</span> <span class="string">set-timezone</span> <span class="string">Asia/Shanghai</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 禁用NTP</span></span><br><span class="line"><span class="string">[root@localhost</span> <span class="string">~]#</span> <span class="string">timedatectl</span> <span class="string">set-ntp</span> <span class="literal">false</span> 　　</span><br><span class="line">       </span><br><span class="line"><span class="comment"># 修改本地时间</span></span><br><span class="line"><span class="string">[root@localhost</span> <span class="string">~]#</span> <span class="string">timedatectl</span> <span class="string">set-time</span> <span class="string">"2022-10-10 11:11:11"</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># UTC 时间</span></span><br><span class="line"><span class="string">整个地球分为二十四时区，每个时区都有自己的本地时间。在国际无线电通信场合，为了统一起见，使用一个统一的时间，称为通用协调时(UTC,</span> <span class="string">Universal</span> <span class="string">Time</span> <span class="string">Coordinated)。</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># GMT 时间</span></span><br><span class="line"><span class="string">格林威治标准时间</span> <span class="string">(Greenwich</span> <span class="string">Mean</span> <span class="string">Time)指位于英国伦敦郊区的皇家格林尼治天文台的标准时间，因为本初子午线被定义在通过那里的经线。(UTC与GMT时间基本相同，本文中不做区分)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># CST 时间</span></span><br><span class="line"><span class="string">中国标准时间</span> <span class="string">(China</span> <span class="string">Standard</span> <span class="string">Time)</span></span><br><span class="line"><span class="string">GMT</span> <span class="string">+</span> <span class="number">8</span> <span class="string">=</span> <span class="string">UTC</span> <span class="string">+</span> <span class="number">8</span> <span class="string">=</span> <span class="string">CST</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># DST 时间</span></span><br><span class="line"><span class="string">夏令时(Daylight</span> <span class="string">Saving</span> <span class="string">Time)</span> <span class="string">指在夏天太阳升起的比较早时，将时钟拨快一小时，以提早日光的使用。（中国不使用）</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="问题四-1"><a href="#问题四-1" class="headerlink" title="问题四"></a>问题四</h5><ul>
+<li><strong>预检查失败</strong>：源库连接性检查失败，联系阿里云工作人员查看后台错误日志</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The server time zone value &apos;EDT&apos; is unrecognized or represents more than one time zone.</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>原因分析</strong>：<code>MySQL</code> 的参数 <code>system_time_zone</code> = <code>EDT</code>，<code>EDT</code> 代表了多个时区</li>
+<li><strong>解决方法</strong>：</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#1.在mysql中执行show variables like '%time_zone%';</span></span><br><span class="line"><span class="string">mysql&gt;</span> <span class="string">show</span> <span class="string">variables</span> <span class="string">like</span> <span class="string">'%time_zone%'</span><span class="string">;</span></span><br><span class="line"><span class="string">+------------------+--------+</span></span><br><span class="line"><span class="string">| Variable_name    | Value  |</span></span><br><span class="line"><span class="string">+------------------+--------+</span></span><br><span class="line"><span class="string">| system_time_zone | EDT    |</span></span><br><span class="line"><span class="string">| time_zone        | SYSTEM |</span></span><br><span class="line"><span class="string">+------------------+--------+</span></span><br><span class="line"><span class="string">2 rows in set (0.01 sec)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#2.输入select now();</span></span><br><span class="line"><span class="string">mysql&gt;select now();</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#3.在终端执行date命令</span></span><br><span class="line"><span class="string">[root@localhost bin]#date</span></span><br><span class="line"><span class="string">#此时发现终端显示的时间和MySql中显示的时间不一致，这就是问题所在。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#4.在mysql中执行 set time_zone=SYSTEM;</span></span><br><span class="line"><span class="string">mysql&gt; show variables like '%time_zone%';</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#5.执行 set global time_zone='+8:00';</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#6.执行 flush privileges;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#7.再次执行date、select now();命令，此时终端和MySQL中显示的时间一致。</span></span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2021/01/05/Xtrabackup-use/" rel="next" title="Xtrabackup部分备份">
+                <i class="fa fa-chevron-left"></i> Xtrabackup部分备份
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">mino-yn</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/blog/archives/">
+              
+                  <span class="site-state-item-count">111</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/blog/tags/index.html">
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#DBS简介"><span class="nav-number">1.</span> <span class="nav-text">DBS简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装备份网关"><span class="nav-number">2.</span> <span class="nav-text">安装备份网关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#备份过程中遇到的问题"><span class="nav-number">3.</span> <span class="nav-text">备份过程中遇到的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#逻辑备份"><span class="nav-number">3.1.</span> <span class="nav-text">逻辑备份</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#问题一"><span class="nav-number">3.1.1.</span> <span class="nav-text">问题一</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#问题二"><span class="nav-number">3.1.2.</span> <span class="nav-text">问题二</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#物理备份"><span class="nav-number">3.2.</span> <span class="nav-text">物理备份</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#问题一-1"><span class="nav-number">3.2.1.</span> <span class="nav-text">问题一</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#问题二-1"><span class="nav-number">3.2.2.</span> <span class="nav-text">问题二</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#问题三"><span class="nav-number">3.2.3.</span> <span class="nav-text">问题三</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#问题四"><span class="nav-number">3.2.4.</span> <span class="nav-text">问题四</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#问题四-1"><span class="nav-number">3.2.5.</span> <span class="nav-text">问题四</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mino-yn</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/blog/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/blog/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
